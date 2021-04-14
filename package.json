@@ -1,0 +1,17 @@
+{
+  "name": "lib",
+  "version": "1.0.0",
+  "description": "some helper objects ad functions for footprint",
+  "main": "index.ts",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Ryan Durling",
+  "license": "ISC",
+  "dependencies": {
+    "mocha": "^8.3.2"
+  }
+}
