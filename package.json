@@ -1,8 +1,8 @@
 {
   "name": "@ryandur/sand",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "some helper objects and functions for footprint",
-  "main": "index.ts",
+  "main": "dist/main*.js",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
@@ -11,5 +11,10 @@
   },
   "author": "Ryan Durling",
   "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.2.3",
+    "webpack": "^5.30.0",
+    "webpack-cli": "^4.6.0"
+  },
   "dependencies": {}
 }
