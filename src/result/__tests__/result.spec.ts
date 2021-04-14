@@ -1,6 +1,6 @@
 import {err, explanation, ok} from '../index';
 import {expect} from 'chai';
-import * as faker from "faker";
+import * as faker from 'faker';
 
 const join = (...es: Array<string>) => es.join(' ');
 

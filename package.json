@@ -1,20 +1,31 @@
 {
   "name": "@ryandur/sand",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "some helper objects and functions for footprint",
-  "main": "dist/main*.js",
+  "main": "dist/index.js",
+  "types": "index.d.ts",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
   "scripts": {
-    "test": "exit 0"
+    "test": "mocha",
+    "build": "webpack --env prod"
   },
   "author": "Ryan Durling",
   "license": "ISC",
   "devDependencies": {
+    "@types/chai": "^4.2.16",
+    "@types/faker": "^5.5.1",
+    "@types/mocha": "^8.2.2",
+    "chai": "^4.3.4",
+    "faker": "^5.5.3",
+    "ts-loader": "^8.1.0",
+    "ts-node": "^9.1.1",
     "typescript": "^4.2.3",
     "webpack": "^5.30.0",
     "webpack-cli": "^4.6.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "mocha": "^8.3.2"
+  }
 }
