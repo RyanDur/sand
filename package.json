@@ -1,12 +1,9 @@
 {
   "name": "@ryandur/sand",
-  "version": "1.0.2",
+  "version": "0.0.1",
   "description": "some helper objects and functions for footprint",
-  "main": "dist/index.js",
+  "main": "index.js",
   "types": "index.d.ts",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "scripts": {
     "test": "mocha",
     "build": "webpack --env prod"
