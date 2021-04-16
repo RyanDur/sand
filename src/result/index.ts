@@ -4,12 +4,14 @@ const freeze = <T>(obj: T) => Object.freeze(obj);
 
 export const ok = <T>(response: T): Ok<T> => freeze({
     isOk: true,
+    data: () => response,
     map: (fn) => fn(response),
     flatmap: (fn) => fn(ok(response))
 });
 
 export const err = <E>(explanation: Explanation<E>): Err<Explanation<E>> => freeze({
     isOk: false,
+    reason: () => explanation,
     map: (fn) => fn(explanation),
     flatmap: (fn) => fn(err(explanation))
 });
