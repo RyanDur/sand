@@ -2,16 +2,16 @@ import {Err, Explanation, Ok} from './types';
 
 const freeze = <T>(obj: T) => Object.freeze(obj);
 
-export const ok = <T>(response: T): Ok<T> => freeze({
+export const ok = <T>(data: T): Ok<T> => freeze({
     isOk: true,
-    data: () => response,
-    map: (fn) => fn(response),
-    flatmap: (fn) => fn(ok(response))
+    data: () => data,
+    map: (fn) => fn(data),
+    flatmap: (fn) => fn(ok(data))
 });
 
-export const err = <E>(explanation: Explanation<E>): Err<Explanation<E>> => freeze({
+export const err = <E>(explanation: E): Err<E> => freeze({
     isOk: false,
-    reason: () => explanation,
+    explanation: () => explanation,
     map: (fn) => fn(explanation),
     flatmap: (fn) => fn(err(explanation))
 });
