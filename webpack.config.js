@@ -5,7 +5,7 @@ const PATHS = {
     exclude: /node_modules|cypress/
 };
 
-const base = ({dist, exclude}) => ({
+const base = ({exclude}) => ({
     target: 'node',
     context: path.resolve(currentDir),
     mode: 'production',
@@ -32,4 +32,4 @@ const base = ({dist, exclude}) => ({
 const last = (list) => list[list.length - 1]
 const name = last(__dirname.split('/'));
 
-module.exports = (mode) => base(PATHS)
+module.exports = () => base(PATHS)
