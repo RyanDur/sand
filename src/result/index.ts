@@ -12,5 +12,5 @@ export const result: ResultCreator = (aResult) => freeze({
 });
 
 export const okResult = <T, E>(data: T): Result<T, E> => result(ok(data));
-export const errResult = <T, E>(reason: E, error: Error = new Error('NO RECORD')): Result<T, E> =>
+export const errResult = <T, E>(reason: E, error: Error = new Error('NO RECORD')): Result<T, Explanation<E>> =>
     result(err(explanation(reason, [error])));
