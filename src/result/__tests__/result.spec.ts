@@ -1,47 +1,28 @@
-import {err, explanation, ok} from '../index';
+import {err, errResult, explanation, ok, okResult} from '../index';
 import {expect} from 'chai';
 import * as faker from 'faker';
-import {Explanation, Result} from "../types";
 
-const join = (...es: Array<string>) => es.join(' ');
+const test = it;
 
-describe('Result', () => {
+describe('The Result', () => {
     const initial = faker.lorem.sentence();
     const sentence = faker.lorem.sentence();
 
-    describe('an Ok result', () => {
-        const okResult = ok(initial);
+    test('an Ok result', () => {
+        const result = okResult(initial);
+        const expected = err(explanation(sentence, [new Error()]));
 
-        it('should be ok', () => expect(okResult.isOk).to.be.true);
-        it('should have an identity', () => expect(okResult.data()).is.equal(initial));
-        it('should be mappable', () => okResult
-            .map((response) => err(explanation(join(response, sentence))))
-            .map((exp => expect(exp.reason).to.equal(join(initial, sentence)))));
-
-        it('should be flat mappable into another result', () => okResult
-            .flatmap((result) => result.isOk ? err(explanation(result.data())) : result)
-            .flatmap((result: Result<string, Explanation<string>>) => {
-                if (!result.isOk) expect(result.explanation()).to.eqls(explanation(initial));
-                return result
-            }));
+        expect(result.orNull()?.isOk).to.be.true;
+        expect(result.map(() => expected).orNull()).to.eql(expected);
+        expect(result.mapError(() => expected).orNull()).to.eql(result.orNull())
     });
 
-    describe('an Err result', () => {
-        const reason = explanation(initial);
-        const errResult = err(reason);
+    test('an Err result', () => {
+        const result = errResult(initial);
+        const expected = ok(sentence);
 
-        it('should not be ok', () => expect(errResult.isOk).not.to.be.true);
-        it('should have an identity', () => expect(errResult.explanation()).is.equal(reason));
-        it('should be mappable', () => errResult
-            .map((reason) => ok(join(reason.reason, sentence)))
-            .map((result) => expect(result).to.equal(join(initial, sentence))));
-
-        it('should be flat mappable into another result', () => errResult
-            .flatmap((result) => !result.isOk ? ok(result.explanation().reason) : result)
-            .flatmap((result: Result<string, Explanation<string>>) => {
-                if (result.isOk) expect(result.data()).to.eqls(initial);
-                else expect.fail('is not ok')
-                return result;
-            }));
+        expect(result.orNull()?.isOk).to.be.false;
+        expect(result.map(() => expected).orNull()).to.eql(result.orNull());
+        expect(result.mapError(() => expected).orNull()).to.eql(expected)
     });
 });
