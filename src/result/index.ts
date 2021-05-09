@@ -1,4 +1,4 @@
-import {Err, Explanation, Ok, Result, ResultCreator} from './result';
+import {Err, Explanation, Ok, Result, ResultCreator} from "./types";
 
 const freeze = <T>(obj: T) => Object.freeze(obj);
 export const explanation = <E>(reason: E, errors: Error[]): Explanation<E> => freeze({reason, errors});
