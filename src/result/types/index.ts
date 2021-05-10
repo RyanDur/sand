@@ -16,6 +16,8 @@ export type Err<E> = {
 
 export interface Result<T, E> {
     readonly map: <NewT>(mapper: (aResult: Ok<T>) => ResultType<NewT, E>) => Result<NewT, E>;
+    readonly flatMap: <NewT>(mapper: (aResult: Ok<T>) => Result<NewT, E>) => Result<NewT, E>;
     readonly mapError: <NewE>(mapper: (aResult: Err<E>) => ResultType<T, NewE>) => Result<T, NewE>;
+    readonly flatMapError: <NewE>(mapper: (aResult: Err<E>) => Result<T, NewE>) => Result<T, NewE>;
     readonly orNull: () => ResultType<T, E> | null;
 }

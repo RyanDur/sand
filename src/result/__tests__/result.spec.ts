@@ -7,22 +7,24 @@ const test = it;
 describe('The Result', () => {
     const initial = faker.lorem.sentence();
     const sentence = faker.lorem.sentence();
+    const resultErr = errResult<string, unknown>(initial);
+    const expectedOk = ok(sentence);
+    const resultOk = okResult(initial);
+    const expectedErr = err(explanation(sentence, [new Error()]));
 
     test('an Ok result', () => {
-        const result = okResult(initial);
-        const expected = err(explanation(sentence, [new Error()]));
-
-        expect(result.orNull()?.isOk).to.be.true;
-        expect(result.map(() => expected).orNull()).to.eql(expected);
-        expect(result.mapError(() => expected).orNull()).to.eql(result.orNull())
+        expect(resultOk.orNull()?.isOk).to.be.true;
+        expect(resultOk.map(() => expectedErr).orNull()).to.eql(expectedErr);
+        expect(resultOk.flatMap(() => resultErr)).to.eql(resultErr);
+        expect(resultOk.mapError(() => expectedErr).orNull()).to.eql(resultOk.orNull())
+        expect(resultOk.flatMapError(() => resultErr).orNull()).to.eql(resultOk.orNull())
     });
 
     test('an Err result', () => {
-        const result = errResult(initial);
-        const expected = ok(sentence);
-
-        expect(result.orNull()?.isOk).to.be.false;
-        expect(result.map(() => expected).orNull()).to.eql(result.orNull());
-        expect(result.mapError(() => expected).orNull()).to.eql(expected)
+        expect(resultErr.orNull()?.isOk).to.be.false;
+        expect(resultErr.map(() => expectedOk).orNull()).to.eql(resultErr.orNull());
+        expect(resultErr.flatMap(() => resultOk).orNull()).to.eql(resultErr.orNull());
+        expect(resultErr.mapError(() => expectedOk).orNull()).to.eql(expectedOk)
+        expect(resultErr.flatMapError(() => resultOk)).to.eql(resultOk)
     });
 });

@@ -5,9 +5,11 @@ export const explanation = <E>(reason: E, errors: Error[]): Explanation<E> => fr
 
 export const ok = <T>(data: T): Ok<T> => freeze({isOk: true, data});
 export const err = <E>(explanation: E): Err<E> => freeze({isOk: false, explanation});
-export const result: ResultCreator = (aResult) => freeze({
+export const result: ResultCreator = (aResult) => ({
     map: mapper => result(aResult.isOk ? mapper(aResult) : aResult),
+    flatMap: mapper => aResult.isOk ? mapper(aResult) : result(aResult),
     mapError: mapper => result(aResult.isOk ? aResult : mapper(aResult)),
+    flatMapError: mapper => aResult.isOk ? result(aResult) : mapper(aResult),
     orNull: () => aResult || null
 });
 
