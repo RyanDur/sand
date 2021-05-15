@@ -1,30 +1,44 @@
-import {err, errResult, explanation, ok, okResult} from '../index';
 import {expect} from 'chai';
 import * as faker from 'faker';
+import {result} from '../index';
 
 const test = it;
 
 describe('The Result', () => {
     const initial = faker.lorem.sentence();
-    const sentence = faker.lorem.sentence();
-    const resultErr = errResult<string, unknown>(initial);
-    const expectedOk = ok(sentence);
-    const resultOk = okResult(initial);
-    const expectedErr = err(explanation(sentence, [new Error()]));
+    const reason = faker.lorem.sentence();
 
     test('an Ok result', () => {
-        expect(resultOk.orNull()?.isOk).to.be.true;
-        expect(resultOk.map(() => expectedErr).orNull()).to.eql(expectedErr);
-        expect(resultOk.flatMap(() => resultErr)).to.eql(resultErr);
-        expect(resultOk.mapError(() => expectedErr).orNull()).to.eql(resultOk.orNull())
-        expect(resultOk.flatMapError(() => resultErr).orNull()).to.eql(resultOk.orNull())
+        const okResult = result.ok(initial);
+
+        expect(okResult.value()).to.eql(result.okValue(initial));
+        expect(okResult.orNull()).to.eql(initial);
+        expect(okResult.orElse(reason)).to.eql(initial);
+
+        expect(okResult.map(data => data + reason).value())
+            .to.eql(result.okValue(initial + reason));
+        expect(okResult.flatMap(data => result.okValue(data + reason)).value())
+            .to.eql(result.okValue(initial + reason));
+
+        expect(okResult.mapError(() => 'this will not happen').value()).to.eql(okResult.value());
+        expect(okResult.flatMapError(() => result.okValue('this will not happen'))
+            .value()).to.eql(okResult.value());
     });
 
     test('an Err result', () => {
-        expect(resultErr.orNull()?.isOk).to.be.false;
-        expect(resultErr.map(() => expectedOk).orNull()).to.eql(resultErr.orNull());
-        expect(resultErr.flatMap(() => resultOk).orNull()).to.eql(resultErr.orNull());
-        expect(resultErr.mapError(() => expectedOk).orNull()).to.eql(expectedOk)
-        expect(resultErr.flatMapError(() => resultOk)).to.eql(resultOk)
+        const errResult = result.err(reason);
+
+        expect(errResult.value()).to.eql(result.errValue(reason));
+        expect(errResult.orNull()).to.be.null;
+        expect(errResult.orElse(initial)).to.eql(initial);
+
+        expect(errResult.map(() => 'this will not happen').value())
+            .to.eql(errResult.value());
+        expect(errResult.flatMap(() => result.errValue('this will not happen')).value())
+            .to.eql(errResult.value());
+
+        expect(errResult.mapError(data => data + initial).value()).to.eql(result.errValue(reason + initial));
+        expect(errResult.flatMapError(data => result.errValue(data + initial)).value())
+            .to.eql(result.errValue(reason + initial));
     });
 });

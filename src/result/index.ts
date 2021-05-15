@@ -1,18 +1,25 @@
-import {Err, Explanation, Ok, Result, ResultCreator} from "./types";
+import {Result} from './types';
 
-const freeze = <T>(obj: T) => Object.freeze(obj);
-export const explanation = <E>(reason: E, errors: Error[]): Explanation<E> => freeze({reason, errors});
+const shallowFreeze = <T>(obj: T) => Object.freeze(obj);
+const okValue = <T>(data: T): Result.Ok<T> => shallowFreeze({isOk: true, data});
+const errValue = <E>(reason: E): Result.Err<E> => shallowFreeze({isOk: false, reason});
 
-export const ok = <T>(data: T): Ok<T> => freeze({isOk: true, data});
-export const err = <E>(explanation: E): Err<E> => freeze({isOk: false, explanation});
-export const result: ResultCreator = (aResult) => ({
-    map: mapper => result(aResult.isOk ? mapper(aResult) : aResult),
-    flatMap: mapper => aResult.isOk ? mapper(aResult) : result(aResult),
-    mapError: mapper => result(aResult.isOk ? aResult : mapper(aResult)),
-    flatMapError: mapper => aResult.isOk ? result(aResult) : mapper(aResult),
-    orNull: () => aResult || null
+const pipeline: Result.PipelineProvider = (aValue) => shallowFreeze({
+    value: () => aValue,
+    orElse: (fallback) => aValue.isOk ? aValue.data : fallback,
+    orNull: () => aValue.isOk ? aValue.data : null,
+    map: mapper => pipeline(aValue.isOk ? okValue(mapper(aValue.data)) : aValue),
+    flatMap: mapper => pipeline(aValue.isOk ? mapper(aValue.data) : aValue),
+    mapError: mapper => pipeline(aValue.isOk ? aValue : errValue(mapper(aValue.reason))),
+    flatMapError: mapper => pipeline(aValue.isOk ? aValue : mapper(aValue.reason))
 });
 
-export const okResult = <T, E>(data: T): Result<T, Explanation<E>> => result(ok(data));
-export const errResult = <T, E>(reason: E, error: Error = new Error('NO RECORD')): Result<T, Explanation<E>> =>
-    result(err(explanation(reason, [error])));
+const ok = <T, E>(data: T): Result.Pipeline<T, E> => pipeline(okValue(data));
+const err = <T, E>(reason: E): Result.Pipeline<T, E> => pipeline(errValue(reason));
+
+export const result = shallowFreeze({
+    ok,
+    okValue,
+    err,
+    errValue
+})

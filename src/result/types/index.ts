@@ -1,23 +1,26 @@
-export type Explanation<T> = {
-    readonly reason: T,
-    readonly errors: Error[]
-};
+type Mapping<A, B> = (a: A) => B
 
-export type ResultCreator = <T, E>(aResult: ResultType<T, E>) => Result<T, E>
-export type ResultType<T, E> = Ok<T> | Err<E>
-export type Ok<T> = {
-    readonly isOk: true;
-    readonly data: T;
-}
-export type Err<E> = {
-    readonly isOk: false;
-    readonly explanation: E;
-}
+export declare namespace Result {
+    interface Ok<T> {
+        readonly isOk: true;
+        readonly data: T;
+    }
 
-export interface Result<T, E> {
-    readonly map: <NewT>(mapper: (aResult: Ok<T>) => ResultType<NewT, E>) => Result<NewT, E>;
-    readonly flatMap: <NewT>(mapper: (aResult: Ok<T>) => Result<NewT, E>) => Result<NewT, E>;
-    readonly mapError: <NewE>(mapper: (aResult: Err<E>) => ResultType<T, NewE>) => Result<T, NewE>;
-    readonly flatMapError: <NewE>(mapper: (aResult: Err<E>) => Result<T, NewE>) => Result<T, NewE>;
-    readonly orNull: () => ResultType<T, E> | null;
+    interface Err<E> {
+        readonly isOk: false;
+        readonly reason: E;
+    }
+
+    interface Pipeline<S, E> {
+        readonly value: () => Value<S, E>;
+        readonly orElse: (fallback: S) => S;
+        readonly orNull: () => S | null;
+        readonly map: <NewS>(mapping: Mapping<S, NewS>) => Pipeline<NewS, E>;
+        readonly mapError: <NewE>(mapping: Mapping<E, NewE>) => Pipeline<S, NewE>;
+        readonly flatMap: <NewS>(mapping: Mapping<S, Value<NewS, E>>) => Pipeline<NewS, E>;
+        readonly flatMapError: <NewE>(mapping: Mapping<E, Value<S, NewE>>) => Pipeline<S, NewE>;
+    }
+
+    type Value<T, E> = Ok<T> | Err<E>
+    type PipelineProvider = <T, E>(aResult: Value<T, E>) => Pipeline<T, E>
 }
