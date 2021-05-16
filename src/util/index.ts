@@ -1,0 +1,1 @@
+export const shallowFreeze = <T>(obj: T): T => Object.freeze(obj);
