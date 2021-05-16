@@ -22,5 +22,4 @@ export declare namespace Result {
     }
 
     type Value<T, E> = Ok<T> | Err<E>
-    type PipelineProvider = <T, E>(aResult: Value<T, E>) => Pipeline<T, E>
 }
