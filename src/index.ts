@@ -1,2 +1,2 @@
 export * from './result';
-export * from './result/types'
+export * from './result/types';

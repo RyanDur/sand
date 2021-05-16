@@ -4,7 +4,7 @@ const shallowFreeze = <T>(obj: T) => Object.freeze(obj);
 const okValue = <T>(data: T): Result.Ok<T> => shallowFreeze({isOk: true, data});
 const errValue = <E>(reason: E): Result.Err<E> => shallowFreeze({isOk: false, reason});
 
-const pipeline: Result.PipelineProvider = (aValue) => shallowFreeze({
+const pipeline = <T, E>(aValue: Result.Value<T, E>): Result.Pipeline<T, E> => shallowFreeze({
     value: () => aValue,
     orElse: (fallback) => aValue.isOk ? aValue.data : fallback,
     orNull: () => aValue.isOk ? aValue.data : null,
@@ -22,4 +22,4 @@ export const result = shallowFreeze({
     okValue,
     err,
     errValue
-})
+});
