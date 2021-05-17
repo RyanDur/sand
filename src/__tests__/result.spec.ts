@@ -8,7 +8,7 @@ describe('The Result', () => {
     const data = faker.lorem.sentence();
     const explanation = faker.lorem.sentence();
 
-    test('an Ok result', () => {
+    test('for an Ok', () => {
         const okResult = result.ok(data);
 
         expect(okResult.value()).to.eql(result.okValue(data));
@@ -26,7 +26,7 @@ describe('The Result', () => {
             .value()).to.eql(okResult.value());
     });
 
-    test('an Err result', () => {
+    test('for an Err', () => {
         const errResult = result.err(explanation);
 
         expect(errResult.value()).to.eql(result.errValue(explanation));

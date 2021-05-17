@@ -10,7 +10,7 @@ describe('the Async Result', () => {
     const successValue = asyncResult.successValue(data);
     const failValue = asyncResult.failureValue(explanation);
 
-    test('Success', async () => {
+    test('for a Success', async () => {
         const aSuccess = asyncResult.success(data);
 
         expect(await aSuccess.map(inner => inner + explanation).value())
@@ -32,7 +32,7 @@ describe('the Async Result', () => {
             .to.eql(successValue);
     });
 
-    test('Failure', async () => {
+    test('for a Failure', async () => {
         const aFailure = asyncResult.failure(explanation);
 
         expect(await aFailure.mapFailure(inner => inner + data).value())
@@ -54,7 +54,7 @@ describe('the Async Result', () => {
             .to.eql(failValue);
     });
 
-    test('of a promise', async () => {
+    test('handles a promise', async () => {
         expect(await asyncResult.ofPromise(Promise.resolve(data)).value()).to.eql(successValue);
 
         expect(await asyncResult.ofPromise(Promise.reject(explanation)).value()).to.eql(failValue);
