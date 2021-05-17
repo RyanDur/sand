@@ -9,14 +9,14 @@ describe('maybe', () => {
     const otherWord = faker.lorem.word();
 
     test('of some', () => {
-        const maybeWord = maybe.some(word);
+        const maybeWord = maybe(word);
 
         expect(maybeWord.map(thisWord => thisWord + otherWord).orElse(otherWord))
             .to.eql(word + otherWord);
     });
 
     test('of none', () => {
-        const maybeWord = maybe.some();
+        const maybeWord = maybe();
 
         expect(maybeWord.map(() => expect.fail('this should not happen') as string)
             .orElse(otherWord)).to.eql(otherWord);

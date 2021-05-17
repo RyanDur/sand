@@ -9,9 +9,4 @@ const pipeline = <T>(value: Maybe.Value<T>): Maybe.Pipeline<T> => shallowFreeze(
     orElse: other => value === none ? other : value()
 });
 
-const some = <T>(value?: T): Maybe.Pipeline<T> => pipeline(value ? someValue(value) : none);
-
-export const maybe = {
-    none,
-    some
-};
+export const maybe = <T>(value?: T): Maybe.Pipeline<T> => pipeline(value ? someValue(value) : none);
