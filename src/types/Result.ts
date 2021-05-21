@@ -25,7 +25,9 @@ export declare namespace Result {
 
     type Value<T, E> = Ok<T> | Err<E>
 
-    namespace Async {
+    // BUG: https://github.com/typescript-eslint/typescript-eslint/issues/2237
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    export namespace Async {
         interface RejectionError {
             readonly reason: unknown
         }
