@@ -8,17 +8,15 @@ const pipeline = <S, F>(promise: Promise<Result.Value<S, F>>): Result.Async.Pipe
     value: () => promise,
     map: mapping => pipeline(promise
         .then(result.pipeline)
-        .then(({map}) => map(mapping))
-        .then(({value}) => value())),
-    flatMap: (mapping) => pipeline(new Promise(resolve => promise
+        .then(({map}) => map(mapping).value())),
+    mapFailure: mapping => pipeline(promise
+        .then(result.pipeline)
+        .then(({mapError}) => mapError(mapping).value())),
+    flatMap: mapping => pipeline(new Promise(resolve => promise
         .then(result.pipeline)
         .then(pipe => pipe
             .onOk(value => mapping(value).onComplete(resolve))
             .onErr(explanation => resolve(failureValue(explanation)))))),
-    mapFailure: mapping => pipeline(promise
-        .then(result.pipeline)
-        .then(({mapError}) => mapError(mapping))
-        .then(({value}) => value())),
     flatMapFailure: mapping => pipeline(new Promise(resolve => promise
         .then(result.pipeline)
         .then(pipe => pipe
@@ -26,15 +24,13 @@ const pipeline = <S, F>(promise: Promise<Result.Value<S, F>>): Result.Async.Pipe
             .onOk(value => resolve(successValue(value)))))),
     onSuccess: consumer => pipeline(promise
         .then(result.pipeline)
-        .then(({onOk}) => onOk(consumer))
-        .then(({value}) => value())),
+        .then(({onOk}) => onOk(consumer).value())),
     onFailure: consumer => pipeline(promise
         .then(result.pipeline)
-        .then(({onErr}) => onErr(consumer))
-        .then(({value}) => value())),
-    onComplete: consumer => pipeline(promise.then(res => {
-        consumer(res);
-        return res;
+        .then(({onErr}) => onErr(consumer).value())),
+    onComplete: consumer => pipeline(promise.then(value => {
+        consumer(value);
+        return value;
     }))
 });
 
