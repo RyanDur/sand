@@ -1,6 +1,5 @@
 import {expect} from 'chai';
 import {maybe} from '../maybe';
-import {typeOf} from '../util';
 
 const test = it;
 
@@ -44,6 +43,8 @@ const somes = [
     ``  // eslint-disable-line
 ].map(setup(SOME));
 
-describe('Maybe', () => [...nones, ...somes].forEach(({value, expectation}) =>
-    test(`maybe(${String(value)}) of type: ${typeOf(value)}`, () =>
-        expect(maybe(value).map(() => SOME).orElse(NONE)).to.equal(expectation))));
+describe('Maybe', () => [...nones, ...somes].forEach(({value, expectation}) => {
+    const maybeValue = maybe(value);
+    test(`${maybeValue.inspect()} ${maybeValue.isNone ? `of value: ${value}` : ''}`, () =>
+        expect(maybeValue.map(() => SOME).orElse(NONE)).to.equal(expectation));
+}));

@@ -7,6 +7,7 @@ const errValue = <E>(explanation: E): Result.Err<E> => shallowFreeze({isOk: fals
 const pipeline = <T, E>(aValue: Result.Value<T, E>): Result.Pipeline<T, E> => shallowFreeze({
     value: () => aValue,
     orElse: fallback => aValue.isOk ? aValue.data : fallback,
+    inspect: () => `Result(${String(aValue)})`,
     orNull: () => aValue.isOk ? aValue.data : null,
     onOk: consumer => {
         if (aValue.isOk) consumer(aValue.data);

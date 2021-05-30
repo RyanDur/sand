@@ -6,6 +6,7 @@ const failureValue = <F>(explanation: F): Result.Err<F> => result.errValue(expla
 
 const pipeline = <S, F>(promise: Promise<Result.Value<S, F>>): Result.Async.Pipeline<S, F> => ({
     value: () => promise,
+    inspect: () => `AsyncResult(${promise})`,
     map: mapping => pipeline(promise
         .then(result.pipeline)
         .then(({map}) => map(mapping).value())),
