@@ -1,12 +1,10 @@
-import {Functor} from '../util';
+import {Inspectable, Monad} from './index';
 
 export declare namespace Maybe {
-    type Some<T> = Functor<T> & {
-        inspect: () => string;
+    type Some<T> = Monad<T> & Inspectable & {
         isNone: false;
     };
-    type None<T> = Functor<T> & {
-        inspect: () => string;
+    type None<T> = Monad<T> & Inspectable & {
         isNone: true;
     };
 }

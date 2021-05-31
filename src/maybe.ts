@@ -1,16 +1,22 @@
 import {Maybe} from './types';
-import {shallowFreeze, typeOf} from './util';
+import {inspect, shallowFreeze, typeOf} from './util';
 
 const some = <T>(value: T): Maybe.Some<T> => shallowFreeze({
     map: f => some(f(value)),
+    flatMap: f => f(value),
+    value: () => value,
     orElse: () => value,
-    inspect: () => `Some(${String(value)})`,
+    orNull: () => value,
+    inspect: () => `Some(${inspect(value)})`,
     isNone: false
 });
 
 const none = <T>(): Maybe.None<T> => shallowFreeze({
     map: () => none(),
+    flatMap: () => none(),
+    value: () => undefined as unknown as T,
     orElse: fallback => fallback,
+    orNull: () => null,
     inspect: () => 'None',
     isNone: true
 });
