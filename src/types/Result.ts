@@ -1,30 +1,35 @@
-import {Consumer, Mapping} from './index';
+import {AsyncSuppliers, BiMonad, Consumer, Inspectable, Suppliers} from './index';
 
 export declare namespace Result {
-    interface Ok<T> {
+    type Ok<T, E> = BiMonad<T, E> & Suppliers<T> & Inspectable & {
         readonly isOk: true;
-        readonly data: T;
+        readonly onOk: (consumer: Consumer<T>) => Ok<T, E>;
+        readonly onErr: (consumer: Consumer<E>) => Ok<T, E>;
     }
-
-    interface Err<E> {
+    type Err<T, E> = BiMonad<T, E> & Suppliers<E> & Inspectable & {
         readonly isOk: false;
-        readonly explanation: E;
+        readonly onOk: (consumer: Consumer<T>) => Err<T, E>;
+        readonly onErr: (consumer: Consumer<E>) => Err<T, E>;
     }
 
-    interface Pipeline<S, E> {
-        readonly value: () => Value<S, E>;
-        readonly orElse: (fallback: S) => S;
-        readonly orNull: () => S | null;
-        readonly inspect: () => string;
-        readonly onOk: (consumer: Consumer<S>) => Pipeline<S, E>;
-        readonly onErr: (consumer: Consumer<E>) => Pipeline<S, E>;
-        readonly map: <NewS>(mapping: Mapping<S, NewS>) => Pipeline<NewS, E>;
-        readonly mapError: <NewE>(mapping: Mapping<E, NewE>) => Pipeline<S, NewE>;
-        readonly flatMap: <NewS>(mapping: Mapping<S, Value<NewS, E>>) => Pipeline<NewS, E>;
-        readonly flatMapError: <NewE>(mapping: Mapping<E, Value<S, NewE>>) => Pipeline<S, NewE>;
+    type Async<S, F> = Inspectable & {
+        readonly value: () => Promise<Result<S, F>>;
+        // readonly onSuccess: (consumer: Consumer<S>) => Async<S, F>;
+        // readonly onFailure: (consumer: Consumer<F>) => Async<S, F>;
+        readonly onComplete: (consumer: Consumer<Result<S, F>>) => Async<S, F>;
     }
 
-    type Value<T, E> = Ok<T> | Err<E>
+    // interface Pipeline<S, F> {
+    //     readonly value: () => Promise<Value<S, F>>;
+    //     readonly inspect: () => string;
+    //     readonly map: <NewS>(mapping: Mapping<S, NewS>) => Pipeline<NewS, F>;
+    //     readonly mapFailure: <NewF>(mapping: Mapping<F, NewF>) => Pipeline<S, NewF>;
+    //     readonly flatMap: <NewS>(mapping: Mapping<S, Pipeline<NewS, F>>) => Pipeline<NewS, F>;
+    //     readonly flatMapFailure: <NewF>(mapping: Mapping<F, Pipeline<S, NewF>>) => Pipeline<S, NewF>;
+    //     readonly onSuccess: (consumer: Consumer<S>) => Pipeline<S, F>;
+    //     readonly onFailure: (consumer: Consumer<F>) => Pipeline<S, F>;
+    //     readonly onComplete: (consumer: Consumer<Value<S, F>>) => Pipeline<S, F>;
+    // }
 
     // BUG: https://github.com/typescript-eslint/typescript-eslint/issues/2237
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -32,17 +37,7 @@ export declare namespace Result {
         interface RejectionError {
             readonly reason: unknown
         }
-
-        interface Pipeline<S, F> {
-            readonly value: () => Promise<Value<S, F>>;
-            readonly inspect: () => string;
-            readonly map: <NewS>(mapping: Mapping<S, NewS>) => Pipeline<NewS, F>;
-            readonly mapFailure: <NewF>(mapping: Mapping<F, NewF>) => Pipeline<S, NewF>;
-            readonly flatMap: <NewS>(mapping: Mapping<S, Pipeline<NewS, F>>) => Pipeline<NewS, F>;
-            readonly flatMapFailure: <NewF>(mapping: Mapping<F, Pipeline<S, NewF>>) => Pipeline<S, NewF>;
-            readonly onSuccess: (consumer: Consumer<S>) => Pipeline<S, F>;
-            readonly onFailure: (consumer: Consumer<F>) => Pipeline<S, F>;
-            readonly onComplete: (consumer: Consumer<Value<S, F>>) => Pipeline<S, F>;
-        }
     }
 }
+
+export type Result<T, E> = Result.Ok<T, E> | Result.Err<T, E>;

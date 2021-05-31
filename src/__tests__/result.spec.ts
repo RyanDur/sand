@@ -1,46 +1,50 @@
 import {expect} from 'chai';
 import * as faker from 'faker';
 import {result} from '../result';
+import {Explanation} from '../types/Explanation';
+import {explanation} from '../explanantion';
 
 const test = it;
 
 describe('The Result', () => {
     const data = faker.lorem.sentence();
-    const explanation = faker.lorem.sentence();
+    const reason = faker.lorem.sentence();
 
     test('for an Ok', () => {
-        const okResult = result.ok(data);
+        const isOk = () => true;
+        const okResult = result<string, Explanation<string>>(isOk);
+        const aResult = okResult(data);
 
-        expect(okResult.value()).to.eql(result.okValue(data));
-        expect(okResult.orNull()).to.eql(data);
-        expect(okResult.orElse(explanation)).to.eql(data);
+        expect(aResult.orNull()).to.eql(data);
+        expect(aResult.orElse(reason)).to.eql(data);
 
-        expect(okResult.onOk(value => expect(value).to.eql(data)).value()).to.eql(okResult.value());
-        expect(okResult.onErr(() => expect.fail('this should not happen')).value()).to.eql(okResult.value());
+        expect(aResult.onOk(value => expect(value).to.eql(data)).orElse(reason)).to.eql(data);
+        expect(aResult.onErr(() => expect.fail('this should not happen')).orElse(reason)).to.eql(data);
 
-        expect(okResult.map(data => data + explanation).value()).to.eql(result.okValue(data + explanation));
-        expect(okResult.mapError(() => expect.fail('this should not happen')).value()).to.eql(okResult.value());
+        expect(aResult.map(value => value + reason).orElse(reason)).to.eql(data + reason);
+        expect(aResult.mapErr(() => expect.fail('this should not happen')).orElse(reason)).to.eql(data);
 
-        expect(okResult.flatMap(data => result.okValue(data + explanation)).value()).to.eql(result.okValue(data + explanation));
-        expect(okResult.flatMapError(() => expect.fail('this should not happen'))
-            .value()).to.eql(okResult.value());
+        expect(aResult.flatMap(value => okResult(value + reason)).value()).to.eql(data + reason);
+        expect(aResult.flatMapErr(() => expect.fail('this should not happen')).orElse(reason)).to.eql(data);
     });
 
     test('for an Err', () => {
-        const errResult = result.err(explanation);
+        const notOk = () => false;
+        const errResult = result<string, Explanation<string>>(notOk);
+        const aResult = errResult(reason);
 
-        expect(errResult.value()).to.eql(result.errValue(explanation));
-        expect(errResult.orNull()).to.be.null;
-        expect(errResult.orElse(data)).to.eql(data);
+        expect(aResult.orNull()).to.be.null;
+        expect(aResult.orElse(data)).to.eql(data);
 
-        expect(errResult.onOk(() => expect.fail('this should not happen')).value()).to.eql(errResult.value());
-        expect(errResult.onErr(value => expect(value).to.eql(explanation)).value()).to.eql(errResult.value());
+        expect(aResult.onOk(() => expect.fail('this should not happen')).orElse(data)).to.eql(data);
+        expect(aResult.onErr(value => expect(value.value()).to.eql(reason)).isOk).to.be.false;
 
-        expect(errResult.map(() => expect.fail('this should not happen')).value()).to.eql(errResult.value());
-        expect(errResult.mapError(explanation => explanation + data).value()).to.eql(result.errValue(explanation + data));
+        expect(aResult.map(() => expect.fail('this should not happen') as string).orElse(data)).to.eql(data);
+        expect(aResult.mapErr(exp => explanation(exp.value() + data)).value().value())
+            .to.eql(reason + data);
 
-        expect(errResult.flatMap(() => result.errValue('this will not happen')).value()).to.eql(errResult.value());
-        expect(errResult.flatMapError(explanation => result.errValue(explanation + data)).value())
-            .to.eql(result.errValue(explanation + data));
+        expect(aResult.flatMap(() => errResult('this will not happen')).orElse(data)).to.eql(data);
+        expect((aResult.flatMapErr(explanation => errResult(explanation.value() + data)).value() as Explanation<string>).value())
+            .to.eql(reason + data);
     });
 });
