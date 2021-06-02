@@ -1,5 +1,5 @@
 export type Func<T = any, NewT = any> = (value: T) => NewT;
-export type Predicate<T> = Func<T, boolean>;
+export type Predicate<QUESTION> = Func<QUESTION, boolean>;
 export type Supplier<SUPPLY> = Func<void, SUPPLY>
 export type Consumer<CONSUME> = Func<CONSUME, void>
 
@@ -8,31 +8,41 @@ export type Inspectable = {
 }
 export type Suppliers<T> = {
     readonly orNull: Supplier<T | null>;
-    readonly value: Supplier<T>;
 }
 
-export type AsyncSuppliers<T> = {
-    readonly orNull: Supplier<Promise<T> | null>;
-    readonly value: Supplier<Promise<T>>;
-}
-
-export type Id<T> = Suppliers<T> & {
+export type Id<T> = {
     readonly orElse: Func<T, T>;
 }
-
-export type Functor<T> = Id<T> & {
+export type Functor<T> = {
+    readonly orElse: Func<T, T>;
     readonly map: <NewT>(f: Func<T, NewT>) => Functor<NewT>;
 }
-export type Monad<T> = Functor<T> & {
+export type Monad<T> = {
+    readonly orElse: Func<T, T>;
+    readonly map: <NewT>(f: Func<T, NewT>) => Monad<NewT>;
     readonly flatMap: <NewT>(f: Func<T, Monad<NewT>>) => Monad<NewT>;
 }
 
-export type BiFunctor<T, E> = Id<T | E> & {
-    readonly map: <NewT extends T>(f: Func<T, NewT>) => BiFunctor<NewT, E>;
-    readonly mapErr: <NewE extends E>(f: Func<E, NewE>) => BiFunctor<T, NewE>;
+export type BiId<T, E> = {
+    readonly orElse: Func<T, T>;
+    readonly orElseErr: Func<E, E>;
+}
+export type BiFMap<T, E> = {
+    readonly map: <NewT>(f: Func<T, NewT>) => BiFunctor<NewT, E>;
+    readonly mapErr: <NewE>(f: Func<E, NewE>) => BiFunctor<T, NewE>;
+}
+export type BiFunctor<T, E> = {
+    readonly orElse: Func<T, T>;
+    readonly orElseErr: Func<E, E>;
+    readonly map: <NewT>(f: Func<T, NewT>) => BiFunctor<NewT, E>;
+    readonly mapErr: <NewE>(f: Func<E, NewE>) => BiFunctor<T, NewE>;
 }
 
-export type BiMonad<T, E> = BiFunctor<T, E> & {
+export type BiMonad<T, E> = {
+    readonly orElse: Func<T, T>;
+    readonly orElseErr: Func<E, E>;
+    readonly map: <NewT>(f: Func<T, NewT>) => BiMonad<NewT, E>;
+    readonly mapErr: <NewE>(f: Func<E, NewE>) => BiMonad<T, NewE>;
     readonly flatMap: <NewT>(f: Func<T, BiMonad<NewT, E>>) => BiMonad<NewT, E>;
     readonly flatMapErr: <NewE>(f: Func<E, BiMonad<T, NewE>>) => BiMonad<T, NewE>;
 }

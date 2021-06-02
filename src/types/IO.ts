@@ -1,7 +1,9 @@
-import {Functor, Inspectable, Supplier, Suppliers} from './index';
+import {Func, Supplier} from './index';
 
-export type IO<T> =
-    & Functor<T>
-    & Inspectable
-    & Suppliers<T>
-    & { readonly perform: Supplier<T>; }
+export interface IO<T> {
+    readonly perform: Supplier<T>;
+    readonly orElse: Func<T, T>;
+    readonly map: <NewT>(f: Func<T, NewT>) => IO<NewT>;
+    readonly flatMap: <NewT>(f: Func<T, IO<NewT>>) => IO<NewT>;
+    readonly inspect: Supplier<string>;
+}

@@ -10,6 +10,7 @@ export const ok = <T, E>(data: T): Result.Ok<T, E> => shallowFreeze({
     flatMap: f => f(data),
     flatMapErr: () => ok(data),
     orElse: () => data,
+    orElseErr: fallback => fallback,
     orNull: () => data,
     onOk: consumer => {
         consumer(data);
@@ -21,12 +22,12 @@ export const ok = <T, E>(data: T): Result.Ok<T, E> => shallowFreeze({
 
 export const err = <T, E>(explanation: E): Result.Err<T, E> => ({
     isOk: false,
-    value: () => explanation,
     map: () => err(explanation),
     mapErr: f => err(f(explanation)),
     flatMap: () => err(explanation),
     flatMapErr: f => f(explanation),
     orElse: other => other,
+    orElseErr: () => explanation,
     orNull: () => null,
     onOk: () => err(explanation),
     onErr: consumer => {

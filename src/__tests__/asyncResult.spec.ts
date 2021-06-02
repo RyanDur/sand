@@ -5,58 +5,57 @@ import faker from 'faker';
 const test = it;
 
 describe('the Async Result', () => {
+    const FAIL = 'FAIL';
     const data = faker.lorem.sentence();
-    const explanation = faker.lorem.sentence();
-    const successValue = asyncResult.successValue(data);
-    const failValue = asyncResult.failureValue(explanation);
+    const reason = faker.lorem.sentence();
 
     test('for a Success', async () => {
-        const aSuccess = asyncResult.success(data);
+        const aSuccess = asyncResult(Promise.resolve(data));
 
-        expect(await aSuccess.map(inner => inner + explanation).value())
-            .to.eql(asyncResult.successValue(data + explanation));
-        expect(await aSuccess.mapFailure(() => expect.fail('this should not happen')).value())
-            .to.eql(successValue);
+        const resultMap = await aSuccess.map(inner => inner + reason).orElse(FAIL);
+        expect(resultMap).to.eql(data + reason);
 
-        expect(await aSuccess.flatMap(inner => asyncResult.success(inner + explanation)).value())
-            .to.eql(asyncResult.successValue(data + explanation));
-        expect(await aSuccess.flatMapFailure(() => expect.fail('this should not happen')).value())
-            .to.eql(successValue);
+        const resultMapFailure = await aSuccess.mapFailure(() => expect.fail('this should not happen')).orElse(FAIL);
+        expect(resultMapFailure).to.eql(data);
 
-        expect(await aSuccess.onSuccess(value => expect(value).to.eql(data)).value())
-            .to.eql(successValue);
-        expect(await aSuccess.onFailure(() => expect.fail('this should not happen')).value())
-            .to.eql(successValue);
+        const resultFlatMap = await aSuccess.flatMap(inner => asyncResult(Promise.resolve(inner + reason))).orElse(FAIL);
+        expect(resultFlatMap).to.eql(data + reason);
 
-        expect(await aSuccess.onComplete(async value => expect(value).to.eql(successValue)).value())
-            .to.eql(successValue);
+        const resultFlatMapFailure = await aSuccess.flatMapFailure(() => expect.fail('this should not happen')).orElse(FAIL);
+        expect(resultFlatMapFailure).to.eql(data);
+
+        const resultOnSuccess = await aSuccess.onSuccess(value => expect(value).to.eql(data)).orElse(FAIL);
+        expect(resultOnSuccess).to.eql(data);
+
+        const resultOnFailure = await aSuccess.onFailure(() => expect.fail('this should not happen')).orElse(FAIL);
+        expect(resultOnFailure).to.eql(data);
+
+        const resultOnComplete = await aSuccess.onComplete(async value => expect(value).to.eql(data)).orElse(FAIL);
+        expect(resultOnComplete).to.eql(data);
     });
 
     test('for a Failure', async () => {
-        const aFailure = asyncResult.failure(explanation);
+        const aFailure = asyncResult<string, string>(Promise.reject(reason));
 
-        expect(await aFailure.mapFailure(inner => inner + data).value())
-            .to.eql(asyncResult.failureValue(explanation + data));
-        expect(await aFailure.map(() => expect.fail('this should not happen')).value())
-            .to.eql(failValue);
+        const resultMap = await aFailure.map(() => expect.fail('this should not happen')).orElseFailure(FAIL);
+        expect(resultMap).to.eql(reason);
 
-        expect(await aFailure.flatMapFailure(inner => asyncResult.failure(inner + data)).value())
-            .to.eql(asyncResult.failureValue(explanation + data));
-        expect(await aFailure.flatMap(() => expect.fail('this should not happen')).value())
-            .to.eql(failValue);
+        const resultMapFailure = await aFailure.mapFailure(inner => inner + data).orElseFailure(FAIL);
+        expect(resultMapFailure).to.eql(reason + data);
 
-        expect(await aFailure.onFailure(value => expect(value).to.eql(explanation)).value())
-            .to.eql(failValue);
-        expect(await aFailure.onSuccess(() => expect.fail('this should not happen')).value())
-            .to.eql(failValue);
+        const resultFlatMap = await aFailure.flatMap(() => expect.fail('this should not happen')).orElseFailure(FAIL);
+        expect(resultFlatMap).to.eql(reason);
 
-        expect(await aFailure.onComplete(async value => expect(value).to.eql(failValue)).value())
-            .to.eql(failValue);
-    });
+        const resultFlatMapFailure = await aFailure.flatMapFailure(inner => asyncResult(Promise.reject(inner + data))).orElseFailure(FAIL);
+        expect(resultFlatMapFailure).to.eql(reason + data);
 
-    test('handles a promise', async () => {
-        expect(await asyncResult.ofPromise(Promise.resolve(data)).value()).to.eql(successValue);
+        const resultOnFailure = await aFailure.onFailure(value => expect(value).to.eql(reason)).orElseFailure(FAIL);
+        expect(resultOnFailure).to.eql(reason);
 
-        expect(await asyncResult.ofPromise(Promise.reject(explanation)).value()).to.eql(failValue);
+        const resultOnSuccess = await aFailure.onSuccess(() => expect.fail('this should not happen')).orElseFailure(FAIL);
+        expect(resultOnSuccess).to.eql(reason);
+
+        const resultOnComplete = await aFailure.onComplete(async value => expect(value).to.eql(reason)).orElseFailure(FAIL);
+        expect(resultOnComplete).to.eql(reason);
     });
 });

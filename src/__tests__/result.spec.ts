@@ -24,7 +24,7 @@ describe('The Result', () => {
         expect(aResult.map(value => value + reason).orElse(reason)).to.eql(data + reason);
         expect(aResult.mapErr(() => expect.fail('this should not happen')).orElse(reason)).to.eql(data);
 
-        expect(aResult.flatMap(value => okResult(value + reason)).value()).to.eql(data + reason);
+        expect(aResult.flatMap(value => okResult(value + reason)).orElse(reason)).to.eql(data + reason);
         expect(aResult.flatMapErr(() => expect.fail('this should not happen')).orElse(reason)).to.eql(data);
     });
 
@@ -37,14 +37,14 @@ describe('The Result', () => {
         expect(aResult.orElse(data)).to.eql(data);
 
         expect(aResult.onOk(() => expect.fail('this should not happen')).orElse(data)).to.eql(data);
-        expect(aResult.onErr(value => expect(value.value()).to.eql(reason)).isOk).to.be.false;
+        expect(aResult.onErr(value => expect(value.orElse(data)).to.eql(reason)).isOk).to.be.false;
 
         expect(aResult.map(() => expect.fail('this should not happen') as string).orElse(data)).to.eql(data);
-        expect(aResult.mapErr(exp => explanation(exp.value() + data)).value().value())
+        expect(aResult.mapErr(exp => explanation(exp.orElse(data) + data)).orElseErr(data).orElse(data))
             .to.eql(reason + data);
 
         expect(aResult.flatMap(() => errResult('this will not happen')).orElse(data)).to.eql(data);
-        expect((aResult.flatMapErr(explanation => errResult(explanation.value() + data)).value() as Explanation<string>).value())
+        expect((aResult.flatMapErr(explanation => errResult(explanation.orNull() + data)).orElseErr(explanation(data))).orNull())
             .to.eql(reason + data);
     });
 });
