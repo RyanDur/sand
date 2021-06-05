@@ -1,4 +1,4 @@
-import {Consumer, Func, Supplier} from '../functions/types';
+import {Consumer, Func, Supplier} from '../function/types';
 
 export declare namespace Result {
     type Ok<T, E> = {

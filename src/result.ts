@@ -1,6 +1,6 @@
 import {inspect, shallowFreeze} from './util';
 import {Result} from './types';
-import {Func, Predicate} from './functions/types';
+import {Func, Predicate} from './function/types';
 
 export const ok = <T, E>(data: T): Result.Ok<T, E> => shallowFreeze({
     isOk: true,

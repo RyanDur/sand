@@ -1,8 +1,8 @@
-import {inspect} from './util';
+import {inspect, shallowFreeze} from './util';
 import {IO} from './types/IO';
-import {Supplier} from './functions/types';
+import {Supplier} from './function/types';
 
-export const io = <T>(impureIO: Supplier<T>): IO<T> => ({
+export const io = <T>(impureIO: Supplier<T>): IO<T> => shallowFreeze({
     perform: impureIO,
     orElse: other => impureIO() || other,
     map: f => io(() => f(impureIO())),

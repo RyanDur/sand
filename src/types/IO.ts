@@ -1,4 +1,4 @@
-import {Func, Supplier} from '../functions/types';
+import {Func, Supplier} from '../function/types';
 
 export interface IO<T> {
     readonly perform: Supplier<T>;

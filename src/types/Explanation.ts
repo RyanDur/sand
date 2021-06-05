@@ -1,4 +1,4 @@
-import {Func, Supplier} from '../functions/types';
+import {Func, Supplier} from '../function/types';
 
 export type Explanation<E> = {
     readonly value: Supplier<E>;
