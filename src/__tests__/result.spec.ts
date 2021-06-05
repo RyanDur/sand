@@ -1,7 +1,6 @@
 import {expect} from 'chai';
 import * as faker from 'faker';
 import {result} from '../result';
-import {Explanation} from '../types/Explanation';
 import {explanation} from '../explanantion';
 
 const test = it;
@@ -12,7 +11,7 @@ describe('The Result', () => {
 
     test('for an Ok', () => {
         const isOk = () => true;
-        const okResult = result<string, Explanation<string>>(isOk);
+        const okResult = result(isOk, explanation);
         const aResult = okResult(data);
 
         expect(aResult.orNull()).to.eql(data);
@@ -30,7 +29,7 @@ describe('The Result', () => {
 
     test('for an Err', () => {
         const notOk = () => false;
-        const errResult = result<string, Explanation<string>>(notOk);
+        const errResult = result(notOk, explanation);
         const aResult = errResult(reason);
 
         expect(aResult.orNull()).to.be.null;
@@ -40,7 +39,7 @@ describe('The Result', () => {
         expect(aResult.onErr(value => expect(value.orElse(data)).to.eql(reason)).isOk).to.be.false;
 
         expect(aResult.map(() => expect.fail('this should not happen') as string).orElse(data)).to.eql(data);
-        expect(aResult.mapErr(exp => explanation(exp.orElse(data) + data)).orElseErr(data).orElse(data))
+        expect(aResult.mapErr(exp => explanation(exp.orElse(data) + data)).orElseErr(explanation(data)).orElse(data))
             .to.eql(reason + data);
 
         expect(aResult.flatMap(() => errResult('this will not happen')).orElse(data)).to.eql(data);

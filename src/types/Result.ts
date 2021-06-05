@@ -1,4 +1,4 @@
-import {Consumer, Func, Supplier} from './index';
+import {Consumer, Func, Supplier} from '../functions/types';
 
 export declare namespace Result {
     type Ok<T, E> = {
@@ -30,8 +30,8 @@ export declare namespace Result {
     }
 
     type Async<S, F> = {
+        readonly value: () => Promise<Result<S, F>>;
         readonly orElse: (fallback: S) => Promise<S>;
-        readonly orElseFailure: (fallback: F) => Promise<F>;
         readonly map: <NewS>(mapping: Func<S, NewS>) => Async<NewS, F>;
         readonly mapFailure: <NewF>(mapping: Func<F, NewF>) => Async<S, NewF>;
         readonly flatMap: <NewS>(mapping: Func<S, Async<NewS, F>>) => Async<NewS, F>;

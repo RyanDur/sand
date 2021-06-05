@@ -1,6 +1,6 @@
 import {inspect, shallowFreeze} from './util';
-import {Func, Predicate, Result} from './types';
-import {explanation} from './explanantion';
+import {Result} from './types';
+import {Func, Predicate} from './functions/types';
 
 export const ok = <T, E>(data: T): Result.Ok<T, E> => shallowFreeze({
     isOk: true,
@@ -37,5 +37,5 @@ export const err = <T, E>(explanation: E): Result.Err<T, E> => ({
     inspect: () => `Err(${inspect(explanation)})`
 });
 
-export const result = <T, E>(isOk: Predicate<T>, onErr: Func<T, E> = explanation) => (value: T): Result<T, E> =>
-    isOk(value) ? ok(value) : err(onErr(value));
+export const result = <T, E>(isOk: Predicate<T>, explanation: Func<T, E>) => (value: T): Result<T, E> =>
+    isOk(value) ? ok(value) : err(explanation(value));

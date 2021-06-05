@@ -35,27 +35,27 @@ describe('the Async Result', () => {
     });
 
     test('for a Failure', async () => {
-        const aFailure = asyncResult<string, string>(Promise.reject(reason));
+        const aFailure = asyncResult(Promise.reject(reason));
 
-        const resultMap = await aFailure.map(() => expect.fail('this should not happen')).orElseFailure(FAIL);
-        expect(resultMap).to.eql(reason);
+        const resultMap = await aFailure.map(() => expect.fail('this should not happen')).value();
+        expect(resultMap.orElseErr(FAIL)).to.eql(reason);
 
-        const resultMapFailure = await aFailure.mapFailure(inner => inner + data).orElseFailure(FAIL);
-        expect(resultMapFailure).to.eql(reason + data);
+        const resultMapFailure = await aFailure.mapFailure(inner => inner + data).value();
+        expect(resultMapFailure.orElseErr(FAIL)).to.eql(reason + data);
 
-        const resultFlatMap = await aFailure.flatMap(() => expect.fail('this should not happen')).orElseFailure(FAIL);
-        expect(resultFlatMap).to.eql(reason);
+        const resultFlatMap = await aFailure.flatMap(() => expect.fail('this should not happen')).value();
+        expect(resultFlatMap.orElseErr(FAIL)).to.eql(reason);
 
-        const resultFlatMapFailure = await aFailure.flatMapFailure(inner => asyncResult(Promise.reject(inner + data))).orElseFailure(FAIL);
-        expect(resultFlatMapFailure).to.eql(reason + data);
+        const resultFlatMapFailure = await aFailure.flatMapFailure(inner => asyncResult(Promise.reject(inner + data))).value();
+        expect(resultFlatMapFailure.orElseErr(FAIL)).to.eql(reason + data);
 
-        const resultOnFailure = await aFailure.onFailure(value => expect(value).to.eql(reason)).orElseFailure(FAIL);
-        expect(resultOnFailure).to.eql(reason);
+        const resultOnFailure = await aFailure.onFailure(value => expect(value).to.eql(reason)).value();
+        expect(resultOnFailure.orElseErr(FAIL)).to.eql(reason);
 
-        const resultOnSuccess = await aFailure.onSuccess(() => expect.fail('this should not happen')).orElseFailure(FAIL);
-        expect(resultOnSuccess).to.eql(reason);
+        const resultOnSuccess = await aFailure.onSuccess(() => expect.fail('this should not happen')).value();
+        expect(resultOnSuccess.orElseErr(FAIL)).to.eql(reason);
 
-        const resultOnComplete = await aFailure.onComplete(async value => expect(value).to.eql(reason)).orElseFailure(FAIL);
-        expect(resultOnComplete).to.eql(reason);
+        const resultOnComplete = await aFailure.onComplete(async value => expect(value).to.eql(reason)).value();
+        expect(resultOnComplete.orElseErr(FAIL)).to.eql(reason);
     });
 });

@@ -2,23 +2,23 @@ import {Maybe} from './types';
 import {inspect, shallowFreeze, typeOf} from './util';
 
 const some = <T>(value: T): Maybe.Some<T> => shallowFreeze({
-    map: f => some(f(value)),
-    flatMap: f => f(value),
+    isNone: false,
     value: () => value,
     orElse: () => value,
     orNull: () => value,
-    inspect: () => `Some(${inspect(value)})`,
-    isNone: false
+    map: f => some(f(value)),
+    flatMap: f => f(value),
+    inspect: () => `Some(${inspect(value)})`
 });
 
 const none = <T>(): Maybe.None<T> => shallowFreeze({
-    map: () => none(),
-    flatMap: () => none(),
-    value: () => undefined as unknown as T,
+    isNone: true,
+    value: () => null,
     orElse: fallback => fallback,
     orNull: () => null,
-    inspect: () => 'None',
-    isNone: true
+    map: () => none(),
+    flatMap: () => none(),
+    inspect: () => 'None'
 });
 
 const isNoneType = (value: unknown): boolean => {

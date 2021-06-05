@@ -6,8 +6,8 @@ const success = <S, F>(value: S): Result.Ok<S, F> => ok(value);
 const failure = <S, F>(explanation: F): Result.Err<S, F> => err(explanation);
 
 const ofPromise = <S, F>(promise: Promise<Result<S, F>>): Result.Async<S, F> => ({
+    value: () => promise,
     orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
-    orElseFailure: fallback => promise.then(({orElseErr}) => orElseErr(fallback)),
     map: mapping => ofPromise(promise.then(({map}) => map(mapping))),
     mapFailure: mapping => ofPromise(promise.then(({mapErr}) => mapErr(mapping))),
     flatMap: mapping => ofPromise(new Promise(resolve => promise
