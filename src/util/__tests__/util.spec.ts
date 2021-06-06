@@ -6,6 +6,7 @@ const test = it;
 
 describe('util', () => {
     const setup = (expectation: boolean) => <T>(value: T) => ({value, expectation});
+
     describe('empty', () => {
         const emptyValues = [
             NaN,

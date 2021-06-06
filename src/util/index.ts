@@ -6,7 +6,7 @@ export const shallowFreeze = <T>(obj: T): T => Object.freeze(obj);
 export const inspect = (inspectable: unknown): string => (inspectable as Inspectable).inspect?.() || String(inspectable);
 
 export const typeOf = (value: unknown): string => {
-    if (Number.isNaN(value)) return 'NaN';
+    if (Number.isNaN(value)) return 'nan';
     if (value === null) return 'null';
     return typeof value;
 };
@@ -26,7 +26,7 @@ export const not = (value: unknown): boolean => !value;
 
 export const empty = (value: unknown): boolean => {
     switch (builtInInstanceOf(value) || typeOf(value)) {
-        case 'NaN':
+        case 'nan':
         case 'null':
         case 'undefined':
         case 'string':

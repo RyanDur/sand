@@ -21,9 +21,9 @@ const none = <T>(): Maybe.None<T> => shallowFreeze({
     inspect: () => 'None'
 });
 
-const isNoneType = (value: unknown): boolean => {
+const isNoneType = <T>(value: T): boolean => {
     const type = typeOf(value);
-    return type === 'undefined' || type === 'null' || type === 'NaN';
+    return type === 'undefined' || type === 'null' || type === 'nan';
 };
 
-export const maybe = <T>(value?: T): Maybe<T> => isNoneType(value) ? none() : some(value as T);
+export const maybe = <T>(value?: T, isNone = isNoneType): Maybe<T> => isNone(value) ? none() : some(value as T);

@@ -20,7 +20,7 @@ export const ok = <T, E>(data: T): Result.Ok<T, E> => shallowFreeze({
     inspect: () => `Ok(${inspect(data)})`
 });
 
-export const err = <T, E>(explanation: E): Result.Err<T, E> => ({
+export const err = <T, E>(explanation: E): Result.Err<T, E> => shallowFreeze({
     isOk: false,
     map: () => err(explanation),
     mapErr: f => err(f(explanation)),

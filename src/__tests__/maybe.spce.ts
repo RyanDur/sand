@@ -50,13 +50,23 @@ describe('Maybe', () => {
             expect(maybeValue.map(() => SOME).orElse(NONE)).to.equal(expectation));
     });
 
-    test('flatMap', () => {
-        const value1 = 'value 1';
-        const value2 = 'value 2';
+    const value1 = 'value 1';
+    const value2 = 'value 2';
 
+    test('flatMap', () => {
         expect(maybe(value1).flatMap(inner => maybe([inner, value2].join(', '))).value())
             .to.eql(`${value1}, ${value2}`);
 
-        expect(maybe().flatMap(() => 'This should not happen' as never).orElse(NONE)).to.eql(NONE);
+        expect(maybe().flatMap(() => expect.fail('This should not happen')).orElse(NONE)).to.eql(NONE);
+    });
+
+    test('custom none type discriminator', () => {
+        const isNone = (value: unknown) => typeof value === 'string';
+        expect(maybe(value1, isNone).flatMap(() => expect.fail('This should not happen')).orElse(NONE)).to.eql(NONE);
+
+        const notNoneValue = {a: 'not none value'};
+
+        expect(maybe(notNoneValue, isNone).flatMap(inner => maybe([inner.a, value2].join(', '))).value())
+            .to.eql(`${notNoneValue.a}, ${value2}`);
     });
 });
