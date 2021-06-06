@@ -2,7 +2,7 @@ import {Inspectable, IsEmpty} from './types';
 
 export const shallowFreeze = <T>(obj: T): T => Object.freeze(obj);
 
-export const inspect = (inspectable: unknown): string => (inspectable as Inspectable).inspect?.() || String(inspectable);
+export const inspect = (value: unknown): string => (value as Inspectable).inspect?.() || String(value);
 
 export const typeOf = (value: unknown): string => {
     if (Number.isNaN(value)) return 'nan';

@@ -2,7 +2,7 @@ import {inspect, shallowFreeze} from './util';
 import {Result} from './types';
 import {Func, Predicate} from './function/types';
 
-export const ok = <T, E>(data: T): Result<T, E> => shallowFreeze({
+const ok = <T, E>(data: T): Result<T, E> => shallowFreeze({
     isOk: true,
     map: f => ok(f(data)),
     mapErr: () => ok(data),
@@ -20,7 +20,7 @@ export const ok = <T, E>(data: T): Result<T, E> => shallowFreeze({
     inspect: () => `Ok(${inspect(data)})`
 });
 
-export const err = <T, E>(explanation: E): Result<T, E> => shallowFreeze({
+const err = <T, E>(explanation: E): Result<T, E> => shallowFreeze({
     isOk: false,
     map: () => err(explanation),
     mapErr: f => err(f(explanation)),
@@ -37,5 +37,7 @@ export const err = <T, E>(explanation: E): Result<T, E> => shallowFreeze({
     inspect: () => `Err(${inspect(explanation)})`
 });
 
-export const result = <T, E>(isOk: Predicate<T>, explanation: Func<T, E>) => (value: T): Result<T, E> =>
+const of = <T, E>(isOk: Predicate<T>, explanation: Func<T, E>) => (value: T): Result<T, E> =>
     isOk(value) ? ok(value) : err(explanation(value));
+
+export const result = {of, ok, err};

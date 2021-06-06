@@ -10,7 +10,7 @@ describe('the Async Result', () => {
     const reason = faker.lorem.sentence();
 
     test('for a Success', async () => {
-        const aSuccess = asyncResult(Promise.resolve(data));
+        const aSuccess = asyncResult.of(Promise.resolve(data));
 
         const resultMap = await aSuccess.map(inner => inner + reason).orElse(FAIL);
         expect(resultMap).to.eql(data + reason);
@@ -18,7 +18,7 @@ describe('the Async Result', () => {
         const resultMapFailure = await aSuccess.mapFailure(() => expect.fail('this should not happen')).orElse(FAIL);
         expect(resultMapFailure).to.eql(data);
 
-        const resultFlatMap = await aSuccess.flatMap(inner => asyncResult(Promise.resolve(inner + reason))).orElse(FAIL);
+        const resultFlatMap = await aSuccess.flatMap(inner => asyncResult.of(Promise.resolve(inner + reason))).orElse(FAIL);
         expect(resultFlatMap).to.eql(data + reason);
 
         const resultFlatMapFailure = await aSuccess.flatMapFailure(() => expect.fail('this should not happen')).orElse(FAIL);
@@ -35,7 +35,7 @@ describe('the Async Result', () => {
     });
 
     test('for a Failure', async () => {
-        const aFailure = asyncResult(Promise.reject(reason));
+        const aFailure = asyncResult.of(Promise.reject(reason));
 
         const resultMap = await aFailure.map(() => expect.fail('this should not happen')).value();
         expect(resultMap.orElseErr(FAIL)).to.eql(reason);
@@ -46,7 +46,7 @@ describe('the Async Result', () => {
         const resultFlatMap = await aFailure.flatMap(() => expect.fail('this should not happen')).value();
         expect(resultFlatMap.orElseErr(FAIL)).to.eql(reason);
 
-        const resultFlatMapFailure = await aFailure.flatMapFailure(inner => asyncResult(Promise.reject(inner + data))).value();
+        const resultFlatMapFailure = await aFailure.flatMapFailure(inner => asyncResult.of(Promise.reject(inner + data))).value();
         expect(resultFlatMapFailure.orElseErr(FAIL)).to.eql(reason + data);
 
         const resultOnFailure = await aFailure.onFailure(value => expect(value).to.eql(reason)).value();

@@ -11,7 +11,7 @@ describe('The Result', () => {
 
     test('for an Ok', () => {
         const isOk = () => true;
-        const okResult = result(isOk, explanation);
+        const okResult = result.of(isOk, explanation);
         const aResult = okResult(data);
 
         expect(aResult.orNull()).to.eql(data);
@@ -29,7 +29,7 @@ describe('The Result', () => {
 
     test('for an Err', () => {
         const notOk = () => false;
-        const errResult = result(notOk, explanation);
+        const errResult = result.of(notOk, explanation);
         const aResult = errResult(reason);
 
         expect(aResult.orNull()).to.be.null;

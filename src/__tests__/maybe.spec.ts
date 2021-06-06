@@ -45,7 +45,7 @@ const somes = [
 
 describe('Maybe', () => {
     [...nones, ...somes].forEach(({value, expectation}) => {
-        const maybeValue = maybe(value);
+        const maybeValue = maybe.of(value);
         test(`${maybeValue.inspect()} ${maybeValue.isNone ? `of value: ${value}` : ''}`, () =>
             expect(maybeValue.map(() => SOME).orElse(NONE)).to.equal(expectation));
     });
@@ -54,19 +54,19 @@ describe('Maybe', () => {
     const value2 = 'value 2';
 
     test('flatMap', () => {
-        expect(maybe(value1).flatMap(inner => maybe([inner, value2].join(', '))).orNull())
+        expect(maybe.of(value1).flatMap(inner => maybe.of([inner, value2].join(', '))).orNull())
             .to.eql(`${value1}, ${value2}`);
 
-        expect(maybe().flatMap(() => expect.fail('This should not happen')).orElse(NONE)).to.eql(NONE);
+        expect(maybe.of().flatMap(() => expect.fail('This should not happen')).orElse(NONE)).to.eql(NONE);
     });
 
     test('custom none type discriminator', () => {
         const isNone = (value: unknown) => typeof value === 'string';
-        expect(maybe(value1, isNone).flatMap(() => expect.fail('This should not happen')).orElse(NONE)).to.eql(NONE);
+        expect(maybe.of(value1, isNone).flatMap(() => expect.fail('This should not happen')).orElse(NONE)).to.eql(NONE);
 
         const notNoneValue = {a: 'not none value'};
 
-        expect(maybe(notNoneValue, isNone).flatMap(inner => maybe([inner.a, value2].join(', '))).orNull())
+        expect(maybe.of(notNoneValue, isNone).flatMap(inner => maybe.of([inner.a, value2].join(', '))).orNull())
             .to.eql(`${notNoneValue.a}, ${value2}`);
     });
 });

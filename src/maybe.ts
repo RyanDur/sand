@@ -24,4 +24,6 @@ const isNoneType = <T>(value: T): boolean => {
     return type === 'undefined' || type === 'null' || type === 'nan';
 };
 
-export const maybe = <T>(value?: T, isNone = isNoneType): Maybe<T> => isNone(value) ? none() : some(value as T);
+const of = <T>(value?: T, isNone = isNoneType): Maybe<T> => isNone(value) ? none() : some(value as T);
+
+export const maybe = {of, none, some};
