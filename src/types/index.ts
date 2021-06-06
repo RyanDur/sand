@@ -39,11 +39,5 @@
 //     readonly flatMapErr: <NewE>(f: Func<E, BiMonad<T, NewE>>) => BiMonad<T, NewE>;
 // }
 
-import {Supplier} from '../function/types';
-
-export type Inspectable = {
-    readonly inspect: Supplier<string>;
-}
-
 export * from './Result';
 export * from './Maybe';

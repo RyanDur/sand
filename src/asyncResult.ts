@@ -2,8 +2,8 @@ import {err, ok} from './result';
 import {Result} from './types';
 import {inspect} from './util';
 
-const success = <S, F>(value: S): Result.Ok<S, F> => ok(value);
-const failure = <S, F>(explanation: F): Result.Err<S, F> => err(explanation);
+const success = <S, F>(value: S): Result<S, F> => ok(value);
+const failure = <S, F>(explanation: F): Result<S, F> => err(explanation);
 
 const ofPromise = <S, F>(promise: Promise<Result<S, F>>): Result.Async<S, F> => ({
     value: () => promise,

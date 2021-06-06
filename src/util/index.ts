@@ -1,5 +1,4 @@
-import {Supplier} from '../function/types';
-import {Inspectable} from '../types';
+import {Inspectable, IsEmpty} from './types';
 
 export const shallowFreeze = <T>(obj: T): T => Object.freeze(obj);
 
@@ -41,7 +40,7 @@ export const empty = (value: unknown): boolean => {
         case 'Array':
         case 'object': {
             const record = value as Record<string | symbol | number, unknown>;
-            if (record.isEmpty) return (record as { isEmpty: Supplier<boolean> }).isEmpty();
+            if (record.isEmpty) return (record as unknown as IsEmpty).isEmpty();
             return Object.keys(record).reduce((acc: boolean, key) => acc && empty(record[key]), true);
         }
         default:
