@@ -6,7 +6,6 @@ const ok = <T, E>(data: T): Result<T, E> => shallowFreeze({
     isOk: true,
     map: f => ok(f(data)),
     mapErr: () => ok(data),
-    value: () => data,
     flatMap: f => f(data),
     flatMapErr: () => ok(data),
     orElse: () => data,
