@@ -14,6 +14,10 @@ describe('The Result', () => {
         const okResult = result.of(isOk, explanation);
         const aResult = okResult(data);
 
+        if (aResult.isOk) {
+            expect(aResult.data).to.eql(data);
+        } else expect.fail('This should not happen');
+
         expect(aResult.orNull()).to.eql(data);
         expect(aResult.orElse(reason)).to.eql(data);
 
@@ -31,6 +35,10 @@ describe('The Result', () => {
         const notOk = () => false;
         const errResult = result.of(notOk, explanation);
         const aResult = errResult(reason);
+
+        if (!aResult.isOk) {
+            expect(aResult.explanation.orNull()).to.eql(reason);
+        } else expect.fail('This should not happen');
 
         expect(aResult.orNull()).to.be.null;
         expect(aResult.orElse(data)).to.eql(data);

@@ -1,7 +1,6 @@
 import {Consumer, Func, Supplier} from '../function/types';
 
-export interface Result<T, E> {
-    readonly isOk: boolean;
+export type Result<T, E> = (Result.Ok<T> | Result.Err<E>) & {
     readonly orElse: Func<T, T>;
     readonly orElseErr: Func<E, E>;
     readonly orNull: Supplier<T | null>;
@@ -15,6 +14,16 @@ export interface Result<T, E> {
 }
 
 export declare namespace Result {
+    type Ok<T> = {
+        readonly isOk: true;
+        readonly data: T;
+    }
+
+    type Err<E> = {
+        readonly isOk: false;
+        readonly explanation: E;
+    }
+
     type Async<S, F> = {
         readonly value: Supplier<Promise<Result<S, F>>>;
         readonly orElse: Func<S, Promise<S>>;

@@ -4,6 +4,7 @@ import {Func, Predicate} from './function/types';
 
 const ok = <T, E>(data: T): Result<T, E> => shallowFreeze({
     isOk: true,
+    data,
     map: f => ok(f(data)),
     mapErr: () => ok(data),
     flatMap: f => f(data),
@@ -21,6 +22,7 @@ const ok = <T, E>(data: T): Result<T, E> => shallowFreeze({
 
 const err = <T, E>(explanation: E): Result<T, E> => shallowFreeze({
     isOk: false,
+    explanation,
     map: () => err(explanation),
     mapErr: f => err(f(explanation)),
     flatMap: () => err(explanation),
