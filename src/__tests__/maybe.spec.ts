@@ -1,5 +1,6 @@
 import {expect} from 'chai';
 import {maybe} from '../maybe';
+import * as faker from 'faker';
 
 const test = it;
 
@@ -15,12 +16,14 @@ function functionDeclaration() {
     return NONE;
 }
 
-const setup = (expectation: 'SOME' | 'NONE') => <T>(value: T) => ({value, expectation});
+const expectMaybeToBe = (expectation: 'SOME' | 'NONE') => <T>(value: T) => expectation === SOME ?
+    {value, expectation: `SOME(${String(value)})`} : {value, expectation};
+
 const nones = [
     NaN,
     null,
     undefined
-].map(setup(NONE));
+].map(expectMaybeToBe(NONE));
 const somes = [
     {},
     false,
@@ -41,20 +44,20 @@ const somes = [
     "", // eslint-disable-line
     '',
     ``  // eslint-disable-line
-].map(setup(SOME));
+].map(expectMaybeToBe(SOME));
 
-describe('Maybe', () => {
+describe('the Maybe', () => {
     [...nones, ...somes].forEach(({value, expectation}) => {
         const maybeValue = maybe.of(value);
-        test(`${maybeValue.inspect()} ${maybeValue.isNone ? `of value: ${value}` : ''}`, () =>
-            expect(maybeValue.map(() => SOME).orElse(NONE)).to.equal(expectation));
+        test(`${maybeValue.isNone ? `${value} is` : ''} ${maybeValue.inspect()} `, () =>
+            expect(maybeValue.map(String).map(value => `SOME(${value})`).orElse(NONE)).to.equal(expectation));
     });
 
-    const value1 = 'value 1';
-    const value2 = 'value 2';
+    const value1 = faker.lorem.sentence();
+    const value2 = faker.lorem.sentence();
 
     test('flatMap', () => {
-        expect(maybe.of(value1).flatMap(inner => maybe.of([inner, value2].join(', '))).orNull())
+        expect(maybe.of(value1).flatMap(inner => maybe.of(`${inner}, ${value2}`)).orNull())
             .to.eql(`${value1}, ${value2}`);
 
         expect(maybe.of().flatMap(() => expect.fail('This should not happen')).orElse(NONE)).to.eql(NONE);
@@ -64,9 +67,9 @@ describe('Maybe', () => {
         const isNone = (value: unknown) => typeof value === 'string';
         expect(maybe.of(value1, isNone).flatMap(() => expect.fail('This should not happen')).orElse(NONE)).to.eql(NONE);
 
-        const notNoneValue = {a: 'not none value'};
+        const notNoneValue = {a: faker.lorem.sentence()};
 
-        expect(maybe.of(notNoneValue, isNone).flatMap(inner => maybe.of([inner.a, value2].join(', '))).orNull())
+        expect(maybe.of(notNoneValue, isNone).flatMap(inner => maybe.of(`${inner.a}, ${value2}`)).orNull())
             .to.eql(`${notNoneValue.a}, ${value2}`);
     });
 });

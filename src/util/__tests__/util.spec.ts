@@ -5,7 +5,7 @@ import * as faker from 'faker';
 const test = it;
 
 describe('util', () => {
-    const setup = (expectation: boolean) => <T>(value: T) => ({value, expectation});
+    const toBe = (expectation: boolean) => <T>(value: T) => ({value, expectation});
 
     describe('empty', () => {
         const emptyValues = [
@@ -35,7 +35,7 @@ describe('util', () => {
                 {k: [], v: {k: [], v: {}, t: '', r: null}, t: ''},
                 {k: [], q: NaN, v: {k: [], v: {x: undefined}, t: ''}, t: ''}
             ]
-        ].map(setup(true));
+        ].map(toBe(true));
         const notEmptyValues = [
             () => void 0,
             {[faker.lorem.word()]: () => 0},
@@ -59,7 +59,7 @@ describe('util', () => {
                 {k: [], v: {k: [], v: {}, t: '', r: null}, t: ''},
                 {k: [], q: NaN, v: {k: [[{}, ['NOT _EMPTY']]], v: {x: undefined}, t: ''}, t: ''}
             ]
-        ].map(setup(false));
+        ].map(toBe(false));
         [...emptyValues, ...notEmptyValues].forEach(({value, expectation}) =>
             test(`empty(${String(value)}) of ${typeOf(value)} is ${expectation}`,
                 () => expect(empty(value)).to.eql(expectation)));
@@ -93,7 +93,7 @@ describe('util', () => {
                 {k: [], v: {k: [], v: {}, t: '', r: null}, t: ''},
                 {k: [], q: NaN, v: {k: [], v: {x: undefined}, t: ''}, t: ''}
             ]
-        ].map(setup(false));
+        ].map(toBe(false));
         const notEmptyValues = [
             () => void 0,
             {[faker.lorem.word()]: () => 0},
@@ -117,7 +117,7 @@ describe('util', () => {
                 {k: [], v: {k: [], v: {}, t: '', r: null}, t: ''},
                 {k: [], q: NaN, v: {k: [[{}, ['NOT _EMPTY']]], v: {x: undefined}, t: ''}, t: ''}
             ]
-        ].map(setup(true));
+        ].map(toBe(true));
         [...emptyValues, ...notEmptyValues].forEach(({value, expectation}) =>
             test(`has(${String(value)}) of ${typeOf(value)} is ${expectation}`,
                 () => expect(has(value)).to.eql(expectation)));
