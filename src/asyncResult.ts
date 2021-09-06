@@ -25,7 +25,7 @@ const ofPromise = <S, F>(promise: Promise<Result<S, F>>): Result.Async<S, F> => 
 });
 
 const success = <S, F>(value: S): Result.Async<S, F> => ofPromise(Promise.resolve(result.ok(value)));
-const failure = <S, F>(error: F): Result.Async<S, F> => ofPromise(Promise.reject(result.err(error)));
+const failure = <S, F>(error: F): Result.Async<S, F> => ofPromise(Promise.resolve(result.err(error)));
 
 const of = <S, F>(promise: Promise<S>): Result.Async<S, F> => ofPromise(promise
     .then(value => result.ok(value))
