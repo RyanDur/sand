@@ -10,7 +10,7 @@ export const typeOf = (value: unknown): string => {
     return typeof value;
 };
 
-const nameOfBuiltInInstanceOf = (value: unknown): string | undefined => {
+export const nameOfBuiltInInstanceOf = (value: unknown): string | undefined => {
     if (value instanceof Boolean) return 'Boolean';
     if (value instanceof String) return 'String';
     if (value instanceof Number) return 'Number';
