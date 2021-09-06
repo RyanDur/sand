@@ -13,5 +13,5 @@ export {
     has
 } from './util';
 
-export * from './types';
+export {Maybe, Result, Explanation} from './types';
 export * from './function/types';
