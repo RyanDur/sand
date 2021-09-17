@@ -1,9 +1,6 @@
-import {expect} from 'chai';
 import * as faker from 'faker';
 import {result} from '../result';
 import {explanation} from '../explanantion';
-
-const test = it;
 
 describe('The Result', () => {
     const data = faker.lorem.sentence();
@@ -15,20 +12,20 @@ describe('The Result', () => {
         const aResult = okResult(data);
 
         if (aResult.isOk) {
-            expect(aResult.data).to.eql(data);
-        } else expect.fail('This should not happen');
+            expect(aResult.data).toEqual(data);
+        } else fail('This should not happen');
 
-        expect(aResult.orNull()).to.eql(data);
-        expect(aResult.orElse(reason)).to.eql(data);
+        expect(aResult.orNull()).toEqual(data);
+        expect(aResult.orElse(reason)).toEqual(data);
 
-        expect(aResult.onOk(value => expect(value).to.eql(data)).orElse(reason)).to.eql(data);
-        expect(aResult.onErr(() => expect.fail('this should not happen')).orElse(reason)).to.eql(data);
+        expect(aResult.onOk(value => expect(value).toEqual(data)).orElse(reason)).toEqual(data);
+        expect(aResult.onErr(() => fail('this should not happen')).orElse(reason)).toEqual(data);
 
-        expect(aResult.map(value => value + reason).orElse(reason)).to.eql(data + reason);
-        expect(aResult.mapErr(() => expect.fail('this should not happen')).orElse(reason)).to.eql(data);
+        expect(aResult.map(value => value + reason).orElse(reason)).toEqual(data + reason);
+        expect(aResult.mapErr(() => fail('this should not happen')).orElse(reason)).toEqual(data);
 
-        expect(aResult.flatMap(value => okResult(value + reason)).orElse(reason)).to.eql(data + reason);
-        expect(aResult.flatMapErr(() => expect.fail('this should not happen')).orElse(reason)).to.eql(data);
+        expect(aResult.flatMap(value => okResult(value + reason)).orElse(reason)).toEqual(data + reason);
+        expect(aResult.flatMapErr(() => fail('this should not happen')).orElse(reason)).toEqual(data);
     });
 
     test('for an Err', () => {
@@ -37,21 +34,21 @@ describe('The Result', () => {
         const aResult = errResult(reason);
 
         if (!aResult.isOk) {
-            expect(aResult.explanation.orNull()).to.eql(reason);
-        } else expect.fail('This should not happen');
+            expect(aResult.explanation.orNull()).toEqual(reason);
+        } else fail('This should not happen');
 
-        expect(aResult.orNull()).to.be.null;
-        expect(aResult.orElse(data)).to.eql(data);
+        expect(aResult.orNull()).toBeNull();
+        expect(aResult.orElse(data)).toEqual(data);
 
-        expect(aResult.onOk(() => expect.fail('this should not happen')).orElse(data)).to.eql(data);
-        expect(aResult.onErr(value => expect(value.orElse(data)).to.eql(reason)).isOk).to.be.false;
+        expect(aResult.onOk(() => fail('this should not happen')).orElse(data)).toEqual(data);
+        expect(aResult.onErr(value => expect(value.orElse(data)).toEqual(reason)).isOk).toBe(false);
 
-        expect(aResult.map(() => expect.fail('this should not happen') as string).orElse(data)).to.eql(data);
+        expect(aResult.map(() => fail('this should not happen') as string).orElse(data)).toEqual(data);
         expect(aResult.mapErr(exp => explanation(exp.orElse(data) + data)).orElseErr(explanation(data)).orElse(data))
-            .to.eql(reason + data);
+            .toEqual(reason + data);
 
-        expect(aResult.flatMap(() => errResult('this will not happen')).orElse(data)).to.eql(data);
+        expect(aResult.flatMap(() => errResult('this will not happen')).orElse(data)).toEqual(data);
         expect((aResult.flatMapErr(explanation => errResult(explanation.orNull() + data)).orElseErr(explanation(data))).orNull())
-            .to.eql(reason + data);
+            .toEqual(reason + data);
     });
 });

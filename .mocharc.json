@@ -1,7 +1,0 @@
-{
-  "extension": ["ts"],
-  "spec": [
-    "**/__tests__/**/*.spec.ts"
-  ],
-  "require": "ts-node/register"
-}
