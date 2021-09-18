@@ -19,6 +19,6 @@ export enum AsyncState {
     ERROR = 'ERROR'
 }
 
-export interface OnEvent<T, E> {
-    on: (dispatch: (event: AsyncEvent<T, E>) => void) => void
+export interface OnAsyncEvent<T, E> {
+    onAsyncEvent: (dispatch: (event: AsyncEvent<T, E>) => void) => void
 }
