@@ -1,26 +1,26 @@
 import {maybe} from '../maybe';
 import * as faker from 'faker';
 
-const SOME = 'SOME';
-const NONE = 'NONE';
+const SOMETHING = 'SOMETHING';
+const NOTHING = 'NOTHING';
 
-const lambda = () => NONE;
+const lambda = () => NOTHING;
 const functionExpression = function () {
-    return NONE;
+    return NOTHING;
 };
 
 function functionDeclaration() {
-    return NONE;
+    return NOTHING;
 }
 
-const expectMaybeToBe = (expectation: 'SOME' | 'NONE') => <T>(value: T) => expectation === SOME ?
+const expectMaybeToBe = (expectation: 'SOMETHING' | 'NOTHING') => <T>(value: T) => expectation === SOMETHING ?
     {value, expectation: `SOME(${String(value)})`} : {value, expectation};
 
 const nones = [
     NaN,
     null,
     undefined
-].map(expectMaybeToBe(NONE));
+].map(expectMaybeToBe(NOTHING));
 const somes = [
     {},
     false,
@@ -37,17 +37,17 @@ const somes = [
     46n,
     -346n,
     Symbol(),
-    SOME,
+    SOMETHING,
     "", // eslint-disable-line
     '',
     ``  // eslint-disable-line
-].map(expectMaybeToBe(SOME));
+].map(expectMaybeToBe(SOMETHING));
 
 describe('the Maybe', () => {
     [...nones, ...somes].forEach(({value, expectation}) => {
         const maybeValue = maybe.of(value);
-        test(`${maybeValue.isNone ? `${value} is` : ''} ${maybeValue.inspect()} `, () =>
-            expect(maybeValue.map(String).map(value => `SOME(${value})`).orElse(NONE)).toEqual(expectation));
+        test(`${maybeValue.isNothing ? `${value} is` : ''} ${maybeValue.inspect()} `, () =>
+            expect(maybeValue.map(String).map(value => `SOME(${value})`).orElse(NOTHING)).toEqual(expectation));
     });
 
     const value1 = faker.lorem.sentence();
@@ -57,16 +57,16 @@ describe('the Maybe', () => {
         expect(maybe.of(value1).flatMap(inner => maybe.of(`${inner}, ${value2}`)).orNull())
             .toEqual(`${value1}, ${value2}`);
 
-        expect(maybe.of().flatMap(() => fail('This should not happen')).orElse(NONE)).toEqual(NONE);
+        expect(maybe.of().flatMap(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
     });
 
     test('custom none type discriminator', () => {
-        const isNone = (value: unknown) => typeof value === 'string';
-        expect(maybe.of(value1, isNone).flatMap(() => fail('This should not happen')).orElse(NONE)).toEqual(NONE);
+        const isNothing = (value: unknown) => typeof value === 'string';
+        expect(maybe.of(value1, isNothing).flatMap(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
 
-        const notNoneValue = {a: faker.lorem.sentence()};
+        const something = {a: faker.lorem.sentence()};
 
-        expect(maybe.of(notNoneValue, isNone).flatMap(inner => maybe.of(`${inner.a}, ${value2}`)).orNull())
-            .toEqual(`${notNoneValue.a}, ${value2}`);
+        expect(maybe.of(something, isNothing).flatMap(inner => maybe.of(`${inner.a}, ${value2}`)).orNull())
+            .toEqual(`${something.a}, ${value2}`);
     });
 });

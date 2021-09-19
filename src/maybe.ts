@@ -1,29 +1,30 @@
 import {Maybe} from './types';
 import {inspect, shallowFreeze, typeOf} from './util';
 
-const some = <T>(value: T): Maybe<T> => shallowFreeze({
-    isNone: false,
-    orElse: () => value,
-    orNull: () => value,
-    map: f => some(f(value)),
-    flatMap: f => f(value),
-    inspect: () => `Some(${inspect(value)})`
+const some = <T>(thing: T): Maybe<T> => shallowFreeze({
+    isNothing: false,
+    orElse: () => thing,
+    orNull: () => thing,
+    map: f => some(f(thing)),
+    flatMap: f => f(thing),
+    inspect: () => `Some(${inspect(thing)})`
 });
 
-const none = <T>(): Maybe<T> => shallowFreeze({
-    isNone: true,
+const nothing = <T>(): Maybe<T> => shallowFreeze({
+    isNothing: true,
     orElse: fallback => fallback,
     orNull: () => null,
-    map: () => none(),
-    flatMap: () => none(),
-    inspect: () => 'None'
+    map: () => nothing(),
+    flatMap: () => nothing(),
+    inspect: () => 'Nothing'
 });
 
-const isNoneType = <T>(value: T): boolean => {
-    const type = typeOf(value);
+const isNothingValue = <T>(thing: T): boolean => {
+    const type = typeOf(thing);
     return type === 'undefined' || type === 'null' || type === 'nan';
 };
 
-const of = <T>(value?: T | null, isNone = isNoneType): Maybe<T> => isNone(value) ? none() : some(value as T);
+const of = <THING>(thing?: THING | null, isNothing = isNothingValue): Maybe<THING> =>
+    isNothing(thing) ? nothing() : some(thing as THING);
 
-export const maybe = {of, none, some};
+export const maybe = {of, nothing, some};

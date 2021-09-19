@@ -1,7 +1,7 @@
 import {Func, Supplier} from '../function/types';
 
 export type Maybe<T> = {
-    readonly isNone: boolean;
+    readonly isNothing: boolean;
     readonly orElse: Func<T, T>;
     readonly orNull: Supplier<T | null>;
     readonly map: <NewT>(f: Func<T, NewT>) => Maybe<NewT>;
