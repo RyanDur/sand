@@ -1,5 +1,5 @@
 import {inspect, shallowFreeze} from './util';
-import {Explanation} from './types/Explanation';
+import {Explanation} from './types';
 
 export const explanation = <E>(reason: E): Explanation<E> => shallowFreeze({
     value: () => reason,

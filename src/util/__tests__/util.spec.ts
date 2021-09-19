@@ -1,8 +1,5 @@
-import {expect} from 'chai';
-import {empty, has, typeOf} from '../index';
+import {empty, has, matches, matchOn, typeOf} from '../index';
 import * as faker from 'faker';
-
-const test = it;
 
 describe('util', () => {
     const toBe = (expectation: boolean) => <T>(value: T) => ({value, expectation});
@@ -23,7 +20,7 @@ describe('util', () => {
             },
             new Set(),
             (new Map()).set(1, undefined),
-            new String(),
+            String(),
             [NaN, null, undefined],
             ['', ``, '', ""], // eslint-disable-line
             [{}, {}, {}],
@@ -46,9 +43,9 @@ describe('util', () => {
             0,
             0n,
             new Date(),
-            new Boolean(),
-            new Number(),
-            new String('sdf'),
+            Boolean(),
+            Number(),
+            String('sdf'),
             {isEmpty: () => false},
             Math.E,
             faker.lorem.word,
@@ -62,7 +59,7 @@ describe('util', () => {
         ].map(toBe(false));
         [...emptyValues, ...notEmptyValues].forEach(({value, expectation}) =>
             test(`empty(${String(value)}) of ${typeOf(value)} is ${expectation}`,
-                () => expect(empty(value)).to.eql(expectation)));
+                () => expect(empty(value)).toEqual(expectation)));
     });
 
     describe('has', () => {
@@ -81,7 +78,7 @@ describe('util', () => {
             },
             new Set(),
             (new Map()).set(1, undefined),
-            new String(),
+            String(),
             [NaN, null, undefined],
             ['', ``, '', ""], // eslint-disable-line
             [{}, {}, {}],
@@ -104,9 +101,9 @@ describe('util', () => {
             0,
             0n,
             new Date(),
-            new Boolean(),
-            new Number(),
-            new String('sdf'),
+            Boolean(),
+            Number(),
+            String('sdf'),
             {isEmpty: () => false},
             Math.E,
             faker.lorem.word,
@@ -120,6 +117,41 @@ describe('util', () => {
         ].map(toBe(true));
         [...emptyValues, ...notEmptyValues].forEach(({value, expectation}) =>
             test(`has(${String(value)}) of ${typeOf(value)} is ${expectation}`,
-                () => expect(has(value)).to.eql(expectation)));
+                () => expect(has(value)).toEqual(expectation)));
+    });
+
+    describe('pattern matching', () => {
+        const matcher = matches([1, 2, 3], 3);
+        const matchValue = matchOn(matcher);
+
+        const one = jest.fn();
+        const two = jest.fn();
+        const three = jest.fn();
+
+        afterEach(() => jest.resetAllMocks());
+
+        test('should match on pattern', () => {
+            matchValue(1, {
+                [1]: one,
+                [2]: two,
+                [3]: three
+            });
+
+            expect(one).toHaveBeenCalled();
+            expect(two).not.toHaveBeenCalled();
+            expect(three).not.toHaveBeenCalled();
+        });
+
+        test('default value', () => {
+            matchValue(10 as 1, {
+                [1]: one,
+                [2]: two,
+                [3]: three
+            });
+
+            expect(one).not.toHaveBeenCalled();
+            expect(two).not.toHaveBeenCalled();
+            expect(three).toHaveBeenCalled();
+        });
     });
 });

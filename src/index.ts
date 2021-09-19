@@ -10,7 +10,9 @@ export {
     nameOfBuiltInInstanceOf,
     not,
     empty,
-    has
+    has,
+    matches,
+    matchOn
 } from './util';
 
 export * from './types';
