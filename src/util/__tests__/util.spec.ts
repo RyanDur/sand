@@ -136,14 +136,21 @@ describe('util', () => {
             matchValue(1, {
                 [1]: one,
                 [2]: two,
-                [3]: three,
-                [MatchOn.DEFAULT]: four
+                [3]: three
             });
 
             expect(one).toHaveBeenCalled();
             expect(two).not.toHaveBeenCalled();
             expect(three).not.toHaveBeenCalled();
             expect(four).not.toHaveBeenCalled();
+
+            expect(() => matchValue(134 as 2, {
+                [1]: one,
+                [2]: two,
+                [3]: three
+            })).toThrow('You passed a value that was not expected.\n' +
+                'If this is a possibility, you may want to consider adding a default.\n' +
+                '\t{ [MatchOn.DEFAULT]: () => <some value> }\n');
         });
 
         test('default value', () => {
