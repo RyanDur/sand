@@ -1,5 +1,5 @@
 export interface Event<T> {
-    type: T;
+    state: T;
 }
 
 export type Loaded<T> = Event<AsyncState.LOADED> & {

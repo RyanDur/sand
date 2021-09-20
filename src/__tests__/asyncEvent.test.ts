@@ -9,7 +9,7 @@ describe('an async event', () => {
     test('loading', (done) =>
         asyncEvent(asyncResult.success(expected))
             .onAsyncEvent((event: AsyncEvent<string, unknown>) => {
-                switch (event.type) {
+                switch (event.state) {
                     case AsyncState.LOADING: {
                         expect(event).toEqual(loading());
                         return done();
@@ -20,7 +20,7 @@ describe('an async event', () => {
     test('success', (done) =>
         asyncEvent(asyncResult.success(expected))
             .onAsyncEvent((event: AsyncEvent<string, unknown>) => {
-                switch (event.type) {
+                switch (event.state) {
                     case AsyncState.LOADING:
                         return expect(event).toEqual(loading());
                     case AsyncState.LOADED: {
@@ -35,7 +35,7 @@ describe('an async event', () => {
     test('failure', (done) =>
         asyncEvent(asyncResult.failure(expected))
             .onAsyncEvent((event: AsyncEvent<unknown, string>) => {
-                switch (event.type) {
+                switch (event.state) {
                     case AsyncState.LOADING:
                         return expect(event).toEqual(loading());
                     case AsyncState.ERROR: {
