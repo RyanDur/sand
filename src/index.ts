@@ -14,6 +14,9 @@ export {
     matches,
     matchOn
 } from './util';
+export {
+    MatchOn
+} from './util/types';
 
 export * from './types';
 export * from './function/types';

@@ -1,5 +1,6 @@
 import {empty, has, matches, matchOn, typeOf} from '../index';
 import * as faker from 'faker';
+import {MatchOn} from '../types';
 
 describe('util', () => {
     const toBe = (expectation: boolean) => <T>(value: T) => ({value, expectation});
@@ -121,12 +122,13 @@ describe('util', () => {
     });
 
     describe('pattern matching', () => {
-        const matcher = matches([1, 2, 3], 3);
+        const matcher = matches([1, 2, 3]);
         const matchValue = matchOn(matcher);
 
         const one = jest.fn();
         const two = jest.fn();
         const three = jest.fn();
+        const four = jest.fn();
 
         afterEach(() => jest.resetAllMocks());
 
@@ -134,24 +136,28 @@ describe('util', () => {
             matchValue(1, {
                 [1]: one,
                 [2]: two,
-                [3]: three
+                [3]: three,
+                [MatchOn.DEFAULT]: four
             });
 
             expect(one).toHaveBeenCalled();
             expect(two).not.toHaveBeenCalled();
             expect(three).not.toHaveBeenCalled();
+            expect(four).not.toHaveBeenCalled();
         });
 
         test('default value', () => {
             matchValue(10 as 1, {
                 [1]: one,
                 [2]: two,
-                [3]: three
+                [3]: three,
+                [MatchOn.DEFAULT]: four
             });
 
             expect(one).not.toHaveBeenCalled();
             expect(two).not.toHaveBeenCalled();
-            expect(three).toHaveBeenCalled();
+            expect(three).not.toHaveBeenCalled();
+            expect(four).toHaveBeenCalled();
         });
     });
 });

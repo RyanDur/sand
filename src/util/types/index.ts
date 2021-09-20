@@ -7,3 +7,7 @@ export interface Inspectable {
 export interface IsEmpty {
     isEmpty: Supplier<boolean>
 }
+
+export enum MatchOn {
+    DEFAULT = 'DEFAULT'
+}
