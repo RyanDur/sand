@@ -129,10 +129,30 @@ describe('util', () => {
                 [2]: () => Number.MIN_SAFE_INTEGER,
                 [3]: () => Number.MAX_SAFE_INTEGER,
             }).orElse( 4)).toEqual(23);
+
+            // if you add to the enum it will cause a linting error below
+            // make sure the choices are exhaustive
+            enum FOO {
+                BAR = 'BAR',
+                BAZ = 'BAZ',
+                BOP = 'BOP'
+            }
+
+            expect(matchOn(matches(Object.values(FOO)))(FOO.BOP, {
+               [FOO.BAR]: () => 3,
+               [FOO.BOP]: () => 4,
+               [FOO.BAZ]: () => 5
+            }).orElse(6)).toEqual(4);
+
+            expect(matchValue(1, {
+                [1]: () => 23,
+                [2]: () => Number.MIN_SAFE_INTEGER,
+                [3]: () => Number.MAX_SAFE_INTEGER,
+            }).orElse( 4)).toEqual(23);
         });
 
         test('default value', () => {
-            expect(matchValue(10 as 1, {
+            expect(matchValue(10, {
                 [1]: () => ({a: 23}),
                 [2]: () => ({a: Number.MIN_SAFE_INTEGER}),
                 [3]: () => ({a: Number.MAX_SAFE_INTEGER}),

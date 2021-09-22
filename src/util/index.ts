@@ -6,6 +6,16 @@ export const shallowFreeze = <T>(obj: T): T => Object.freeze(obj);
 
 export const inspect = (value: unknown): string => (value as Inspectable).inspect?.() || String(value);
 
+export const matches = <MATCH extends string | number, MATCH_ON extends string | number>(values: MATCH[]): (value: MATCH_ON) => MATCH => {
+    const obj = values.reduce((acc, value) => ({...acc, [value]: value}), ({} as Record<string | number, MATCH>));
+    return (value: MATCH_ON) => obj[value];
+};
+
+export const matchOn = <MATCH extends string | number, MATCH_ON>(matcher: (value: MATCH_ON) => MATCH) => <VALUE>(
+    on: MATCH_ON,
+    cases: Record<MATCH, () => VALUE>
+): Maybe<VALUE> => maybe.of(cases[matcher(on)]).map(value => value());
+
 export const typeOf = (value: unknown): string => {
     if (Number.isNaN(value)) return 'nan';
     if (value === null) return 'null';
@@ -51,13 +61,3 @@ export const empty = (value: unknown): boolean => {
 };
 
 export const has = (value: unknown): boolean => not(empty(value));
-
-export const matches = <MATCH extends string | number>(values: MATCH[]): (value: MATCH) => MATCH => {
-    const obj = values.reduce((acc, value) => ({...acc, [value]: value}), ({} as Record<MATCH, MATCH>));
-    return (value: MATCH) => obj[value];
-};
-
-export const matchOn = <MATCH extends string | number, MATCH_ON>(matcher: (value: MATCH_ON) => MATCH) => <VALUE>(
-    on: MATCH_ON,
-    cases: Record<MATCH, () => VALUE>
-): Maybe<VALUE> => maybe.of(cases[matcher(on)]).map(value => value());
