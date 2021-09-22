@@ -1,6 +1,5 @@
 import {empty, has, matches, matchOn, typeOf} from '../index';
 import * as faker from 'faker';
-import {MatchOn} from '../types';
 
 describe('util', () => {
     const toBe = (expectation: boolean) => <T>(value: T) => ({value, expectation});
@@ -129,13 +128,7 @@ describe('util', () => {
                 [1]: () => 23,
                 [2]: () => Number.MIN_SAFE_INTEGER,
                 [3]: () => Number.MAX_SAFE_INTEGER,
-            })).toEqual(23);
-
-            expect(matchValue(134 as 2, {
-                [1]: () => 23,
-                [2]: () => Number.MIN_SAFE_INTEGER,
-                [3]: () => Number.MAX_SAFE_INTEGER,
-            })).toBeUndefined();
+            }).orElse( 4)).toEqual(23);
         });
 
         test('default value', () => {
@@ -143,8 +136,7 @@ describe('util', () => {
                 [1]: () => ({a: 23}),
                 [2]: () => ({a: Number.MIN_SAFE_INTEGER}),
                 [3]: () => ({a: Number.MAX_SAFE_INTEGER}),
-                [MatchOn.DEFAULT]: () => ({a: 4})
-            })?.a).toEqual(4);
+            }).orElse({a: 4}).a).toEqual(4);
         });
     });
 });

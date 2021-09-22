@@ -1,4 +1,6 @@
-import {Inspectable, IsEmpty, MatchOn} from './types';
+import {Inspectable, IsEmpty} from './types';
+import {Maybe} from '../types';
+import {maybe} from '../maybe';
 
 export const shallowFreeze = <T>(obj: T): T => Object.freeze(obj);
 
@@ -55,11 +57,7 @@ export const matches = <MATCH extends string | number>(values: MATCH[]): (value:
     return (value: MATCH) => obj[value];
 };
 
-type Cases<MATCH extends string | number, VALUE> =
-    Record<MATCH, () => VALUE | undefined> | Record<MATCH | MatchOn.DEFAULT, () => VALUE>
-
 export const matchOn = <MATCH extends string | number, MATCH_ON>(matcher: (value: MATCH_ON) => MATCH) => <VALUE>(
     on: MATCH_ON,
-    cases: Cases<MATCH, VALUE>
-): VALUE | undefined =>
-    ({...{[MatchOn.DEFAULT]: (): undefined => undefined}, ...cases}[matcher(on) || MatchOn.DEFAULT]());
+    cases: Record<MATCH, () => VALUE>
+): Maybe<VALUE> => maybe.of(cases[matcher(on)]).map(value => value());
