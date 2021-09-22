@@ -56,20 +56,10 @@ export const matches = <MATCH extends string | number>(values: MATCH[]): (value:
 };
 
 type Cases<MATCH extends string | number, VALUE> =
-    Record<MATCH, () => VALUE> | Record<MATCH | MatchOn.DEFAULT, () => VALUE>
+    Record<MATCH, () => VALUE | undefined> | Record<MATCH | MatchOn.DEFAULT, () => VALUE>
 
 export const matchOn = <MATCH extends string | number, MATCH_ON>(matcher: (value: MATCH_ON) => MATCH) => <VALUE>(
     on: MATCH_ON,
     cases: Cases<MATCH, VALUE>
-): VALUE => {
-    const allCases = {
-        ...{
-            [MatchOn.DEFAULT]: (): VALUE => {
-                throw new Error('You passed a value that was not expected.\n' +
-                    'If this is a possibility, you may want to consider adding a default.\n' +
-                    '\t{ [MatchOn.DEFAULT]: () => <some value> }\n');
-            }
-        }, ...cases
-    };
-    return allCases[matcher(on) || MatchOn.DEFAULT]();
-};
+): VALUE | undefined =>
+    ({...{[MatchOn.DEFAULT]: (): undefined => undefined}, ...cases}[matcher(on) || MatchOn.DEFAULT]());

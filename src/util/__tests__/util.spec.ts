@@ -122,49 +122,29 @@ describe('util', () => {
     });
 
     describe('pattern matching', () => {
-        const matcher = matches([1, 2, 3]);
-        const matchValue = matchOn(matcher);
-
-        const one = jest.fn();
-        const two = jest.fn();
-        const three = jest.fn();
-        const four = jest.fn();
-
-        afterEach(() => jest.resetAllMocks());
+        const matchValue = matchOn(matches([1, 2, 3]));
 
         test('should match on pattern', () => {
-            matchValue(1, {
-                [1]: one,
-                [2]: two,
-                [3]: three
-            });
+            expect(matchValue(1, {
+                [1]: () => 23,
+                [2]: () => Number.MIN_SAFE_INTEGER,
+                [3]: () => Number.MAX_SAFE_INTEGER,
+            })).toEqual(23);
 
-            expect(one).toHaveBeenCalled();
-            expect(two).not.toHaveBeenCalled();
-            expect(three).not.toHaveBeenCalled();
-            expect(four).not.toHaveBeenCalled();
-
-            expect(() => matchValue(134 as 2, {
-                [1]: one,
-                [2]: two,
-                [3]: three
-            })).toThrow('You passed a value that was not expected.\n' +
-                'If this is a possibility, you may want to consider adding a default.\n' +
-                '\t{ [MatchOn.DEFAULT]: () => <some value> }\n');
+            expect(matchValue(134 as 2, {
+                [1]: () => 23,
+                [2]: () => Number.MIN_SAFE_INTEGER,
+                [3]: () => Number.MAX_SAFE_INTEGER,
+            })).toBeUndefined();
         });
 
         test('default value', () => {
-            matchValue(10 as 1, {
-                [1]: one,
-                [2]: two,
-                [3]: three,
-                [MatchOn.DEFAULT]: four
-            });
-
-            expect(one).not.toHaveBeenCalled();
-            expect(two).not.toHaveBeenCalled();
-            expect(three).not.toHaveBeenCalled();
-            expect(four).toHaveBeenCalled();
+            expect(matchValue(10 as 1, {
+                [1]: () => ({a: 23}),
+                [2]: () => ({a: Number.MIN_SAFE_INTEGER}),
+                [3]: () => ({a: Number.MAX_SAFE_INTEGER}),
+                [MatchOn.DEFAULT]: () => ({a: 4})
+            })?.a).toEqual(4);
         });
     });
 });
