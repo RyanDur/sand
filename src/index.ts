@@ -1,7 +1,7 @@
 export {result} from './result';
 export {asyncResult} from './asyncResult';
 export {maybe} from './maybe';
-export {asyncEvent, loading, loaded, error} from './asyncEvent';
+export {asyncEvent} from './asyncEvent';
 export {explanation} from './explanantion';
 export {
     shallowFreeze,

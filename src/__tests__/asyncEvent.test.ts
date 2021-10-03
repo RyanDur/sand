@@ -1,49 +1,28 @@
 import {asyncResult} from '../asyncResult';
-import {asyncEvent, error, loaded, loading} from '../asyncEvent';
-import {AsyncEvent, AsyncState} from '../types';
+import {asyncEvent} from '../asyncEvent';
 import * as faker from 'faker';
 
 describe('an async event', () => {
     const expected = faker.lorem.words();
 
-    test('loading', (done) =>
-        asyncEvent(asyncResult.success(expected))
-            .onAsyncEvent((event: AsyncEvent<string, unknown>) => {
-                switch (event.state) {
-                    case AsyncState.LOADING: {
-                        expect(event).toEqual(loading());
-                        return done();
-                    }
-                }
-            }));
+    test('loading', done => {
+        const loading = jest.fn();
+        asyncEvent(asyncResult.success(expected)).onLoading(() => {
+            loading();
+            return done();
+        });
+        expect(loading).toHaveBeenCalled();
+    });
 
-    test('success', (done) =>
-        asyncEvent(asyncResult.success(expected))
-            .onAsyncEvent((event: AsyncEvent<string, unknown>) => {
-                switch (event.state) {
-                    case AsyncState.LOADING:
-                        return expect(event).toEqual(loading());
-                    case AsyncState.LOADED: {
-                        expect(event).toEqual(loaded(expected));
-                        return done();
-                    }
-                    default:
-                        fail('this should not happen');
-                }
-            }));
+    test('loaded', done =>
+        asyncEvent(asyncResult.success(expected)).onLoad(data => {
+            expect(data).toEqual(expected);
+            return done();
+        }));
 
-    test('failure', (done) =>
-        asyncEvent(asyncResult.failure(expected))
-            .onAsyncEvent((event: AsyncEvent<unknown, string>) => {
-                switch (event.state) {
-                    case AsyncState.LOADING:
-                        return expect(event).toEqual(loading());
-                    case AsyncState.ERROR: {
-                        expect(event).toEqual(error(expected));
-                        return done();
-                    }
-                    default:
-                        fail('this should not happen');
-                }
-            }));
+    test('error', (done) =>
+        asyncEvent(asyncResult.failure(expected)).onError(err => {
+            expect(err).toEqual(expected);
+            return done();
+        }));
 });
