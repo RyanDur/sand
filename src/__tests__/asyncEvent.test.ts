@@ -14,7 +14,7 @@ describe('an async event', () => {
         expect(loading).toHaveBeenCalled();
     });
 
-    test('loaded', done =>
+    test('load', done =>
         void asyncEvent(asyncResult.success(expected)).onLoad(data => {
             expect(data).toEqual(expected);
             done();
