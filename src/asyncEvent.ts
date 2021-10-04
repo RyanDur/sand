@@ -3,10 +3,10 @@ import {shallowFreeze} from './util';
 import {Consumer} from './function/types';
 
 export const asyncEvent = <T, E>(result: Result.Async<T, E>): OnAsyncEvent<T, E> => shallowFreeze({
-    onLoading: (loading: Consumer<void>) => {
-        loading();
+    onLoading: (handleLoading: Consumer<void>) => {
+        handleLoading();
         return asyncEvent(result);
     },
-    onLoad: (loaded: Consumer<T>) => asyncEvent(result.onSuccess(loaded)),
-    onError: (err: Consumer<E>) => asyncEvent(result.onFailure(err))
+    onLoad: (handleLoad: Consumer<T>) => asyncEvent(result.onSuccess(handleLoad)),
+    onError: (handleErr: Consumer<E>) => asyncEvent(result.onFailure(handleErr))
 });
