@@ -8,5 +8,5 @@ export const asyncEvent = <T, E>(result: Result.Async<T, E>): OnAsyncEvent<T, E>
         return asyncEvent(result);
     },
     onLoad: (handleLoad: Consumer<T>) => asyncEvent(result.onSuccess(handleLoad)),
-    onError: (handleErr: Consumer<E>) => asyncEvent(result.onFailure(handleErr))
+    onError: (handleError: Consumer<E>) => asyncEvent(result.onFailure(handleError))
 });
