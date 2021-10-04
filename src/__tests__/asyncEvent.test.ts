@@ -9,20 +9,20 @@ describe('an async event', () => {
         const loading = jest.fn();
         asyncEvent(asyncResult.success(expected)).onLoading(() => {
             loading();
-            return done();
+            done();
         });
         expect(loading).toHaveBeenCalled();
     });
 
     test('loaded', done =>
-        asyncEvent(asyncResult.success(expected)).onLoad(data => {
+        void asyncEvent(asyncResult.success(expected)).onLoad(data => {
             expect(data).toEqual(expected);
-            return done();
+            done();
         }));
 
     test('error', (done) =>
-        asyncEvent(asyncResult.failure(expected)).onError(err => {
+        void asyncEvent(asyncResult.failure(expected)).onError(err => {
             expect(err).toEqual(expected);
-            return done();
+            done();
         }));
 });
