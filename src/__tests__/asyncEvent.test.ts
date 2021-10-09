@@ -16,7 +16,6 @@ describe('an async event', () => {
                 expect(loading).toHaveBeenNthCalledWith(2, false);
                 done();
             }, 0);
-
         });
     });
 
