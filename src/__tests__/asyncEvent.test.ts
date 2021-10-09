@@ -5,13 +5,19 @@ import * as faker from 'faker';
 describe('an async event', () => {
     const expected = faker.lorem.words();
 
-    test('loading', done => {
-        const loading = jest.fn();
-        asyncEvent(asyncResult.success(expected)).onLoading(() => {
-            loading();
-            done();
+    describe('loading', () => {
+        it('identify when it is loading', done => {
+            const loading = jest.fn();
+            asyncEvent(asyncResult.success(expected))
+                .onLoading(loading);
+
+            expect(loading).toHaveBeenNthCalledWith(1, true);
+            setTimeout(() => {
+                expect(loading).toHaveBeenNthCalledWith(2, false);
+                done();
+            }, 0);
+
         });
-        expect(loading).toHaveBeenCalled();
     });
 
     test('load', done =>
