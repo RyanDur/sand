@@ -1,17 +1,16 @@
 import {inspect, shallowFreeze} from './util';
 import {Result} from './types';
-import {Func, Predicate} from './function/types';
 
 const ok = <T, E>(data: T): Result<T, E> => shallowFreeze({
     isOk: true,
     data,
+    orNull: () => data,
+    orElse: () => data,
+    errOrElse: other => other,
     map: f => ok(f(data)),
     mapErr: () => ok(data),
     flatMap: f => f(data),
     flatMapErr: () => ok(data),
-    orElse: () => data,
-    orElseErr: fallback => fallback,
-    orNull: () => data,
     onOk: consumer => {
         consumer(data);
         return ok(data);
@@ -20,25 +19,22 @@ const ok = <T, E>(data: T): Result<T, E> => shallowFreeze({
     inspect: () => `Ok(${inspect(data)})`
 });
 
-const err = <T, E>(explanation: E): Result<T, E> => shallowFreeze({
+const err = <T, E>(reason: E): Result<T, E> => shallowFreeze({
     isOk: false,
-    explanation,
-    map: () => err(explanation),
-    mapErr: f => err(f(explanation)),
-    flatMap: () => err(explanation),
-    flatMapErr: f => f(explanation),
-    orElse: other => other,
-    orElseErr: () => explanation,
+    reason,
     orNull: () => null,
-    onOk: () => err(explanation),
+    orElse: other => other,
+    errOrElse: () => reason,
+    map: () => err(reason),
+    mapErr: f => err(f(reason)),
+    flatMap: () => err(reason),
+    flatMapErr: f => f(reason),
+    onOk: () => err(reason),
     onErr: consumer => {
-        consumer(explanation);
-        return err(explanation);
+        consumer(reason);
+        return err(reason);
     },
-    inspect: () => `Err(${inspect(explanation)})`
+    inspect: () => `Err(${inspect(reason)})`
 });
 
-const of = <T, E>(isOk: Predicate<T>, explanation: Func<T, E>) => (value: T): Result<T, E> =>
-    isOk(value) ? ok(value) : err(explanation(value));
-
-export const result = {of, ok, err};
+export const result = {ok, err};

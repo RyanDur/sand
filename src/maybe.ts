@@ -19,8 +19,8 @@ const nothing = <T>(): Maybe<T> => shallowFreeze({
     inspect: () => 'Nothing'
 });
 
-const isNothingValue = <T>(thing: T): boolean => {
-    const type = typeOf(thing);
+const isNothingValue = <T>(value: T): boolean => {
+    const type = typeOf(value);
     return type === 'undefined' || type === 'null' || type === 'nan';
 };
 

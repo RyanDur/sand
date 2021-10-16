@@ -3,8 +3,9 @@ import {Result} from './types';
 import {inspect} from './util';
 
 const ofPromise = <S, F>(promise: Promise<Result<S, F>>): Result.Async<S, F> => ({
-    value: () => promise,
+    orNull: () => promise.then(({orNull}) => orNull()),
     orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
+    failureOrElse: fallback => promise.then(({errOrElse}) => errOrElse(fallback)),
     map: mapping => ofPromise(promise.then(({map}) => map(mapping))),
     mapFailure: mapping => ofPromise(promise.then(({mapErr}) => mapErr(mapping))),
     flatMap: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
