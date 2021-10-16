@@ -2,6 +2,17 @@ import {Inspectable, IsEmpty} from './types';
 import {Maybe} from '../types';
 import {maybe} from '../maybe';
 
+const nameOfBuiltInInstanceOf = (value: unknown): string | undefined => {
+    if (value instanceof Boolean) return 'Boolean';
+    if (value instanceof String) return 'String';
+    if (value instanceof Number) return 'Number';
+    if (value instanceof Date) return 'Date';
+    if (value instanceof Map) return 'Map';
+    if (value instanceof Set) return 'Set';
+    if (Array.isArray(value)) return 'Array';
+    return undefined;
+};
+
 export const shallowFreeze = <T>(obj: T): T => Object.freeze(obj);
 
 export const inspect = (value: unknown): string => (value as Inspectable).inspect?.() || String(value);
@@ -20,17 +31,6 @@ export const typeOf = (value: unknown): string => {
     if (Number.isNaN(value)) return 'nan';
     if (value === null) return 'null';
     return typeof value;
-};
-
-export const nameOfBuiltInInstanceOf = (value: unknown): string | undefined => {
-    if (value instanceof Boolean) return 'Boolean';
-    if (value instanceof String) return 'String';
-    if (value instanceof Number) return 'Number';
-    if (value instanceof Date) return 'Date';
-    if (value instanceof Map) return 'Map';
-    if (value instanceof Set) return 'Set';
-    if (Array.isArray(value)) return 'Array';
-    return undefined;
 };
 
 export const not = (value: unknown): boolean => !value;
