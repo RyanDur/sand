@@ -11,8 +11,8 @@ const ofPromise = <S, F>(promise: Promise<Result<S, F>>): Result.Async<S, F> => 
         .onOk(value => mapping(value).onComplete(resolve))
         .onErr(explanation => resolve(result.err(explanation)))))),
     flatMapFailure: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-        .onErr(explanation => mapping(explanation).onComplete(resolve))
-        .onOk(value => resolve(result.ok(value)))))),
+        .onOk(value => resolve(result.ok(value)))
+        .onErr(explanation => mapping(explanation).onComplete(resolve))))),
     onLoading: isLoading => {
         isLoading(true);
         return ofPromise(promise.then(value => {
