@@ -137,10 +137,10 @@ describe('the Async Result', () => {
        });
 
        test('a failure', done => {
-           const aSuccess = asyncResult.failure(data);
+           const aFailure = asyncResult.failure(data);
            const isLoading = jest.fn();
 
-           aSuccess.onLoading(isLoading).onFailure(() => {
+           aFailure.onLoading(isLoading).onFailure(() => {
                expect(isLoading).toHaveBeenNthCalledWith(1, true);
                expect(isLoading).toHaveBeenNthCalledWith(2, false);
                done();
