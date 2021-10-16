@@ -7,20 +7,12 @@ const ofPromise = <S, F>(promise: Promise<Result<S, F>>): Result.Async<S, F> => 
     orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
     map: mapping => ofPromise(promise.then(({map}) => map(mapping))),
     mapFailure: mapping => ofPromise(promise.then(({mapErr}) => mapErr(mapping))),
-    flatMap: mapping => ofPromise(new Promise(resolve => promise
-        .then(pipe => pipe
-            .onOk(value => mapping(value).onComplete(resolve))
-            .onErr(explanation => resolve(result.err(explanation)))))),
-    flatMapFailure: mapping => ofPromise(new Promise(resolve => promise
-        .then(pipe => pipe
-            .onErr(explanation => mapping(explanation).onComplete(resolve))
-            .onOk(value => resolve(result.ok(value)))))),
-    onSuccess: consumer => ofPromise(promise.then(({onOk}) => onOk(consumer))),
-    onFailure: consumer => ofPromise(promise.then(({onErr}) => onErr(consumer))),
-    onComplete: consumer => ofPromise(promise.then(value => {
-        consumer(value);
-        return value;
-    })),
+    flatMap: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+        .onOk(value => mapping(value).onComplete(resolve))
+        .onErr(explanation => resolve(result.err(explanation)))))),
+    flatMapFailure: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+        .onErr(explanation => mapping(explanation).onComplete(resolve))
+        .onOk(value => resolve(result.ok(value)))))),
     onLoading: isLoading => {
         isLoading(true);
         return ofPromise(promise.then(value => {
@@ -28,6 +20,12 @@ const ofPromise = <S, F>(promise: Promise<Result<S, F>>): Result.Async<S, F> => 
             return value;
         }));
     },
+    onSuccess: consumer => ofPromise(promise.then(({onOk}) => onOk(consumer))),
+    onFailure: consumer => ofPromise(promise.then(({onErr}) => onErr(consumer))),
+    onComplete: consumer => ofPromise(promise.then(value => {
+        consumer(value);
+        return value;
+    })),
     inspect: () => `AsyncResult(${promise.then(inspect)})`
 });
 
