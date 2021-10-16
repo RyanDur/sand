@@ -34,6 +34,7 @@ export declare namespace Result {
         readonly onSuccess: Func<Consumer<S>, Async<S, F>>;
         readonly onFailure: Func<Consumer<F>, Async<S, F>>;
         readonly onComplete: Func<Consumer<Result<S, F>>, Async<S, F>>;
+        readonly onLoading: Func<Consumer<boolean>, Async<S, F>>;
         readonly inspect: Supplier<string>;
     }
 }

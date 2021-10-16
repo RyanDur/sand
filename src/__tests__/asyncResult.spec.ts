@@ -123,4 +123,28 @@ describe('the Async Result', () => {
             });
         });
     });
+
+    describe('on loading', () => {
+       test('a success', done => {
+           const aSuccess = asyncResult.success(data);
+           const isLoading = jest.fn();
+
+           aSuccess.onLoading(isLoading).onSuccess(() => {
+               expect(isLoading).toHaveBeenNthCalledWith(1, true);
+               expect(isLoading).toHaveBeenNthCalledWith(2, false);
+               done();
+           });
+       });
+
+       test('a failure', done => {
+           const aSuccess = asyncResult.failure(data);
+           const isLoading = jest.fn();
+
+           aSuccess.onLoading(isLoading).onFailure(() => {
+               expect(isLoading).toHaveBeenNthCalledWith(1, true);
+               expect(isLoading).toHaveBeenNthCalledWith(2, false);
+               done();
+           });
+       });
+    });
 });

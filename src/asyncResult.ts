@@ -17,11 +17,18 @@ const ofPromise = <S, F>(promise: Promise<Result<S, F>>): Result.Async<S, F> => 
             .onOk(value => resolve(result.ok(value)))))),
     onSuccess: consumer => ofPromise(promise.then(({onOk}) => onOk(consumer))),
     onFailure: consumer => ofPromise(promise.then(({onErr}) => onErr(consumer))),
-    inspect: () => `AsyncResult(${promise.then(inspect)})`,
     onComplete: consumer => ofPromise(promise.then(value => {
         consumer(value);
         return value;
-    }))
+    })),
+    onLoading: isLoading => {
+        isLoading(true);
+        return ofPromise(promise.then(value => {
+            isLoading(false);
+            return value;
+        }));
+    },
+    inspect: () => `AsyncResult(${promise.then(inspect)})`
 });
 
 const success = <S, F>(value: S): Result.Async<S, F> => ofPromise(Promise.resolve(result.ok(value)));
