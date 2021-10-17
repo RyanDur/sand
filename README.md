@@ -113,7 +113,7 @@ has(0) // produces: true
 Example:
 
 ```typescript
-enum Foo {
+enum Thing {
     One = 'One',
     Two = 'Two',
     Three = 'Three'
@@ -123,16 +123,16 @@ const thingsToMatchOn = matches(Object.values(Foo));
 
 const matchThings = matchOn(thingsToMatchOn);
 
-matchThings(Foo.Two, {
-    [Foo.One]: () => 'I am one',
-    [Foo.Two]: () => 'I am two',
-    [Foo.Three]: () => 'I am three',
+matchThings(Thing.Two, {
+    [Thing.One]: () => 'I am one',
+    [Thing.Two]: () => 'I am two',
+    [Thing.Three]: () => 'I am three',
 }).orElse('none of the above'); // prodices: "I am two"
 
-matchThings(undefined as Foo, {
-    [Foo.One]: () => 'I am one',
-    [Foo.Two]: () => 'I am two',
-    [Foo.Three]: () => 'I am three',
+matchThings(undefined as Thing, {
+    [Thing.One]: () => 'I am one',
+    [Thing.Two]: () => 'I am two',
+    [Thing.Three]: () => 'I am three',
 }).orElse('none of the above'); // prodices: "none of the above"
 ```
 
