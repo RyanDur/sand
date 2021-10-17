@@ -64,6 +64,8 @@ not(false) // produces: true
 
 ### [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
+Example:
+
 ```javascript
 empty({}) // produces: true
 empty({I: 'am not empty'}) // produces: false
@@ -81,7 +83,10 @@ empty(0) // produces: false
 ### [has](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
 A value that
-is [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts).
+is [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+.
+
+Example:
 
 ```javascript
 has({}) // produces: false
@@ -101,12 +106,15 @@ has(0) // produces: true
 
 #### [matches](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
+Example:
+
 ```typescript
 enum Foo {
     One = 'One',
     Two = 'Two',
     Three = 'Three'
 }
+
 
 const thingsToMatchOn = matches(Object.values(Foo));
 
@@ -133,7 +141,6 @@ wrap the object in a string.
 ### [typeOf](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
 My own typeOf, since the built in one will return object for null, and number for NaN.
-
 
 ### [shallowFreeze](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
