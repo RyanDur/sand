@@ -51,35 +51,88 @@ maybe.of(NaN).map(value => value + ' more').orNull() // produces: null
 
 ## Util
 
-### [shallowFreeze](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+### [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
-Is a delegate for Object.freeze, the only thing that i ike about it is that it tells the user about how much it will
-freeze
+Will negate any boolean or truthy or falsy value.
+
+Example:
+
+```javascript
+not(true) // produces: false
+not(false) // produces: true
+```
+
+### [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+
+```javascript
+empty({}) // produces: true
+empty({I: 'am not empty'}) // produces: false
+
+empty([]) // produces: true
+empty([1, 2, 3]) // produces: false
+
+empty('') // produces: true
+empty('not empty') // produces: false
+
+empty(NaN) // produces: true
+empty(0) // produces: false
+```
+
+### [has](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+
+A value that
+is [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts).
+
+```javascript
+has({}) // produces: false
+has({I: 'am not empty'}) // produces: true
+
+has([]) // produces: false
+has([1, 2, 3]) // produces: true
+
+has('') // produces: false
+has('not empty') // produces: true
+
+has(NaN) // produces: false
+has(0) // produces: true
+```
+
+### [matchOn](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+
+#### [matches](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+
+```typescript
+enum Foo {
+    One,
+    Two,
+    Three
+}
+
+const thingsToMatchOn = matches(Object.values(Foo));
+
+const matchThings = matchOn(thingsToMatchOn);
+
+matchThings(Foo.Two, {
+    [Foo.One]: () => 'I am one',
+    [Foo.Two]: () => 'I am two',
+    [Foo.Theree]: () => 'I am three',
+}).orElse('none of the above'); // prodices: "I am two"
+```
 
 ### [inspect](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
 provides a string representation of the object. If the object passed has an inspect method, it will invoke that or just
 wrap the object in a string.
 
-### [matches](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-
-### [matchOn](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-
 ### [typeOf](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
 My own typeOf, since the built in one will return object for null, and number for NaN.
 
-### [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
-Will negate any boolean or truthy or falsy value.
+### [shallowFreeze](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
-### [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-
-### [has](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-
-A value that
-is [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-.
+Is a delegate for Object.freeze, the only thing that i ike about it is that it tells the user about how much it will
+freeze
 
 ## Examples of use
 
