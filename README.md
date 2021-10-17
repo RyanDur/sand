@@ -123,7 +123,7 @@ type Maybe<T> = {
 interface:
 
 ```typescript
-of: <THING>(thing?: THING | null, isNothing = isNothingValue) => Maybe<THING>;
+of: <T>(thing?: T | null, isNothing = isNothingValue) => Maybe<T>;
 some: <T>(thing: T) => Maybe<T>;
 nothing: <T>() => Maybe<T>;
 ```
