@@ -5,11 +5,8 @@
 interface:
 
 ```typescript
-ok: <T, E>(data: T) => Result<T, E>
-```
-
-```typescript
-err: <T, E>(reason: E) => Result<T, E>
+ok: <T, E>(data: T) => Result<T, E>;
+err: <T, E>(reason: E) => Result<T, E>;
 ```
 
 * [test for ok](https://github.com/RyanDur/sand/blob/main/src/__tests__/result.spec.ts#L9)
@@ -32,15 +29,9 @@ errResult.errOrElse('Not this'); // produces: "some err, another err"
 interface:
 
 ```typescript
-of: <S, F>(promise: Promise<S>) => Result.Async<S, F>
-```
-
-```typescript
-success: <S, F>(value: S) => Result.Async<S, F>
-```
-
-```typescript
-failure: <S, F>(error: F) => Result.Async<S, F>
+of: <S, F>(promise: Promise<S>) => Result.Async<S, F>;
+success: <S, F>(value: S) => Result.Async<S, F>;
+failure: <S, F>(error: F) => Result.Async<S, F>;
 ```
 
 * [test for success](https://github.com/RyanDur/sand/blob/main/src/__tests__/asyncResult.spec.ts#L11)
@@ -63,15 +54,9 @@ failureResult.failureOrElse('Not this'); // produces: "some err, another err"
 interface:
 
 ```typescript
-of: <THING>(thing?: THING | null, isNothing = isNothingValue) => Maybe<THING>
-```
-
-```typescript
-some: <T>(thing: T) => Maybe<T>
-```
-
-```typescript
-nothing: <T>() => Maybe<T>
+of: <THING>(thing?: THING | null, isNothing = isNothingValue) => Maybe<THING>;
+some: <T>(thing: T) => Maybe<T>;
+nothing: <T>() => Maybe<T>;
 ```
 
 * [test for something or nothing](https://github.com/RyanDur/sand/blob/main/src/__tests__/maybe.spec.ts)
