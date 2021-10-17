@@ -115,13 +115,13 @@ const matchThings = matchOn(thingsToMatchOn);
 matchThings(Foo.Two, {
     [Foo.One]: () => 'I am one',
     [Foo.Two]: () => 'I am two',
-    [Foo.Theree]: () => 'I am three',
+    [Foo.Three]: () => 'I am three',
 }).orElse('none of the above'); // prodices: "I am two"
 
 matchThings(undefined as Foo, {
     [Foo.One]: () => 'I am one',
     [Foo.Two]: () => 'I am two',
-    [Foo.Theree]: () => 'I am three',
+    [Foo.Three]: () => 'I am three',
 }).orElse('none of the above'); // prodices: "none of the above"
 ```
 
