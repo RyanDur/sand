@@ -1,7 +1,5 @@
 # Sand
 
-## Main
-
 ### [Result](https://github.com/RyanDur/sand/blob/main/src/types/Result.ts)
 
 * [test for ok](https://github.com/RyanDur/sand/blob/main/src/__tests__/result.spec.ts#L9)
