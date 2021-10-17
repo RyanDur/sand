@@ -86,7 +86,7 @@ A value that
 is [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 .
 
-[test for has](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L65)
+* [test for has](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L65)
 
 Example:
 
