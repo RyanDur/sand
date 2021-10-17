@@ -5,6 +5,37 @@
 interface:
 
 ```typescript
+type Result<T, E> = (Result.Ok<T> | Result.Err<E>) & {
+    readonly orElse: Func<T, T>;
+    readonly errOrElse: Func<E, E>;
+    readonly orNull: Supplier<T | null>;
+    readonly map: <NewT>(f: Func<T, NewT>) => Result<NewT, E>;
+    readonly mapErr: <NewE>(f: Func<E, NewE>) => Result<T, NewE>;
+    readonly flatMap: <NewT>(f: Func<T, Result<NewT, E>>) => Result<NewT, E>;
+    readonly flatMapErr: <NewE>(f: Func<E, Result<T, NewE>>) => Result<T, NewE>;
+    readonly onOk: Func<Consumer<T>, Result<T, E>>;
+    readonly onErr: Func<Consumer<E>, Result<T, E>>;
+    readonly inspect: Supplier<string>;
+}
+
+namespace Result {
+    type Ok<T> = {
+        readonly isOk: true;
+        readonly data: T;
+    }
+
+    type Err<E> = {
+        readonly isOk: false;
+        readonly reason: E;
+    }
+}
+```
+
+### [result](https://github.com/RyanDur/sand/blob/main/src/result.ts)
+
+interface:
+
+```typescript
 ok: <T, E>(data: T) => Result<T, E>;
 err: <T, E>(reason: E) => Result<T, E>;
 ```
@@ -25,6 +56,29 @@ errResult.errOrElse('Not this'); // produces: "some err, another err"
 ```
 
 ### [AsyncResult](https://github.com/RyanDur/sand/blob/main/src/types/Result.ts)
+
+interface:
+
+```typescript
+namespace Result {
+    type Async<S, F> = {
+        readonly orNull: Supplier<Promise<S | null>>;
+        readonly orElse: Func<S, Promise<S>>;
+        readonly failureOrElse: Func<F, Promise<F>>;
+        readonly map: <NewS>(mapping: Func<S, NewS>) => Async<NewS, F>;
+        readonly mapFailure: <NewF>(mapping: Func<F, NewF>) => Async<S, NewF>;
+        readonly flatMap: <NewS>(mapping: Func<S, Async<NewS, F>>) => Async<NewS, F>;
+        readonly flatMapFailure: <NewF>(mapping: Func<F, Async<S, NewF>>) => Async<S, NewF>;
+        readonly onLoading: Func<Consumer<boolean>, Async<S, F>>;
+        readonly onSuccess: Func<Consumer<S>, Async<S, F>>;
+        readonly onFailure: Func<Consumer<F>, Async<S, F>>;
+        readonly onComplete: Func<Consumer<Result<S, F>>, Async<S, F>>;
+        readonly inspect: Supplier<string>;
+    }
+}
+```
+
+### [asyncResult](https://github.com/RyanDur/sand/blob/main/src/asyncResult.ts)
 
 interface:
 
@@ -50,6 +104,21 @@ failureResult.failureOrElse('Not this'); // produces: "some err, another err"
 ```
 
 ### [Maybe](https://github.com/RyanDur/sand/blob/main/src/types/Maybe.ts)
+
+interface:
+
+```typescript
+type Maybe<T> = {
+    readonly isNothing: boolean;
+    readonly orElse: Func<T, T>;
+    readonly orNull: Supplier<T | null>;
+    readonly map: <NewT>(f: Func<T, NewT>) => Maybe<NewT>;
+    readonly flatMap: <NewT>(f: Func<T, Maybe<NewT>>) => Maybe<NewT>;
+    readonly inspect: Supplier<string>;
+};
+```
+
+### [maybe](https://github.com/RyanDur/sand/blob/main/src/maybe.ts)
 
 interface:
 
