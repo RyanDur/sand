@@ -2,6 +2,16 @@
 
 ### [Result](https://github.com/RyanDur/sand/blob/main/src/types/Result.ts)
 
+interface:
+
+```typescript
+ok: <T, E>(data: T) => Result<T, E>
+```
+
+```typescript
+err: <T, E>(reason: E) => Result<T, E>
+```
+
 * [test for ok](https://github.com/RyanDur/sand/blob/main/src/__tests__/result.spec.ts#L9)
 * [test for err](https://github.com/RyanDur/sand/blob/main/src/__tests__/result.spec.ts#L29)
 
@@ -19,6 +29,20 @@ errResult.errOrElse('Not this'); // produces: "some err, another err"
 
 ### [AsyncResult](https://github.com/RyanDur/sand/blob/main/src/types/Result.ts)
 
+interface:
+
+```typescript
+of: <S, F>(promise: Promise<S>) => Result.Async<S, F>
+```
+
+```typescript
+success: <S, F>(value: S) => Result.Async<S, F>
+```
+
+```typescript
+failure: <S, F>(error: F) => Result.Async<S, F>
+```
+
 * [test for success](https://github.com/RyanDur/sand/blob/main/src/__tests__/asyncResult.spec.ts#L11)
 * [test for failure](https://github.com/RyanDur/sand/blob/main/src/__tests__/asyncResult.spec.ts#L48)
 
@@ -35,6 +59,20 @@ failureResult.failureOrElse('Not this'); // produces: "some err, another err"
 ```
 
 ### [Maybe](https://github.com/RyanDur/sand/blob/main/src/types/Maybe.ts)
+
+interface:
+
+```typescript
+of: <THING>(thing?: THING | null, isNothing = isNothingValue) => Maybe<THING>
+```
+
+```typescript
+some: <T>(thing: T) => Maybe<T>
+```
+
+```typescript
+nothing: <T>() => Maybe<T>
+```
 
 * [test for something or nothing](https://github.com/RyanDur/sand/blob/main/src/__tests__/maybe.spec.ts)
 
