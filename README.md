@@ -29,7 +29,7 @@ Example:
 ```javascript
 var successfulResult = await asyncResult.of(Promise.resolve('some value')).map(value => value + ', another value');
 successfulResult.orNull(); // produces: "some value, another value"
-successfulResult.errOrElse('definately this'); // produces: "definately this"
+successfulResult.failureOrElse('definately this'); // produces: "definately this"
 
 const failureResult = await asyncResult.of(Promise.reject('some err')).mapErr(value => value + ', another err');
 failureResult.orNull(); // produces: null
