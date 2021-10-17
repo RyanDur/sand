@@ -40,6 +40,15 @@ failureResult.failureOrElse('Not this'); // produces: "some err, another err"
 
 * [test for something or nothing](https://github.com/RyanDur/sand/blob/main/src/__tests__/maybe.spec.ts)
 
+Example:
+
+```javascript
+maybe.of('something').map(value => value + ' more').orNull() // produces: "something more"
+maybe.of(null).map(value => value + ' more').orNull() // produces: null
+maybe.of(undefined).map(value => value + ' more').orNull() // produces: null
+maybe.of(NaN).map(value => value + ' more').orNull() // produces: null
+```
+
 ## Util
 
 ### [shallowFreeze](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
