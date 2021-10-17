@@ -47,7 +47,7 @@ maybe.of(undefined).map(value => value + ' more').orNull() // produces: null
 maybe.of(NaN).map(value => value + ' more').orNull() // produces: null
 ```
 
-## Util 
+## Util
 
 ### [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
@@ -105,6 +105,9 @@ has(0) // produces: true
 ```
 
 ### Matching
+
+[test for matching](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L123)
+
 #### [matches](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
 Example:
@@ -120,9 +123,6 @@ const thingsToMatchOn = matches(Object.values(Foo));
 ```
 
 #### [matchOn](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-
-
-[test for matching](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L123)
 
 Example:
 
