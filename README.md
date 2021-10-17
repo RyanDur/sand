@@ -133,13 +133,13 @@ matchThings(Thing.Two, {
     [Thing.One]: () => 'I am one',
     [Thing.Two]: () => 'I am two',
     [Thing.Three]: () => 'I am three',
-}).orElse('none of the above'); // prodices: "I am two"
+}).orElse('none of the above'); // produces: "I am two"
 
 matchThings(undefined as Thing, {
     [Thing.One]: () => 'I am one',
     [Thing.Two]: () => 'I am two',
     [Thing.Three]: () => 'I am three',
-}).orElse('none of the above'); // prodices: "none of the above"
+}).orElse('none of the above'); // produces: "none of the above"
 ```
 
 ### [inspect](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
