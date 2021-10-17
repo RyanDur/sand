@@ -115,7 +115,6 @@ enum Foo {
     Three = 'Three'
 }
 
-
 const thingsToMatchOn = matches(Object.values(Foo));
 
 const matchThings = matchOn(thingsToMatchOn);
