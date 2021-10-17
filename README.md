@@ -2,7 +2,7 @@
 
 ## Main
 
-### [Result](https://github.com/RyanDur/sand/blob/nain/src/types/Result.ts)
+### [Result](https://github.com/RyanDur/sand/blob/main/src/types/Result.ts)
 
 * [test for ok](https://github.com/RyanDur/sand/blob/main/src/__tests__/result.spec.ts#L9)
 * [test for err](https://github.com/RyanDur/sand/blob/main/src/__tests__/result.spec.ts#L29)
@@ -19,7 +19,7 @@ errResult.orNull(); // produces: null
 errResult.errOrElse('Not this'); // produces: "some err, another err"
 ```
 
-### [AsyncResult](https://github.com/RyanDur/sand/blob/nain/src/types/Result.ts)
+### [AsyncResult](https://github.com/RyanDur/sand/blob/main/src/types/Result.ts)
 
 * [test for success](https://github.com/RyanDur/sand/blob/main/src/__tests__/asyncResult.spec.ts#L11)
 * [test for failure](https://github.com/RyanDur/sand/blob/main/src/__tests__/asyncResult.spec.ts#L48)
