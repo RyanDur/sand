@@ -1,6 +1,12 @@
 # Sand
 
+I made this little library of helper functions to aid my development of javascript/typescript applications and learn
+more about the functional paradigm.
+
 ### [Result](https://github.com/RyanDur/sand/blob/main/src/types/Result.ts)
+
+The Result is either ok or not. Depending on what type of result it is affects how the results functions behave.
+For example, the 'orNull' function for an ok result will return the value of the result while err will return null.
 
 interface:
 
@@ -33,6 +39,8 @@ namespace Result {
 
 ### [result](https://github.com/RyanDur/sand/blob/main/src/result.ts)
 
+A factory method the helps create Result's
+
 interface:
 
 ```typescript
@@ -57,6 +65,13 @@ errResult.errOrElse('Not this'); // produces: "some err, another err"
 
 ### [AsyncResult](https://github.com/RyanDur/sand/blob/main/src/types/Result.ts)
 
+The AsyncResult is something that [Damien LeBerrigaud](https://github.com/dam5s) has introduced me to. I had the chance
+to work with him on a project that inspired me to write this lib. Together we
+collaborated on [React Redux Starter](https://github.com/dam5s/react-redux-starter) to aid us in developing future projects with
+clients.
+
+The type allows you to work with a promise in the same way you would work with a Result, with some extra helpers.
+
 interface:
 
 ```typescript
@@ -79,6 +94,8 @@ namespace Result {
 ```
 
 ### [asyncResult](https://github.com/RyanDur/sand/blob/main/src/asyncResult.ts)
+
+A factory method the helps create AsyncResult's
 
 interface:
 
@@ -105,6 +122,8 @@ failureResult.failureOrElse('Not this'); // produces: "some err, another err"
 
 ### [Maybe](https://github.com/RyanDur/sand/blob/main/src/types/Maybe.ts)
 
+A Maybe is either something or nothing.
+
 interface:
 
 ```typescript
@@ -119,6 +138,8 @@ type Maybe<T> = {
 ```
 
 ### [maybe](https://github.com/RyanDur/sand/blob/main/src/maybe.ts)
+
+A factory function for creating a Maybe.
 
 interface:
 
@@ -241,11 +262,11 @@ wrap the object in a string.
 
 ### [typeOf](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
-My own typeOf, since the built in one will return object for null, and number for NaN.
+My own typeOf, since the builtin one will return object for null, and number for NaN.
 
 ### [shallowFreeze](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
-Is a delegate for Object.freeze, the only thing that i ike about it is that it tells the user about how much it will
+Is a delegate for Object.freeze, the only thing that I ike about it is that it tells the user about how much it will
 freeze
 
 ## Examples of use
