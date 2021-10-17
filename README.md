@@ -104,11 +104,8 @@ has(NaN) // produces: false
 has(0) // produces: true
 ```
 
-### [matchOn](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-
+### Matching
 #### [matches](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-
-[test for matching](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L123)
 
 Example:
 
@@ -120,7 +117,16 @@ enum Thing {
 }
 
 const thingsToMatchOn = matches(Object.values(Foo));
+```
 
+#### [matchOn](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+
+
+[test for matching](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L123)
+
+Example:
+
+```typescript
 const matchThings = matchOn(thingsToMatchOn);
 
 matchThings(Thing.Two, {
