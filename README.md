@@ -49,7 +49,7 @@ maybe.of(undefined).map(value => value + ' more').orNull() // produces: null
 maybe.of(NaN).map(value => value + ' more').orNull() // produces: null
 ```
 
-## Util
+## Util 
 
 ### [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
@@ -63,6 +63,8 @@ not(false) // produces: true
 ```
 
 ### [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+
+* [test for empty](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L7)
 
 Example:
 
@@ -86,6 +88,8 @@ A value that
 is [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 .
 
+[test for has](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L65)
+
 Example:
 
 ```javascript
@@ -105,6 +109,8 @@ has(0) // produces: true
 ### [matchOn](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
 #### [matches](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+
+[test for matching](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L123)
 
 Example:
 
