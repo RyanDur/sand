@@ -103,9 +103,9 @@ has(0) // produces: true
 
 ```typescript
 enum Foo {
-    One,
-    Two,
-    Three
+    One = 'One',
+    Two = 'Two',
+    Three = 'Three'
 }
 
 const thingsToMatchOn = matches(Object.values(Foo));
