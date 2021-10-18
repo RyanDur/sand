@@ -1,3 +1,3 @@
-export type Predicate<QUESTION> = (question: QUESTION) => boolean;
+export type Predicate<SUBJECT> = (subject: SUBJECT) => boolean;
 export type Supplier<SUPPLY> = () => SUPPLY;
-export type Consumer<CONSUME> = (consume: CONSUME) => void;
+export type Consumer<CONSUMABLE> = (consumable: CONSUMABLE) => void;

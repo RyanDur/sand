@@ -1,10 +1,10 @@
 import {Supplier} from './Function';
 
-export interface Maybe<T> {
+export interface Maybe<THING> {
     readonly isNothing: boolean;
-    readonly orElse: (fallback: T) => T;
-    readonly orNull: Supplier<T | null>;
-    readonly map: <NewT>(f: (value: T) => NewT) => Maybe<NewT>;
-    readonly flatMap: <NewT>(f: (value: T) => Maybe<NewT>) => Maybe<NewT>;
+    readonly orElse: (fallback: THING) => THING;
+    readonly orNull: Supplier<THING | null>;
+    readonly map: <NEW_THING>(f: (value: THING) => NEW_THING) => Maybe<NEW_THING>;
+    readonly flatMap: <NEW_THING>(f: (value: THING) => Maybe<NEW_THING>) => Maybe<NEW_THING>;
     readonly inspect: Supplier<string>;
 }

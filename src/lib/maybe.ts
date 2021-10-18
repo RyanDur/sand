@@ -41,12 +41,25 @@ const isNothingValue = <THING>(thing: THING): boolean => {
  * maybe.of(undefined).map(value => value + ' more').orNull() // produces: null
  * maybe.of(NaN).map(value => value + ' more').orNull() // produces: null
  * ```
+ * @defaultValue for isNothing
+ * ```ts
+ * const isNothingValue = <THING>(thing: THING): boolean => {
+ *    const type = typeOf(thing);
+ *    return type === 'undefined' || type === 'null' || type === 'nan';
+ * };
+ * ```
  * */
-const of = <THING>(thing?: THING | null, isNothing = isNothingValue): Maybe<THING> =>
-    isNothing(thing) ? nothing() : some(thing as THING);
+const of = <THING>(
+    value?: THING | null,
+    isNothing = isNothingValue
+): Maybe<THING> => isNothing(value) ? nothing() : some(value as THING);
 
 /**
  * @see implementation  {@link https://github.com/RyanDur/sand/blob/main/src/maybe.ts}
  * @see test {@link https://github.com/RyanDur/sand/blob/main/src/util/index.ts}
  * */
-export const maybe = {of, nothing, some};
+export const maybe = {
+    of,
+    nothing,
+    some
+};
