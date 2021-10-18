@@ -1,4 +1,4 @@
-import {Supplier} from '../../function/types';
+import {Supplier} from '../../types';
 
 export interface Inspectable {
     inspect: Supplier<string>;

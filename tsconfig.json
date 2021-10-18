@@ -91,5 +91,11 @@
   "exclude": [
     "**/types/**",
     "**/__tests__/**"
-  ]
+  ],
+  "typedocOptions": {
+    "entryPoints": [
+      "src/lib/index.ts"
+    ],
+    "out": "docs"
+  }
 }

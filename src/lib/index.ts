@@ -2,10 +2,6 @@ export {result} from './result';
 export {asyncResult} from './asyncResult';
 export {maybe} from './maybe';
 export {
-    shallowFreeze,
-    inspect,
-    typeOf,
-    nameOfBuiltInInstanceOf,
     not,
     empty,
     has,
@@ -14,4 +10,3 @@ export {
 } from './util';
 
 export * from './types';
-export * from './function/types';

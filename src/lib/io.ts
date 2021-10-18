@@ -1,6 +1,6 @@
 import {inspect, shallowFreeze} from './util';
-import {IO} from './types/IO';
-import {Supplier} from './function/types';
+import {IO} from '../development/IO';
+import {Supplier} from './types';
 
 export const io = <T>(impureIO: Supplier<T>): IO<T> => shallowFreeze({
     perform: impureIO,

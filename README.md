@@ -255,20 +255,6 @@ matchThings(undefined as Thing, {
 }).orElse('none of the above'); // produces: "none of the above"
 ```
 
-### [inspect](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-
-provides a string representation of the object. If the object passed has an inspect method, it will invoke that or just
-wrap the object in a string.
-
-### [typeOf](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-
-My own typeOf, since the builtin one will return object for null, and number for NaN.
-
-### [shallowFreeze](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-
-Is a delegate for Object.freeze, the only thing that I ike about it is that it tells the user about how much it will
-freeze
-
 ## Examples of use
 
 [Gallery](http://localhost:3000/gallery?page=1&size=8&tab=aic)

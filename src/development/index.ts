@@ -1,5 +1,16 @@
-import {empty, has} from '../util';
-import {Func, Head, MapFunc, ReducerFunc, Tail} from './types';
+import {empty, has} from '../lib';
+
+export type MapFunc = <T, NewT>(func: (value: T) => NewT) => (values: T[]) => NewT[];
+export type ReducerFunc<T, NewT> = (acc: NewT, value: T) => NewT;
+export type Head = {
+    (a: string): string;
+    <T>(a: T[]): T;
+}
+
+export type Tail = {
+    (a: string): string;
+    <T>(a: T[]): T[];
+}
 
 type TailF<T extends any[]> = T extends [head: any, ...tail: infer Tail_]
     ? Tail_
@@ -28,7 +39,7 @@ export const reduce = <T, NewT>(callback: ReducerFunc<T, NewT>, start: NewT) => 
     has(head) ? reduce(callback, callback(start, head))(tail) : start;
 export const reverse = <T>([head, ...tail]: T[]): T[] => empty(tail) ? [head] : [...reverse(tail), head];
 
-export const filter = <T>(f: Func<T, boolean>) => ([head, ...tail]: T[] = []): T[] => {
+export const filter = <T>(f: (value: T) => boolean) => ([head, ...tail]: T[] = []): T[] => {
     if (empty(head)) return [];
     return f(head) ? [head, ...filter(f)(tail)] : filter(f)(tail);
 };
