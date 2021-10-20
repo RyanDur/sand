@@ -27,10 +27,10 @@ describe('the Async Result', () => {
             const resultFlatMapFailure = await aResult.flatMapFailure(unexpected).orNull();
             expect(resultFlatMapFailure).toEqual(data);
 
-            const isLoading = jest.fn();
-            await aResult.onLoading(isLoading).orNull();
-            expect(isLoading).toHaveBeenCalledWith(true);
-            expect(isLoading).toHaveBeenLastCalledWith(false);
+            const isPending = jest.fn();
+            await aResult.onPending(isPending).orNull();
+            expect(isPending).toHaveBeenCalledWith(true);
+            expect(isPending).toHaveBeenLastCalledWith(false);
 
             const resultOnSuccess = await aResult.onSuccess(value => expect(value).toEqual(data)).orNull();
             expect(resultOnSuccess).toEqual(data);
@@ -65,7 +65,7 @@ describe('the Async Result', () => {
             expect(resultFlatMapFailure).toEqual(reason + data);
 
             const isLoading = jest.fn();
-            await aResult.onLoading(isLoading).orNull();
+            await aResult.onPending(isLoading).orNull();
             expect(isLoading).toHaveBeenNthCalledWith(1, true);
             expect(isLoading).toHaveBeenNthCalledWith(2, false);
 

@@ -14,7 +14,7 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
     flatMapFailure: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
         .onOk(value => resolve(result.ok(value)))
         .onErr(explanation => mapping(explanation).onComplete(resolve))))),
-    onLoading: isLoading => {
+    onPending: isLoading => {
         isLoading(true);
         return ofPromise(promise.then(value => {
             isLoading(false);
