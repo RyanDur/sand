@@ -14,7 +14,7 @@ interface:
 type Result<DATA, REASON> = Result.Ok<DATA, REASON> | Result.Err<DATA, REASON>;
 
 declare namespace Result {
-    interface Ok<DATA, REASON> extends _Result<DATA, REASON> {
+    interface Ok<DATA, REASON> {
         readonly isOk: true;
         readonly data: DATA;
         readonly orNull: Supplier<DATA | null>;
@@ -29,7 +29,7 @@ declare namespace Result {
         readonly inspect: Supplier<string>;
     }
 
-    interface Err<DATA, REASON> extends _Result<DATA, REASON> {
+    interface Err<DATA, REASON> {
         readonly isOk: false;
         readonly reason: REASON;
         readonly orNull: Supplier<DATA | null>;
