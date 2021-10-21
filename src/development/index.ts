@@ -1,4 +1,4 @@
-import {empty, has} from '../lib';
+import {empty, has} from '../lib/util';
 
 export type MapFunc = <T, NewT>(func: (value: T) => NewT) => (values: T[]) => NewT[];
 export type ReducerFunc<T, NewT> = (acc: NewT, value: T) => NewT;

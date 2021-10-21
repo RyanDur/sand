@@ -11,7 +11,6 @@ const base = ({exclude}) => ({
     target: 'node',
     context: path.resolve(currentDir),
     mode: 'production',
-    entry: './src/lib/index.ts',
     output: {
         filename: 'index.js',
         library: {

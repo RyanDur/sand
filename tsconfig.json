@@ -94,7 +94,7 @@
   ],
   "typedocOptions": {
     "entryPoints": [
-      "src/lib/index.ts"
+      "src/index.ts"
     ],
     "out": "docs"
   }
