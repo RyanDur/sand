@@ -17,17 +17,19 @@ export const shallowFreeze = <T>(obj: T): T => Object.freeze(obj);
 
 export const inspect = (value: unknown): string => (value as Inspectable).inspect?.() || String(value);
 
-const matches = <MATCH extends string | number, MATCH_ON extends string | number>(values: MATCH[]): (value: MATCH_ON) => MATCH => {
-    const obj = values.reduce((acc, value) => ({...acc, [value]: value}), ({} as Record<string | number, MATCH>));
-    return (value: MATCH_ON) => obj[value];
+const createMatcher = <MATCH extends string | number>(values: MATCH[]): (value: MATCH) => MATCH => {
+    const obj = values.reduce((acc, value) => ({...acc, [value]: value}), ({} as Record<MATCH, MATCH>));
+    return (value: MATCH) => obj[value];
 };
 
-export const matchOn = <MATCH extends string | number, MATCH_ON extends string | number>(values: MATCH[]) => <VALUE>(
-    on: MATCH_ON | null = null,
+export const matchOn = <MATCH extends string | number>(
+    matches: MATCH[]
+) => <VALUE>(
+    on: MATCH | null = null,
     cases: Record<MATCH, () => VALUE>
 ): Maybe<VALUE> => {
-    const matcher = matches(values);
-    return maybe.of(cases[matcher(on as MATCH_ON)]).map(value => value());
+    const matcher = createMatcher(matches);
+    return maybe.of(cases[matcher(on as MATCH)]).map(value => value());
 };
 
 export const typeOf = (value: unknown): string => {

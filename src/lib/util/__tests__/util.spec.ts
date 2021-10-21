@@ -152,7 +152,7 @@ describe('util', () => {
         });
 
         test('default value', () => {
-            expect(matchValue(10, {
+            expect(matchValue(10 as 2, {
                 [1]: () => ({a: 23}),
                 [2]: () => ({a: Number.MIN_SAFE_INTEGER}),
                 [3]: () => ({a: Number.MAX_SAFE_INTEGER}),

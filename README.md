@@ -5,8 +5,8 @@ more about the functional paradigm.
 
 ### [Result](https://github.com/RyanDur/sand/blob/main/src/lib/types/Result.ts)
 
-The Result is either ok or not. Depending on what type of result it is affects how the results functions behave.
-For example, the 'orNull' function for an ok result will return the value of the result while err will return null.
+The Result is either ok or not. Depending on what type of result it is affects how the results functions behave. For
+example, the 'orNull' function for an ok result will return the value of the result while err will return null.
 
 interface:
 
@@ -75,8 +75,8 @@ errResult.errOrElse('Not this'); // produces: "some err, another err"
 ### [AsyncResult](https://github.com/RyanDur/sand/blob/main/src/lib/types/Result.ts)
 
 The AsyncResult is something that [Damien LeBerrigaud](https://github.com/dam5s) has introduced me to. I had the chance
-to work with him on a project that inspired me to write this lib. Together we
-collaborated on [React Redux Starter](https://github.com/dam5s/react-redux-starter) to aid us in developing future projects with
+to work with him on a project that inspired me to write this lib. Together we collaborated
+on [React Redux Starter](https://github.com/dam5s/react-redux-starter) to aid us in developing future projects with
 clients.
 
 The type allows you to work with a promise in the same way you would work with a Result, with some extra helpers.
@@ -184,6 +184,10 @@ maybe.of(NaN).map(value => value + ' more').orNull() // produces: null
 
 ### [not](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts)
 
+```typescript
+not: (value: unknown) => boolean;
+```
+
 Will negate any boolean or truthy or falsy value.
 
 Example:
@@ -194,6 +198,10 @@ not(false) // produces: true
 ```
 
 ### [empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts)
+
+```typescript
+empty: (value: unknown) => boolean;
+```
 
 * [test for empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L7)
 
@@ -214,6 +222,10 @@ empty(0) // produces: false
 ```
 
 ### [has](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts)
+
+```typescript
+has: (value: unknown) => boolean;
+```
 
 A value that
 is [not](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts)
@@ -238,6 +250,15 @@ has(0) // produces: true
 ```
 
 ### [matchOn](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts)
+
+```typescript
+matchOn: <MATCH extends string | number>(
+    matches: MATCH[]
+) => <VALUE>(
+    on: MATCH | null = null,
+    cases: Record<MATCH, () => VALUE>
+) => Maybe<VALUE>;
+```
 
 * [test for matchOn](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L123)
 
