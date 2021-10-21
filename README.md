@@ -39,7 +39,7 @@ namespace Result {
 
 ### [result](https://github.com/RyanDur/sand/blob/main/src/result.ts)
 
-A factory method the helps create Result's
+A factory for creating Result's
 
 interface:
 
@@ -106,7 +106,7 @@ namespace Result {
 
 ### [asyncResult](https://github.com/RyanDur/sand/blob/main/src/asyncResult.ts)
 
-A factory method the helps create AsyncResult's
+A factory for creating AsyncResult's
 
 interface:
 
@@ -150,7 +150,7 @@ type Maybe<T> = {
 
 ### [maybe](https://github.com/RyanDur/sand/blob/main/src/maybe.ts)
 
-A factory function for creating a Maybe.
+A factory for creating a Maybe.
 
 interface:
 

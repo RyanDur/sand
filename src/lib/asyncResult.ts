@@ -27,7 +27,7 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
         consumer(value);
         return value;
     })),
-    inspect: () => `AsyncResult(${promise.then(inspect)})`
+    inspect: () => `Result.Async(${promise.then(inspect)})`
 });
 
 /**
