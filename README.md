@@ -3,7 +3,7 @@
 I made this little library of helper functions to aid my development of javascript/typescript applications and learn
 more about the functional paradigm.
 
-### [Result](https://github.com/RyanDur/sand/blob/main/src/types/Result.ts)
+### [Result](https://github.com/RyanDur/sand/blob/main/src/lib/types/Result.ts)
 
 The Result is either ok or not. Depending on what type of result it is affects how the results functions behave.
 For example, the 'orNull' function for an ok result will return the value of the result while err will return null.
@@ -46,7 +46,7 @@ declare namespace Result {
 }
 ```
 
-### [result](https://github.com/RyanDur/sand/blob/main/src/result.ts)
+### [result](https://github.com/RyanDur/sand/blob/main/src/lib/result.ts)
 
 A factory for creating Result's
 
@@ -57,8 +57,8 @@ ok: <T, E>(data: T) => Result<T, E>;
 err: <T, E>(reason: E) => Result<T, E>;
 ```
 
-* [test for ok](https://github.com/RyanDur/sand/blob/main/src/__tests__/result.spec.ts#L9)
-* [test for err](https://github.com/RyanDur/sand/blob/main/src/__tests__/result.spec.ts#L29)
+* [test for ok](https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L9)
+* [test for err](https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L29)
 
 Example:
 
@@ -72,7 +72,7 @@ errResult.orNull(); // produces: null
 errResult.errOrElse('Not this'); // produces: "some err, another err"
 ```
 
-### [AsyncResult](https://github.com/RyanDur/sand/blob/main/src/types/Result.ts)
+### [AsyncResult](https://github.com/RyanDur/sand/blob/main/src/lib/types/Result.ts)
 
 The AsyncResult is something that [Damien LeBerrigaud](https://github.com/dam5s) has introduced me to. I had the chance
 to work with him on a project that inspired me to write this lib. Together we
@@ -113,7 +113,7 @@ namespace Result {
 }
 ```
 
-### [asyncResult](https://github.com/RyanDur/sand/blob/main/src/asyncResult.ts)
+### [asyncResult](https://github.com/RyanDur/sand/blob/main/src/lib/asyncResult.ts)
 
 A factory for creating AsyncResult's
 
@@ -125,8 +125,8 @@ success: <S, F>(value: S) => Result.Async<S, F>;
 failure: <S, F>(error: F) => Result.Async<S, F>;
 ```
 
-* [test for success](https://github.com/RyanDur/sand/blob/main/src/__tests__/asyncResult.spec.ts#L11)
-* [test for failure](https://github.com/RyanDur/sand/blob/main/src/__tests__/asyncResult.spec.ts#L48)
+* [test for success](https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/asyncResult.spec.ts#L11)
+* [test for failure](https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/asyncResult.spec.ts#L48)
 
 Example:
 
@@ -140,7 +140,7 @@ failureResult.orNull(); // produces: null
 failureResult.failureOrElse('Not this'); // produces: "some err, another err"
 ```
 
-### [Maybe](https://github.com/RyanDur/sand/blob/main/src/types/Maybe.ts)
+### [Maybe](https://github.com/RyanDur/sand/blob/main/src/lib/types/Maybe.ts)
 
 A Maybe is either something or nothing.
 
@@ -157,7 +157,7 @@ type Maybe<T> = {
 };
 ```
 
-### [maybe](https://github.com/RyanDur/sand/blob/main/src/maybe.ts)
+### [maybe](https://github.com/RyanDur/sand/blob/main/src/lib/maybe.ts)
 
 A factory for creating a Maybe.
 
@@ -169,7 +169,7 @@ some: <T>(thing: T) => Maybe<T>;
 nothing: <T>() => Maybe<T>;
 ```
 
-* [test for something or nothing](https://github.com/RyanDur/sand/blob/main/src/__tests__/maybe.spec.ts)
+* [test for something or nothing](https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/maybe.spec.ts)
 
 Example:
 
@@ -182,7 +182,7 @@ maybe.of(NaN).map(value => value + ' more').orNull() // produces: null
 
 ## Util
 
-### [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+### [not](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts)
 
 Will negate any boolean or truthy or falsy value.
 
@@ -193,9 +193,9 @@ not(true) // produces: false
 not(false) // produces: true
 ```
 
-### [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+### [empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts)
 
-* [test for empty](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L7)
+* [test for empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L7)
 
 Example:
 
@@ -213,13 +213,13 @@ empty(NaN) // produces: true
 empty(0) // produces: false
 ```
 
-### [has](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+### [has](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts)
 
 A value that
-is [not](https://github.com/RyanDur/sand/blob/main/src/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+is [not](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts)
 .
 
-* [test for has](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L65)
+* [test for has](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L65)
 
 Example:
 
@@ -237,9 +237,9 @@ has(NaN) // produces: false
 has(0) // produces: true
 ```
 
-### [matchOn](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+### [matchOn](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts)
 
-* [test for matchOn](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L123)
+* [test for matchOn](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L123)
 
 Example:
 
@@ -269,7 +269,7 @@ matchThings(undefined, {
 
 [Gallery](http://localhost:3000/gallery?page=1&size=8&tab=aic)
 
-[Gallery implementation](https://github.com/RyanDur/ChosenPicachu/tree/main/src/components/Gallery)
+[Gallery implementation](https://github.com/RyanDur/ChosenPicachu/tree/main/src/lib/components/Gallery)
 
-* [Art](https://github.com/RyanDur/ChosenPicachu/blob/main/src/components/Gallery/Art/index.tsx#L19)
-* [ArtPiece](https://github.com/RyanDur/ChosenPicachu/blob/main/src/components/Gallery/ArtPiece/index.tsx#L19)
+* [Art](https://github.com/RyanDur/ChosenPicachu/blob/main/src/lib/components/Gallery/Art/index.tsx#L19)
+* [ArtPiece](https://github.com/RyanDur/ChosenPicachu/blob/main/src/lib/components/Gallery/ArtPiece/index.tsx#L19)
