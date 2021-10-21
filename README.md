@@ -53,8 +53,8 @@ A factory for creating Result's
 interface:
 
 ```typescript
-ok: <T, E>(data: T) => Result<T, E>;
-err: <T, E>(reason: E) => Result<T, E>;
+ok: <DATA, REASON>(data: DATA) => Result<DATA, REASON>;
+err: <DATA, REASON>(reason: REASON) => Result<DATA, REASON>;
 ```
 
 * [test for ok](https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L9)
@@ -85,16 +85,16 @@ interface:
 
 ```typescript
 namespace Result {
-    type Async<S, F> = {
-        readonly orNull: Supplier<Promise<S | null>>;
-        readonly orElse: Func<S, Promise<S>>;
-        readonly failureOrElse: Func<F, Promise<F>>;
-        readonly map: <NewS>(mapping: Func<S, NewS>) => Async<NewS, F>;
-        readonly mapFailure: <NewF>(mapping: Func<F, NewF>) => Async<S, NewF>;
-        readonly flatMap: <NewS>(mapping: Func<S, Async<NewS, F>>) => Async<NewS, F>;
-        readonly flatMapFailure: <NewF>(mapping: Func<F, Async<S, NewF>>) => Async<S, NewF>;
+    interface Async<SUCCESS, FAILURE> {
+        readonly orNull: Supplier<Promise<SUCCESS | null>>;
+        readonly orElse: (fallback: SUCCESS) => Promise<SUCCESS>;
+        readonly failureOrElse: (fallback: FAILURE) => Promise<FAILURE>;
+        readonly map: <NEW_SUCCESS>(mapping: (data: SUCCESS) => NEW_SUCCESS) => Async<NEW_SUCCESS, FAILURE>;
+        readonly mapFailure: <NEW_FAILURE>(mapping: (reason: FAILURE) => NEW_FAILURE) => Async<SUCCESS, NEW_FAILURE>;
+        readonly flatMap: <NEW_SUCCESS>(mapping: (data: SUCCESS) => Async<NEW_SUCCESS, FAILURE>) => Async<NEW_SUCCESS, FAILURE>;
+        readonly flatMapFailure: <NEW_FAILURE>(mapping: (reason: FAILURE) => Async<SUCCESS, NEW_FAILURE>) => Async<SUCCESS, NEW_FAILURE>;
         /**
-         * onPending: A function that notifies the consuming function of the pending state.
+         * A function that notifies the consuming function of the pending state.
          *
          * <p>Upon invocation it will pass true to the consumer.
          * Once the call has finished it will pass false to the consumer.</p>
@@ -104,10 +104,10 @@ namespace Result {
          *
          * @param consumer - consumes the loading state.
          * */
-        readonly onPending: Func<Consumer<boolean>, Async<S, F>>;
-        readonly onSuccess: Func<Consumer<S>, Async<S, F>>;
-        readonly onFailure: Func<Consumer<F>, Async<S, F>>;
-        readonly onComplete: Func<Consumer<Result<S, F>>, Async<S, F>>;
+        readonly onPending: (consumer: Consumer<boolean>) => Async<SUCCESS, FAILURE>;
+        readonly onSuccess: (consumer: Consumer<SUCCESS>) => Async<SUCCESS, FAILURE>;
+        readonly onFailure: (consumer: Consumer<FAILURE>) => Async<SUCCESS, FAILURE>;
+        readonly onComplete: (consumer: Consumer<Result<SUCCESS, FAILURE>>) => Async<SUCCESS, FAILURE>;
         readonly inspect: Supplier<string>;
     }
 }
@@ -120,9 +120,9 @@ A factory for creating AsyncResult's
 interface:
 
 ```typescript
-of: <S, F>(promise: Promise<S>) => Result.Async<S, F>;
-success: <S, F>(value: S) => Result.Async<S, F>;
-failure: <S, F>(error: F) => Result.Async<S, F>;
+of: <SUCCESS, FAILURE>(promise: Promise<S>) => Result.Async<SUCCESS, FAILURE>;
+success: <SUCCESS, FAILURE>(value: S) => Result.Async<SUCCESS, FAILURE>;
+failure: <SUCCESS, FAILURE>(error: F) => Result.Async<SUCCESS, FAILURE>;
 ```
 
 * [test for success](https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/asyncResult.spec.ts#L11)
@@ -147,12 +147,12 @@ A Maybe is either something or nothing.
 interface:
 
 ```typescript
-type Maybe<T> = {
+interface Maybe<THING> {
     readonly isNothing: boolean;
-    readonly orElse: Func<T, T>;
-    readonly orNull: Supplier<T | null>;
-    readonly map: <NewT>(f: Func<T, NewT>) => Maybe<NewT>;
-    readonly flatMap: <NewT>(f: Func<T, Maybe<NewT>>) => Maybe<NewT>;
+    readonly orElse: (fallback: THING) => THING;
+    readonly orNull: Supplier<THING | null>;
+    readonly map: <NEW_THING>(f: (value: THING) => NEW_THING) => Maybe<NEW_THING>;
+    readonly flatMap: <NEW_THING>(f: (value: THING) => Maybe<NEW_THING>) => Maybe<NEW_THING>;
     readonly inspect: Supplier<string>;
 };
 ```
@@ -164,9 +164,9 @@ A factory for creating a Maybe.
 interface:
 
 ```typescript
-of: <T>(thing?: T | null, isNothing = isNothingValue) => Maybe<T>;
-some: <T>(thing: T) => Maybe<T>;
-nothing: <T>() => Maybe<T>;
+of: <THING>(thing?: THING | null, isNothing = isNothingValue) => Maybe<THING>;
+some: <THING>(thing: THING) => Maybe<THING>;
+nothing: <THING>() => Maybe<THING>;
 ```
 
 * [test for something or nothing](https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/maybe.spec.ts)
