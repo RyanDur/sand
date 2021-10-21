@@ -5,7 +5,6 @@ export {
     not,
     empty,
     has,
-    matches,
     matchOn
 } from './util';
 

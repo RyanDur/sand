@@ -84,7 +84,18 @@ namespace Result {
         readonly mapFailure: <NewF>(mapping: Func<F, NewF>) => Async<S, NewF>;
         readonly flatMap: <NewS>(mapping: Func<S, Async<NewS, F>>) => Async<NewS, F>;
         readonly flatMapFailure: <NewF>(mapping: Func<F, Async<S, NewF>>) => Async<S, NewF>;
-        readonly onLoading: Func<Consumer<boolean>, Async<S, F>>;
+        /**
+         * onPending: A function that notifies the consuming function of the pending state.
+         *
+         * <p>Upon invocation it will pass true to the consumer.
+         * Once the call has finished it will pass false to the consumer.</p>
+         *
+         * @remarks
+         * The provided consumer gets called twice.
+         *
+         * @param consumer - consumes the loading state.
+         * */
+        readonly onPending: Func<Consumer<boolean>, Async<S, F>>;
         readonly onSuccess: Func<Consumer<S>, Async<S, F>>;
         readonly onFailure: Func<Consumer<F>, Async<S, F>>;
         readonly onComplete: Func<Consumer<Result<S, F>>, Async<S, F>>;
@@ -217,11 +228,9 @@ has(NaN) // produces: false
 has(0) // produces: true
 ```
 
-### Matching
+### [matchOn](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
 
-* [test for matching](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L123)
-
-#### [matches](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
+* [test for matchOn](https://github.com/RyanDur/sand/blob/main/src/util/__tests__/util.spec.ts#L123)
 
 Example:
 
@@ -232,15 +241,7 @@ enum Thing {
     Three = 'Three'
 }
 
-const thingsToMatchOn = matches(Object.values(Foo));
-```
-
-#### [matchOn](https://github.com/RyanDur/sand/blob/main/src/util/index.ts)
-
-Example:
-
-```typescript
-const matchThings = matchOn(thingsToMatchOn);
+const matchThings = matchOn(Object.values(Thing));
 
 matchThings(Thing.Two, {
     [Thing.One]: () => 'I am one',
@@ -248,7 +249,7 @@ matchThings(Thing.Two, {
     [Thing.Three]: () => 'I am three',
 }).orElse('none of the above'); // produces: "I am two"
 
-matchThings(undefined as Thing, {
+matchThings(undefined, {
     [Thing.One]: () => 'I am one',
     [Thing.Two]: () => 'I am two',
     [Thing.Three]: () => 'I am three',

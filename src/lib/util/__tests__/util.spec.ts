@@ -1,4 +1,4 @@
-import {empty, has, matches, matchOn, typeOf} from '../index';
+import {empty, has, matchOn, typeOf} from '../index';
 import * as faker from 'faker';
 
 describe('util', () => {
@@ -121,7 +121,7 @@ describe('util', () => {
     });
 
     describe('pattern matching', () => {
-        const matchValue = matchOn(matches([1, 2, 3]));
+        const matchValue = matchOn([1, 2, 3]);
 
         test('should match on pattern', () => {
             expect(matchValue(1, {
@@ -138,7 +138,7 @@ describe('util', () => {
                 BOP = 'BOP'
             }
 
-            expect(matchOn(matches(Object.values(FOO)))(FOO.BOP, {
+            expect(matchOn(Object.values(FOO))(FOO.BOP, {
                [FOO.BAR]: () => 3,
                [FOO.BOP]: () => 4,
                [FOO.BAZ]: () => 5
@@ -153,6 +153,12 @@ describe('util', () => {
 
         test('default value', () => {
             expect(matchValue(10, {
+                [1]: () => ({a: 23}),
+                [2]: () => ({a: Number.MIN_SAFE_INTEGER}),
+                [3]: () => ({a: Number.MAX_SAFE_INTEGER}),
+            }).orElse({a: 4}).a).toEqual(4);
+
+            expect(matchValue(undefined, {
                 [1]: () => ({a: 23}),
                 [2]: () => ({a: Number.MIN_SAFE_INTEGER}),
                 [3]: () => ({a: Number.MAX_SAFE_INTEGER}),

@@ -22,10 +22,13 @@ export const matches = <MATCH extends string | number, MATCH_ON extends string |
     return (value: MATCH_ON) => obj[value];
 };
 
-export const matchOn = <MATCH extends string | number, MATCH_ON>(matcher: (value: MATCH_ON) => MATCH) => <VALUE>(
-    on: MATCH_ON,
+export const matchOn = <MATCH extends string | number, MATCH_ON extends string | number>(values: MATCH[]) => <VALUE>(
+    on: MATCH_ON | null = null,
     cases: Record<MATCH, () => VALUE>
-): Maybe<VALUE> => maybe.of(cases[matcher(on)]).map(value => value());
+): Maybe<VALUE> => {
+    const matcher = matches(values);
+    return maybe.of(cases[matcher(on as MATCH_ON)]).map(value => value());
+};
 
 export const typeOf = (value: unknown): string => {
     if (Number.isNaN(value)) return 'nan';

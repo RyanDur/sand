@@ -2,6 +2,9 @@ import {Consumer, Supplier} from './Function';
 
 export type Result<DATA, REASON> = Result.Ok<DATA, REASON> | Result.Err<DATA, REASON>;
 
+/**
+ * @internal
+ * */
 interface _Result<DATA, REASON> {
     readonly orNull: Supplier<DATA | null>;
     readonly orElse: (fallback: DATA) => DATA;
