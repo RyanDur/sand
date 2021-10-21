@@ -102,7 +102,7 @@ namespace Result {
          * @remarks
          * The provided consumer gets called twice.
          *
-         * @param consumer - consumes the loading state.
+         * @param consumer - consumes the pending state.
          * */
         readonly onPending: (consumer: Consumer<boolean>) => Async<SUCCESS, FAILURE>;
         readonly onSuccess: (consumer: Consumer<SUCCESS>) => Async<SUCCESS, FAILURE>;
