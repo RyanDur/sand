@@ -120,9 +120,9 @@ A factory for creating AsyncResult's
 interface:
 
 ```typescript
-of: <SUCCESS, FAILURE>(promise: Promise<S>) => Result.Async<SUCCESS, FAILURE>;
-success: <SUCCESS, FAILURE>(value: S) => Result.Async<SUCCESS, FAILURE>;
-failure: <SUCCESS, FAILURE>(error: F) => Result.Async<SUCCESS, FAILURE>;
+of: <SUCCESS, FAILURE>(promise: Promise<SUCCESS>) => Result.Async<SUCCESS, FAILURE>;
+success: <SUCCESS, FAILURE>(value: SUCCESS) => Result.Async<SUCCESS, FAILURE>;
+failure: <SUCCESS, FAILURE>(error: FAILURE) => Result.Async<SUCCESS, FAILURE>;
 ```
 
 * [test for success](https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/asyncResult.spec.ts#L11)
