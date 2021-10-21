@@ -11,28 +11,37 @@ For example, the 'orNull' function for an ok result will return the value of the
 interface:
 
 ```typescript
-type Result<T, E> = (Result.Ok<T> | Result.Err<E>) & {
-    readonly orElse: Func<T, T>;
-    readonly errOrElse: Func<E, E>;
-    readonly orNull: Supplier<T | null>;
-    readonly map: <NewT>(f: Func<T, NewT>) => Result<NewT, E>;
-    readonly mapErr: <NewE>(f: Func<E, NewE>) => Result<T, NewE>;
-    readonly flatMap: <NewT>(f: Func<T, Result<NewT, E>>) => Result<NewT, E>;
-    readonly flatMapErr: <NewE>(f: Func<E, Result<T, NewE>>) => Result<T, NewE>;
-    readonly onOk: Func<Consumer<T>, Result<T, E>>;
-    readonly onErr: Func<Consumer<E>, Result<T, E>>;
-    readonly inspect: Supplier<string>;
-}
+type Result<DATA, REASON> = Result.Ok<DATA, REASON> | Result.Err<DATA, REASON>;
 
-namespace Result {
-    type Ok<T> = {
+declare namespace Result {
+    interface Ok<DATA, REASON> extends _Result<DATA, REASON> {
         readonly isOk: true;
-        readonly data: T;
+        readonly data: DATA;
+        readonly orNull: Supplier<DATA | null>;
+        readonly orElse: (fallback: DATA) => DATA;
+        readonly errOrElse: (fallback: REASON) => REASON;
+        readonly map: <NEW_DATA>(mapper: (data: DATA) => NEW_DATA) => Result<NEW_DATA, REASON>;
+        readonly mapErr: <NEW_REASON>(mapper: (reason: REASON) => NEW_REASON) => Result<DATA, NEW_REASON>;
+        readonly flatMap: <NEW_DATA>(mapper: (data: DATA) => Result<NEW_DATA, REASON>) => Result<NEW_DATA, REASON>;
+        readonly flatMapErr: <NEW_REASON>(mapper: (reason: REASON) => Result<DATA, NEW_REASON>) => Result<DATA, NEW_REASON>;
+        readonly onOk: (consumer: Consumer<DATA>) => Result<DATA, REASON>;
+        readonly onErr: (consumer: Consumer<REASON>) => Result<DATA, REASON>;
+        readonly inspect: Supplier<string>;
     }
 
-    type Err<E> = {
+    interface Err<DATA, REASON> extends _Result<DATA, REASON> {
         readonly isOk: false;
-        readonly reason: E;
+        readonly reason: REASON;
+        readonly orNull: Supplier<DATA | null>;
+        readonly orElse: (fallback: DATA) => DATA;
+        readonly errOrElse: (fallback: REASON) => REASON;
+        readonly map: <NEW_DATA>(mapper: (data: DATA) => NEW_DATA) => Result<NEW_DATA, REASON>;
+        readonly mapErr: <NEW_REASON>(mapper: (reason: REASON) => NEW_REASON) => Result<DATA, NEW_REASON>;
+        readonly flatMap: <NEW_DATA>(mapper: (data: DATA) => Result<NEW_DATA, REASON>) => Result<NEW_DATA, REASON>;
+        readonly flatMapErr: <NEW_REASON>(mapper: (reason: REASON) => Result<DATA, NEW_REASON>) => Result<DATA, NEW_REASON>;
+        readonly onOk: (consumer: Consumer<DATA>) => Result<DATA, REASON>;
+        readonly onErr: (consumer: Consumer<REASON>) => Result<DATA, REASON>;
+        readonly inspect: Supplier<string>;
     }
 }
 ```
