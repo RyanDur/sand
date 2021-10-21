@@ -14,10 +14,10 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
     flatMapFailure: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
         .onOk(value => resolve(result.ok(value)))
         .onErr(explanation => mapping(explanation).onComplete(resolve))))),
-    onPending: isLoading => {
-        isLoading(true);
+    onPending: isPending => {
+        isPending(true);
         return ofPromise(promise.then(value => {
-            isLoading(false);
+            isPending(false);
             return value;
         }));
     },
