@@ -19,7 +19,7 @@ something went wrong.</p>
 <p>In the example below we request the art via ID. While we wait we notify the user that the content is loading. The
 <em>onPending</em> function will fire the provided callback twice. Once when it is invoked and again once the call is done
 passing the pending state <em>(true then false)</em> as a parameter. Once the call is complete it will invoke either
-&#39;onSuccess&#39; with te data or &#39;onFailure&#39; with a possible explanation.</p>
+<em>onSuccess</em> with te data or <em>onFailure</em> with a possible explanation.</p>
 <pre><code class="language-typescript"><span class="hl-5">getArt</span><span class="hl-1">(</span><span class="hl-4">id</span><span class="hl-1">)</span><br/><span class="hl-1">    .</span><span class="hl-5">onPending</span><span class="hl-1">(</span><span class="hl-4">isLoading</span><span class="hl-1">)</span><br/><span class="hl-1">    .</span><span class="hl-5">onSuccess</span><span class="hl-1">(</span><span class="hl-4">updatePiece</span><span class="hl-1">)</span><br/><span class="hl-1">    .</span><span class="hl-5">onFailure</span><span class="hl-1">(</span><span class="hl-4">hasErrored</span><span class="hl-1">);</span>
 </code></pre>
 <p>To handle the request, we make a http <em>GET</em> to the endpoint with the id. We decode the response, I decided to
