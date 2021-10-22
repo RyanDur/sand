@@ -29,7 +29,7 @@ getArt(id)
 ```
 
 To handle the request, we make a http *GET* to the endpoint with the id. We decode the response, I decided to
-use [schemawax](https://www.npmjs.com/package/schemawax). if the response is structured correctly pass back the
+use [schemawax](https://www.npmjs.com/package/schemawax), if the response is structured correctly pass back the
 successful response, else pass back a failure with some explanation.
 
 ```typescript
