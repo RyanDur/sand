@@ -28,9 +28,8 @@ getArt(id)
     .onFailure(hasErrored);
 ```
 
-To handle the request, we make a http *GET* to the endpoint with the id. We decode the response, I decided to
-use [schemawax](https://www.npmjs.com/package/schemawax), if the response is structured correctly pass back the
-successful response, else pass back a failure with some explanation.
+To handle the request, we make a http *GET* to the endpoint with the id. We validate the response, if the response is
+structured correctly pass back the successful response, else pass back a failure with some explanation.
 
 ```typescript
 getArt: (id: string): Result.Async<Art, Explanation<HTTPError>> =>
@@ -42,7 +41,8 @@ getArt: (id: string): Result.Async<Art, Explanation<HTTPError>> =>
 
 To make the request, we fetch from the endpoint. If there is some kind of network error we give back an explanation. If
 successful, we check the response status. Since it's a *GET* we expect a 200 is a successful response, or we consider it
-a failure. Then we get the *JSON* out of the response. If there is a problem with the *JSON* we pack it into an explanation.
+a failure. Then we get the *JSON* out of the response. If there is a problem with the *JSON* we pack it into an
+explanation.
 
 ```typescript
 get: (endpoint: string): Result.Async<Art, Explanation<HTTPError>> =>
