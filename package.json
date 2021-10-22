@@ -1,9 +1,11 @@
 {
   "name": "@ryandur/sand",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "some helper objects and functions for footprint",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "homepage": "https://ryandur.github.io/sand/",
+  "repository": "https://github.com/RyanDur/sand",
   "scripts": {
     "test": "jest",
     "build": "webpack --env prod"
