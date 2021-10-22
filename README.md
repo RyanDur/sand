@@ -34,7 +34,7 @@ structured correctly pass back the successful response, else pass back a failure
 ```typescript
 getArt: (id: string): Result.Async<Art, Explanation<HTTPError>> =>
     http.get(`/some-endpoint/${id}`)
-        .flatMap(response => maybe.of(validate(response))
+        .flatMap(response => maybe.of(valid(response))
             .map(asyncResult.success)
             .orElse(asyncResult.failure(explanation(HTTPError.CANNOT_DECODE))))
 ```
