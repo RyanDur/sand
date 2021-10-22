@@ -16,8 +16,8 @@ on the page. The response might take a little while, so we will need a way to no
 pending. Once we have obtained the piece we will need to display it, or if the call has failed we need to notify that
 something went wrong.
 
-In the example below we request the art via ID. While we wait we notify the user that the content is loading. The '
-onPending' function will fire the provided callback twice. Once when it is invoked and again once the call is done
+In the example below we request the art via ID. While we wait we notify the user that the content is loading. The
+*onPending* function will fire the provided callback twice. Once when it is invoked and again once the call is done
 passing the pending state *(true then false)* as a parameter. Once the call is complete it will invoke either
 'onSuccess' with te data or 'onFailure' with a possible explanation.
 
