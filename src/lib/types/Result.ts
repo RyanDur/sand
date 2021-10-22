@@ -1,36 +1,40 @@
-import {Consumer, Supplier} from './Function';
+import {Consumer} from './Function';
 
 export type Result<DATA, REASON> = Result.Ok<DATA, REASON> | Result.Err<DATA, REASON>;
 
-/**
- * @internal
- * */
-interface _Result<DATA, REASON> {
-    readonly orNull: Supplier<DATA | null>;
-    readonly orElse: (fallback: DATA) => DATA;
-    readonly errOrElse: (fallback: REASON) => REASON;
-    readonly map: <NEW_DATA>(mapper: (data: DATA) => NEW_DATA) => Result<NEW_DATA, REASON>;
-    readonly mapErr: <NEW_REASON>(mapper: (reason: REASON) => NEW_REASON) => Result<DATA, NEW_REASON>;
-    readonly flatMap: <NEW_DATA>(mapper: (data: DATA) => Result<NEW_DATA, REASON>) => Result<NEW_DATA, REASON>;
-    readonly flatMapErr: <NEW_REASON>(mapper: (reason: REASON) => Result<DATA, NEW_REASON>) => Result<DATA, NEW_REASON>;
-    readonly onOk: (consumer: Consumer<DATA>) => Result<DATA, REASON>;
-    readonly onErr: (consumer: Consumer<REASON>) => Result<DATA, REASON>;
-    readonly inspect: Supplier<string>;
-}
-
 export declare namespace Result {
-    interface Ok<DATA, REASON> extends _Result<DATA, REASON> {
+    interface Ok<DATA, REASON> {
         readonly isOk: true;
         readonly data: DATA;
+        readonly orNull: () => DATA | null;
+        readonly orElse: (fallback: DATA) => DATA;
+        readonly errOrElse: (fallback: REASON) => REASON;
+        readonly map: <NEW_DATA>(mapper: (data: DATA) => NEW_DATA) => Result<NEW_DATA, REASON>;
+        readonly mapErr: <NEW_REASON>(mapper: (reason: REASON) => NEW_REASON) => Result<DATA, NEW_REASON>;
+        readonly flatMap: <NEW_DATA>(mapper: (data: DATA) => Result<NEW_DATA, REASON>) => Result<NEW_DATA, REASON>;
+        readonly flatMapErr: <NEW_REASON>(mapper: (reason: REASON) => Result<DATA, NEW_REASON>) => Result<DATA, NEW_REASON>;
+        readonly onOk: (consumer: Consumer<DATA>) => Result<DATA, REASON>;
+        readonly onErr: (consumer: Consumer<REASON>) => Result<DATA, REASON>;
+        readonly inspect: () => string;
     }
 
-    interface Err<DATA, REASON> extends _Result<DATA, REASON> {
+    interface Err<DATA, REASON> {
         readonly isOk: false;
         readonly reason: REASON;
+        readonly orNull: () => DATA | null;
+        readonly orElse: (fallback: DATA) => DATA;
+        readonly errOrElse: (fallback: REASON) => REASON;
+        readonly map: <NEW_DATA>(mapper: (data: DATA) => NEW_DATA) => Result<NEW_DATA, REASON>;
+        readonly mapErr: <NEW_REASON>(mapper: (reason: REASON) => NEW_REASON) => Result<DATA, NEW_REASON>;
+        readonly flatMap: <NEW_DATA>(mapper: (data: DATA) => Result<NEW_DATA, REASON>) => Result<NEW_DATA, REASON>;
+        readonly flatMapErr: <NEW_REASON>(mapper: (reason: REASON) => Result<DATA, NEW_REASON>) => Result<DATA, NEW_REASON>;
+        readonly onOk: (consumer: Consumer<DATA>) => Result<DATA, REASON>;
+        readonly onErr: (consumer: Consumer<REASON>) => Result<DATA, REASON>;
+        readonly inspect: () => string;
     }
 
     interface Async<SUCCESS, FAILURE> {
-        readonly orNull: Supplier<Promise<SUCCESS | null>>;
+        readonly orNull: () => Promise<SUCCESS | null>;
         readonly orElse: (fallback: SUCCESS) => Promise<SUCCESS>;
         readonly failureOrElse: (fallback: FAILURE) => Promise<FAILURE>;
         readonly map: <NEW_SUCCESS>(mapping: (data: SUCCESS) => NEW_SUCCESS) => Async<NEW_SUCCESS, FAILURE>;
@@ -52,6 +56,6 @@ export declare namespace Result {
         readonly onSuccess: (consumer: Consumer<SUCCESS>) => Async<SUCCESS, FAILURE>;
         readonly onFailure: (consumer: Consumer<FAILURE>) => Async<SUCCESS, FAILURE>;
         readonly onComplete: (consumer: Consumer<Result<SUCCESS, FAILURE>>) => Async<SUCCESS, FAILURE>;
-        readonly inspect: Supplier<string>;
+        readonly inspect: () => string;
     }
 }
