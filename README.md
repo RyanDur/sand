@@ -3,7 +3,7 @@
 I made this little library of helper functions to aid my development of javascript/typescript applications and learn
 more about the functional paradigm.
 
-[Docs](https://ryandur.github.io/sand/index.html)
+[Docs](https://ryandur.github.io/sand/modules.html)
 
 ## Examples of use
 
