@@ -42,7 +42,7 @@ export declare namespace Result {
         readonly flatMap: <NEW_SUCCESS>(mapping: (data: SUCCESS) => Async<NEW_SUCCESS, FAILURE>) => Async<NEW_SUCCESS, FAILURE>;
         readonly flatMapFailure: <NEW_FAILURE>(mapping: (reason: FAILURE) => Async<SUCCESS, NEW_FAILURE>) => Async<SUCCESS, NEW_FAILURE>;
         /**
-         * A function that notifies the consuming function of the pending state.
+         * onPending: A function that notifies the consuming function of the pending state.
          *
          * <p>Upon invocation it will pass true to the consumer.
          * Once the call has finished it will pass false to the consumer.</p>
@@ -50,7 +50,7 @@ export declare namespace Result {
          * @remarks
          * The provided consumer gets called twice.
          *
-         * @param consumer - consumes the loading state.
+         * @param consumer - consumes the pending state.
          * */
         readonly onPending: (consumer: Consumer<boolean>) => Async<SUCCESS, FAILURE>;
         readonly onSuccess: (consumer: Consumer<SUCCESS>) => Async<SUCCESS, FAILURE>;

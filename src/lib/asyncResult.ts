@@ -65,7 +65,16 @@ const of = <SUCCESS, FAILURE>(promise: Promise<SUCCESS>): Result.Async<SUCCESS, 
     .catch(reason => result.err(reason)));
 
 /**
- * @see Implementation:  {@link https://github.com/RyanDur/sand/blob/main/src/asyncResult.ts}
- * @see Test: {@link https://github.com/RyanDur/sand/blob/main/src/__tests__/asyncResult.spec.ts}
+ * The AsyncResult is something that [Damien LeBerrigaud](https://github.com/dam5s) has introduced me to. I had the chance
+ * to work with him on a project that inspired me to write this lib. Together we
+ * collaborated on [React Redux Starter](https://github.com/dam5s/react-redux-starter) to aid us in developing future projects with
+ * clients.
+ *
+ * The type allows you to work with a promise in the same way you would work with a Result, with some extra helpers.
+ *
+ * A factory for creating AsyncResult's
+ *
+ * @see Implementation:  {@link https://github.com/RyanDur/sand/blob/main/src/lib/asyncResult.ts}
+ * @see Test: {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/asyncResult.spec.ts}
  * */
 export const asyncResult = {of, success, failure};

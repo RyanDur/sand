@@ -55,8 +55,12 @@ const of = <THING>(
 ): Maybe<THING> => isNothing(value) ? nothing() : some(value as THING);
 
 /**
- * @see implementation  {@link https://github.com/RyanDur/sand/blob/main/src/maybe.ts}
- * @see test {@link https://github.com/RyanDur/sand/blob/main/src/util/index.ts}
+ * A Maybe is either something or nothing.
+ *
+ * A factory for creating Maybe's
+ *
+ * @see implementation  {@link https://github.com/RyanDur/sand/blob/main/src/lib/maybe.ts}
+ * @see test {@link https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts}
  * */
 export const maybe = {
     of,

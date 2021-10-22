@@ -22,6 +22,35 @@ const createMatcher = <MATCH extends string | number>(values: MATCH[]): (value: 
     return (value: MATCH) => obj[value];
 };
 
+/**
+ *
+ * @see [test for matchOn](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L123)
+ *
+ * Example:
+ *
+ * ```typescript
+ * enum Thing {
+ *    One = 'One',
+ *    Two = 'Two',
+ *    Three = 'Three'
+ * }
+ *
+ * const matchThings = matchOn(Object.values(Thing));
+ *
+ * matchThings(Thing.Two, {
+ *    [Thing.One]: () => 'I am one',
+ *    [Thing.Two]: () => 'I am two',
+ *    [Thing.Three]: () => 'I am three',
+ * }).orElse('none of the above'); // produces: "I am two"
+ *
+ * matchThings(undefined, {
+ *    [Thing.One]: () => 'I am one',
+ *    [Thing.Two]: () => 'I am two',
+ *    [Thing.Three]: () => 'I am three',
+ * }).orElse('none of the above'); // produces: "none of the above"
+ * ```
+ *
+ * */
 export const matchOn = <MATCH extends string | number>(
     matches: MATCH[]
 ) => <VALUE>(
@@ -38,8 +67,40 @@ export const typeOf = (value: unknown): string => {
     return typeof value;
 };
 
+/**
+ * Will negate any boolean or truthy or falsy value.
+ *
+ * Example:
+ *
+ * ```ts
+ * not(true) // produces: false
+ * not(false) // produces: true
+ * ```
+ * */
 export const not = (value: unknown): boolean => !value;
 
+/**
+ * tests whether a value is empty
+ *
+ * @see [test for empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L7)
+ *
+ * Example:
+ *
+ * ```javascript
+ * empty({}) // produces: true
+ * empty({I: 'am not empty'}) // produces: false
+ *
+ * empty([]) // produces: true
+ * empty([1, 2, 3]) // produces: false
+ *
+ * empty('') // produces: true
+ * empty('not empty') // produces: false
+ *
+ * empty(NaN) // produces: true
+ * empty(0) // produces: false
+ * ```
+ *
+ * */
 export const empty = (value: unknown): boolean => {
     switch (nameOfBuiltInInstanceOf(value) || typeOf(value)) {
         case 'nan':
@@ -65,4 +126,26 @@ export const empty = (value: unknown): boolean => {
     }
 };
 
+/**
+ * A value that is [not](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts).
+ *
+ * @see [test for has](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L65)
+ *
+ * Example:
+ *
+ * ```ts
+ * has({}) // produces: false
+ * has({I: 'am not empty'}) // produces: true
+ *
+ * has([]) // produces: false
+ * has([1, 2, 3]) // produces: true
+ *
+ * has('') // produces: false
+ * has('not empty') // produces: true
+ *
+ * has(NaN) // produces: false
+ * has(0) // produces: true
+ * ```
+ *
+ * */
 export const has = (value: unknown): boolean => not(empty(value));

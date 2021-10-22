@@ -53,8 +53,13 @@ const err = <DATA, REASON>(reason: REASON): Result<DATA, REASON> => shallowFreez
 });
 
 /**
- * @see implementation {@link https://github.com/RyanDur/sand/blob/main/src/result.ts}
- * @see test for ok {@link https://github.com/RyanDur/sand/blob/main/src/__tests__/result.spec.ts#L9}
- * @see test for err {@link https://github.com/RyanDur/sand/blob/main/src/__tests__/result.spec.ts#L29}
+ * The Result is either ok or not. Depending on what type of result it is affects how the results functions behave.
+ * For example, the 'orNull' function for an ok result will return the value of the result while err will return null.
+ *
+ * A factory for creating Result's
+ *
+ * @see implementation {@link https://github.com/RyanDur/sand/blob/main/sr/lib/result.ts}
+ * @see test for ok {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L9}
+ * @see test for err {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L29}
  * */
 export const result = {ok, err};
