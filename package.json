@@ -10,7 +10,8 @@
     "test": "jest",
     "build": "webpack --env prod && typedoc --excludeInternal",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d docs"
+    "deploy": "gh-pages -d docs",
+    "prepare": "husky install"
   },
   "author": "Ryan Durling",
   "license": "ISC",
@@ -24,6 +25,7 @@
     "eslint-webpack-plugin": "^2.5.4",
     "faker": "^5.5.3",
     "gh-pages": "^3.2.3",
+    "husky": "^7.0.4",
     "jest": "^27.2.0",
     "ts-jest": "^27.0.5",
     "ts-loader": "^8.1.0",
