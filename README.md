@@ -45,13 +45,12 @@ a failure. Then we get the *JSON* out of the response. If there is a problem wit
 explanation.
 
 ```typescript
-get: (endpoint: string): Result.Async<Art, Explanation<HTTPError>> =>
-    asyncResult.of<Response, Error>(fetch(endpoint))
-        .mapFailure(err => explanation(HTTPError.NETWORK_ERROR, maybe.some(err)))
-        .flatMap(response => response.status === HTTPStatus.OK ?
-            asyncResult.of<Art, Error>(response.json()).mapFailure<Explanation<HTTPError>>(
-                err => explanation(HTTPError.JSON_BODY_ERROR, maybe.some(err))
-            ) : fail(response));
+get: (endpoint: string): Result.Async<Art, Explanation<HTTPError>> => asyncResult.of(fetch(endpoint))
+    .mapFailure(err => explanation(HTTPError.NETWORK_ERROR, maybe.some(err)))
+    .flatMap(response => response.status === HTTPStatus.OK ?
+        asyncResult.of(response.json()).mapFailure(
+            err => explanation(HTTPError.JSON_BODY_ERROR, maybe.some(err))
+        ) : fail(response));
 ```
 
 ## Examples of use
