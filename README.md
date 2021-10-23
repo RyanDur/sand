@@ -1,4 +1,4 @@
-# Sand Castle
+# Sand
 
 A library should support your decisions while allowing you to leave an impression for others to follow.
 

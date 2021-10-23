@@ -10,8 +10,7 @@
     "test": "jest",
     "build": "webpack --env prod && typedoc --excludeInternal",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d docs",
-    "prepare": "husky install"
+    "deploy": "gh-pages -d docs"
   },
   "author": "Ryan Durling",
   "license": "ISC",
