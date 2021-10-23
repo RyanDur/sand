@@ -8,7 +8,7 @@
   "repository": "https://github.com/RyanDur/sand",
   "scripts": {
     "test": "jest",
-    "build": "webpack --env prod && npm typedoc --excludeInternal",
+    "build": "webpack --env prod && typedoc --excludeInternal",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d docs"
   },
