@@ -62,3 +62,9 @@ get: (endpoint: string): Result.Async<Art, Explanation<HTTPError>> =>
 * [ArtPiece](https://github.com/RyanDur/ChosenPicachu/blob/main/src/lib/components/Gallery/ArtPiece/index.tsx#L19)
 * [handle request](https://github.com/RyanDur/ChosenPicachu/blob/main/src/data/artGallery/index.ts#L11)
 * [make request](https://github.com/RyanDur/ChosenPicachu/blob/main/src/data/http.ts#L24)
+
+## Resources
+
+* [Railway Oriented Programming](https://fsharpforfunandprofit.com/rop/)
+* [Haskell Programming from First Principles](https://haskellbook.com/)
+* [React Redux Starter - ../prelude](https://github.com/dam5s/react-redux-starter/tree/main/src/prelude)
