@@ -1,4 +1,4 @@
-import {Supplier} from '../lib/types';
+import {Supplier} from '../../lib/types';
 
 export interface IO<T> {
     readonly perform: Supplier<T>;
