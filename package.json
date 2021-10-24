@@ -1,11 +1,12 @@
 {
   "name": "@ryandur/sand",
-  "version": "0.9.14",
+  "version": "0.9.15",
   "description": "some helper objects and functions for footprint",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "homepage": "https://ryandur.github.io/sand/",
   "repository": "https://github.com/RyanDur/sand",
+  "files": ["dist/**"],
   "keywords": [
     "result",
     "asyncresult",
