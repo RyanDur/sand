@@ -88,10 +88,7 @@
   ],
   "exclude": [
     "**/types/**",
-    "**/__tests__/**",
-    "**/development/**",
-    "./docs/**",
-    "./src/**"
+    "**/__tests__/**"
   ],
   "typedocOptions": {
     "entryPoints": [
