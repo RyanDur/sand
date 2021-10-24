@@ -17,11 +17,6 @@ export const shallowFreeze = <T>(obj: T): T => Object.freeze(obj);
 
 export const inspect = (value: unknown): string => (value as Inspectable).inspect?.() || String(value);
 
-const createMatcher = <MATCH extends string | number>(values: MATCH[]): (value: MATCH) => MATCH => {
-    const obj = values.reduce((acc, value) => ({...acc, [value]: value}), ({} as Record<MATCH, MATCH>));
-    return (value: MATCH) => obj[value];
-};
-
 /**
  *
  * @see [test for matchOn](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L123)
@@ -53,12 +48,13 @@ const createMatcher = <MATCH extends string | number>(values: MATCH[]): (value: 
  * */
 export const matchOn = <MATCH extends string | number>(
     matches: MATCH[]
-) => <VALUE>(
-    on: MATCH | null = null,
-    cases: Record<MATCH, () => VALUE>
-): Maybe<VALUE> => {
-    const matcher = createMatcher(matches);
-    return maybe.of(cases[matcher(on as MATCH)]).map(value => value());
+): <VALUE>(on: (MATCH | null | undefined), cases: Record<MATCH, () => VALUE>) => Maybe<VALUE> => {
+    const obj = matches.reduce((acc, value) => ({...acc, [value]: value}), ({} as Record<MATCH, MATCH>));
+    const matcher = (value: MATCH) => obj[value];
+    return <VALUE>(
+        on: MATCH | null | undefined = null,
+        cases: Record<MATCH, () => VALUE>
+    ): Maybe<VALUE> => maybe.of(cases[matcher(on as MATCH)]).map(value => value());
 };
 
 export const typeOf = (value: unknown): string => {
