@@ -19,7 +19,7 @@
     "build": "webpack --env prod && typedoc --excludeInternal",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d docs",
-    "test:coverage": "npm test -- --coverage",
+    "test:coverage": "npm test -- src/lib --coverage",
     "test:badges": "npm run test:coverage  && jest-coverage-badges"
   },
   "author": "Ryan Durling",
