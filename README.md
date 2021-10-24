@@ -1,5 +1,7 @@
 # Sand
 
+<img src="./coverage/badge-functions.svg"  alt="functions badge"/>
+
 A library should support your decisions while allowing you to leave an impression for others to follow.
 
 I made this little library of helper functions to aid my development of javascript/typescript applications and learn
