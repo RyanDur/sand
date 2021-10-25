@@ -7,9 +7,9 @@ more about the functional paradigm.
 
 [Docs](https://ryandur.github.io/sand/modules.html)
 
-![branches](./badges/badge-branches.svg) ![Functions](./badges/badge-functions.svg)
+![branches](./docs/badges/badge-branches.svg) ![Functions](./docs/badges/badge-functions.svg)
 
-![lines](./badges/badge-lines.svg) ![statements](./badges/badge-statements.svg)
+![lines](./docs/badges/badge-lines.svg) ![statements](./docs/badges/badge-statements.svg)
 
 ## Maybe how you would like to use it.
 
