@@ -20,7 +20,8 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d docs",
     "test:coverage": "npm test -- src/lib --coverage",
-    "test:badges": "npm run test  && jest-coverage-badges"
+    "test:badges": "npm run test  && jest-coverage-badges",
+    "prepare": "husky install"
   },
   "author": "Ryan Durling",
   "license": "ISC",
