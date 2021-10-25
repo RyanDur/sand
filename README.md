@@ -1,3 +1,4 @@
+<link href="./style.css" rel="stylesheet"/> 
 # Sand
 
 A library should support your decisions while allowing you to leave an impression for others to follow.
@@ -7,6 +8,10 @@ more about the functional paradigm.
 
 [Docs](https://ryandur.github.io/sand/modules.html)
 
+<script>
+document.querySelectorAll('img').forEach(image => image.onErr(() => image.classList.add('broken')));
+document.querySelectorAll('img').forEach(image => image.onload(() => image.classList.remove('broken')));
+</script>
 
 ![branches](./docs/badges/badge-branches.svg) ![Functions](./docs/badges/badge-functions.svg)
 
@@ -15,16 +20,6 @@ more about the functional paradigm.
 ![branches](./docs/badges/coverage-branches.svg) ![Functions](./docs/badges/coverage-functions.svg)
 
 ![lines](./docs/badges/coverage-lines.svg) ![statements](./docs/badges/coverage-statements.svg)
-
-<style>
-img.broken {
-    display: none;
-}
-</style>
-<script>
-document.querySelectorAll('img').forEach(image => image.onErr(() => image.classList.add('broken')));
-document.querySelectorAll('img').forEach(image => image.onload(() => image.classList.remove('broken')));
-</script>
 
 ## Maybe how you would like to use it.
 
