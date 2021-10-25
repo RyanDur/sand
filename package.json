@@ -21,6 +21,7 @@
     "deploy": "gh-pages -d docs",
     "test:coverage": "npm test -- src/lib --coverage",
     "test:badges": "npm run test  && jest-coverage-badges",
+    "test:ci": "jest src/lib --ci --runInBand --coverage",
     "prepare": "husky install"
   },
   "author": "Ryan Durling",

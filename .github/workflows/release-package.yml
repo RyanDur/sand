@@ -17,12 +17,17 @@ jobs:
           node-version: "16.x"
       - run: npm install
       - run: npm run build
-      - run: npm test
-      - name: Deploy 🚀
+      - run: npm run test:ci
+      - name: Generating coverage badges
+        uses: jpb06/jest-badges-action@latest
+        with:
+          branches: main
+      - name: Deploy Documentation 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: gh-pages
           folder: docs
-      - uses: JS-DevTools/npm-publish@v1
+      - name: Publish
+        uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
