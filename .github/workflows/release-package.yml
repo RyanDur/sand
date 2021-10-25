@@ -18,10 +18,13 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npm run test:ci
-      - name: Generating coverage badges
-        uses: jpb06/jest-badges-action@latest
+      - name: Deploy badge to gist
+        uses: exuanbo/actions-deploy-gist@v1
         with:
-          branches: main
+          token: ${{ secrets.TOKEN }}
+          gist_id: from_your_gist_url
+          gist_file_name: ./badges
+          file_path: ./badges
       - name: Deploy Documentation 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
