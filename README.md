@@ -1,9 +1,9 @@
 # Sand
 
-![branches](./coverage/badge-branches.svg)
-![Functions](./coverage/badge-functions.svg)
-![lines](./coverage/badge-lines.svg)
-![statements](./coverage/badge-statements.svg)
+![branches](./badges/badge-branches.svg)
+![Functions](./badges/badge-functions.svg)
+![lines](./badges/badge-lines.svg)
+![statements](./badges/badge-statements.svg)
 
 A library should support your decisions while allowing you to leave an impression for others to follow.
 
