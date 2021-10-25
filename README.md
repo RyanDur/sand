@@ -1,4 +1,4 @@
-<link href="./style.css" rel="stylesheet"/> 
+<link href="./style.css" rel="stylesheet" type="text/css" media="all" /> 
 # Sand
 
 A library should support your decisions while allowing you to leave an impression for others to follow.
