@@ -8,11 +8,6 @@ more about the functional paradigm.
 
 [Docs](https://ryandur.github.io/sand/modules.html)
 
-<script>
-document.querySelectorAll('img').forEach(image => image.onErr(() => image.classList.add('broken')));
-document.querySelectorAll('img').forEach(image => image.onload(() => image.classList.remove('broken')));
-</script>
-
 ![branches](./docs/badges/badge-branches.svg) ![Functions](./docs/badges/badge-functions.svg)
 
 ![lines](./docs/badges/badge-lines.svg) ![statements](./docs/badges/badge-statements.svg)
