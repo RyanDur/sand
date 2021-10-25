@@ -2,7 +2,7 @@ import {Inspectable, IsEmpty} from './types';
 import {Maybe} from '../types';
 import {maybe} from '../maybe';
 
-export const nameOfBuiltInInstanceOf = (value: unknown): string | undefined => {
+const nameOfBuiltInInstanceOf = (value: unknown): string | undefined => {
     if (value instanceof Boolean) return 'Boolean';
     if (value instanceof String) return 'String';
     if (value instanceof Number) return 'Number';
