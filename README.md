@@ -8,13 +8,13 @@ more about the functional paradigm.
 
 [Docs](https://ryandur.github.io/sand/modules.html)
 
-![branches](./docs/badges/badge-branches.svg) ![Functions](./docs/badges/badge-functions.svg)
+![branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg)
 
-![lines](./docs/badges/badge-lines.svg) ![statements](./docs/badges/badge-statements.svg)
+![lines](./badges/coverage-lines.svg) ![statements](./badges/coverage-statements.svg)
 
-![branches](./docs/badges/coverage-branches.svg) ![Functions](./docs/badges/coverage-functions.svg)
+![branches](./badges/badge-branches.svg) ![Functions](./badges/badge-functions.svg)
 
-![lines](./docs/badges/coverage-lines.svg) ![statements](./docs/badges/coverage-statements.svg)
+![lines](./badges/badge-lines.svg) ![statements](./badges/badge-statements.svg)
 
 ## Maybe how you would like to use it.
 
