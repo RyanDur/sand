@@ -1,5 +1,5 @@
+## Sand
 <link href="./style.css" rel="stylesheet" type="text/css" media="all" /> 
-# Sand
 
 A library should support your decisions while allowing you to leave an impression for others to follow.
 
@@ -11,10 +11,6 @@ more about the functional paradigm.
 ![branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg)
 
 ![lines](./badges/coverage-lines.svg) ![statements](./badges/coverage-statements.svg)
-
-![branches](./badges/badge-branches.svg) ![Functions](./badges/badge-functions.svg)
-
-![lines](./badges/badge-lines.svg) ![statements](./badges/badge-statements.svg)
 
 ## Maybe how you would like to use it.
 
