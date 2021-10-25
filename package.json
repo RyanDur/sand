@@ -20,7 +20,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d docs",
     "test:coverage": "npm test -- src/lib --coverage",
-    "test:badges": "npm run test:coverage && jest-coverage-badges --output './badges'",
+    "test:badges": "npm run test:coverage && jest-coverage-badges --output './docs/badges'",
     "test:ci": "npm run test:badges -- --ci --runInBand"
   },
   "author": "Ryan Durling",
