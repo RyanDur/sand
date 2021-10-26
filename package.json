@@ -1,7 +1,7 @@
 {
   "name": "@ryandur/sand",
-  "version": "0.9.20",
-  "description": "some helper objects and functions for footprint",
+  "version": "0.9.21",
+  "description": "helper objects and functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "homepage": "https://ryandur.github.io/sand/",
