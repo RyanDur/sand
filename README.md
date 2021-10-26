@@ -60,8 +60,8 @@ get: (endpoint: string): Result.Async<Art, Explanation<HTTPError>> =>
 
 [Gallery implementation](https://github.com/RyanDur/ChosenPicachu/tree/main/src/lib/components/Gallery)
 
-* [Art](https://github.com/RyanDur/ChosenPicachu/blob/main/src/lib/components/Gallery/Art/index.tsx#L19)
-* [ArtPiece](https://github.com/RyanDur/ChosenPicachu/blob/main/src/lib/components/Gallery/ArtPiece/index.tsx#L19)
+* [Art](https://github.com/RyanDur/ChosenPicachu/blob/main/src/components/Gallery/Art/index.tsx#L19)
+* [ArtPiece](https://github.com/RyanDur/ChosenPicachu/blob/main/src/components/Gallery/ArtPiece/index.tsx#L19)
 * [handle request](https://github.com/RyanDur/ChosenPicachu/blob/main/src/data/artGallery/index.ts#L11)
 * [make request](https://github.com/RyanDur/ChosenPicachu/blob/main/src/data/http.ts#L24)
 
