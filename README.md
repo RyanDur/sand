@@ -13,15 +13,14 @@ more about the functional paradigm.
 
 Let's look at how we might use this lib. Imagine we are creating an
 art [gallery](https://peaceful-heyrovsky-96583c.netlify.app/gallery?page=1&size=8&tab=aic), and we want to take a closer
-look at a piece of art. We would need to get the piece via its ID and send a request to a backend, so we can display it
-on the page. The response might take a little while, so we will need a way to notify to the user that the request is
-pending. Once we have obtained the piece we will need to display it, or if the call has failed we need to notify that
-something went wrong.
+look at one of the pieces. To get the piece of art we send a request to a backend referencing it by id. The response
+might take a little while, so we need a way to notify the user that the request is pending. Once we have
+obtained the piece we will need to display it, or if the call has failed we need to notify that something went wrong.
 
-In the example below we request the art via ID. While we wait we notify the user that the content is loading. The
-*onPending* function will fire the provided callback twice. Once when it is invoked and again once the call is done
+In the example below we request the art via ID. While we wait, we notify the user that the content is loading. The
+***onPending*** function will fire the provided callback twice. Once when it is invoked and again once the call is done,
 passing the pending state *(true then false)* as a parameter. Once the call is complete it will invoke either
-*onSuccess* with te data or *onFailure* with a possible explanation.
+***onSuccess*** with te data or ***onFailure*** with a possible explanation.
 
 ```typescript
 getArt(id)
@@ -30,8 +29,8 @@ getArt(id)
     .onFailure(hasErrored);
 ```
 
-To handle the request, we make a http *GET* to the endpoint with the id. We validate the response, if the response is
-structured correctly pass back the successful response, else pass back a failure with some explanation.
+To handle the request, we make a http ***GET*** to the endpoint with the id. We validate the response, if the response
+is structured correctly pass back the successful response, else pass back a failure with some explanation.
 
 ```typescript
 getArt: (id: string): Result.Async<Art, Explanation<HTTPError>> =>
@@ -42,9 +41,9 @@ getArt: (id: string): Result.Async<Art, Explanation<HTTPError>> =>
 ```
 
 To make the request, we fetch from the endpoint. If there is some kind of network error we give back an explanation. If
-successful, we check the response status. Since it's a *GET* we expect a 200 is a successful response, or we consider it
-a failure. Then we get the *JSON* out of the response. If there is a problem with the *JSON* we pack it into an
-explanation.
+successful, we check the response status. Since it's a ***GET*** we expect a 200 is a successful response, or we
+consider it a failure. Then we get the ***JSON*** out of the response. If there is a problem with the ***JSON*** we pack
+it into an explanation.
 
 ```typescript
 get: (endpoint: string): Result.Async<Art, Explanation<HTTPError>> =>
