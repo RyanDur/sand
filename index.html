@@ -19,7 +19,7 @@ obtained the piece we will need to display it, or if the call has failed we need
 <p>In the example below we request the art via ID. While we wait, we notify the user that the content is loading. The
 <em><strong>onPending</strong></em> function will fire the provided callback twice. Once when it is invoked and again once the call is done,
 passing the pending state <em>(true then false)</em> as a parameter. Once the call is complete it will invoke either
-<em><strong>onSuccess</strong></em> with te data or <em><strong>onFailure</strong></em> with a possible explanation.</p>
+<em><strong>onSuccess</strong></em> with the data or <em><strong>onFailure</strong></em> with a possible explanation.</p>
 <pre><code class="language-typescript"><span class="hl-5">getArt</span><span class="hl-1">(</span><span class="hl-4">id</span><span class="hl-1">)</span><br/><span class="hl-1">    .</span><span class="hl-5">onPending</span><span class="hl-1">(</span><span class="hl-4">isLoading</span><span class="hl-1">)</span><br/><span class="hl-1">    .</span><span class="hl-5">onSuccess</span><span class="hl-1">(</span><span class="hl-4">updatePiece</span><span class="hl-1">)</span><br/><span class="hl-1">    .</span><span class="hl-5">onFailure</span><span class="hl-1">(</span><span class="hl-4">hasErrored</span><span class="hl-1">);</span>
 </code></pre>
 <p>To handle the request, we make a http <em><strong>GET</strong></em> to the endpoint with the id. We validate the response, if the response
