@@ -20,7 +20,7 @@ obtained the piece we will need to display it, or if the call has failed we need
 In the example below we request the art via ID. While we wait, we notify the user that the content is loading. The
 ***onPending*** function will fire the provided callback twice. Once when it is invoked and again once the call is done,
 passing the pending state *(true then false)* as a parameter. Once the call is complete it will invoke either
-***onSuccess*** with te data or ***onFailure*** with a possible explanation.
+***onSuccess*** with the data or ***onFailure*** with a possible explanation.
 
 ```typescript
 getArt(id)
