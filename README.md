@@ -57,7 +57,7 @@ get: (endpoint: string): Result.Async<Art, Explanation<HTTPError>> =>
 
 ## Examples of use
 
-[Gallery implementation](https://github.com/RyanDur/ChosenPicachu/tree/main/src/lib/components/Gallery)
+[Art Gallery](https://peaceful-heyrovsky-96583c.netlify.app/gallery?page=1&size=8&tab=aic)
 
 * [Art](https://github.com/RyanDur/ChosenPicachu/blob/main/src/components/Gallery/Art/index.tsx#L19)
 * [ArtPiece](https://github.com/RyanDur/ChosenPicachu/blob/main/src/components/Gallery/ArtPiece/index.tsx#L19)
