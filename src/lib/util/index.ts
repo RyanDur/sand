@@ -15,7 +15,7 @@ const nameOfBuiltInInstanceOf = (value: unknown): string | undefined => {
 
 export const shallowFreeze = <T>(obj: T): T => Object.freeze(obj);
 
-export const inspect = (value: unknown): string => (value as Inspectable).inspect?.() || String(value);
+export const inspect = (value: unknown): string => has(value) && (value as Inspectable).inspect?.() || String(value);
 
 /**
  *

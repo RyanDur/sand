@@ -53,20 +53,34 @@ describe('the Maybe', () => {
     const value1 = faker.lorem.sentence();
     const value2 = faker.lorem.sentence();
 
-    test('flatMap', () => {
-        expect(maybe.of(value1).flatMap(inner => maybe.of(`${inner}, ${value2}`)).orNull())
+    test('mBind', () => {
+        expect(maybe.of(value1).mBind(inner => maybe.of(`${inner}, ${value2}`)).orNull())
             .toEqual(`${value1}, ${value2}`);
 
-        expect(maybe.of().flatMap(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
+        expect(maybe.of().mBind(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
     });
 
     test('custom none type discriminator', () => {
         const isNothing = (value: unknown) => typeof value === 'string';
-        expect(maybe.of(value1, isNothing).flatMap(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
+        expect(maybe.of(value1, isNothing).mBind(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
 
         const something = {a: faker.lorem.sentence()};
 
-        expect(maybe.of(something, isNothing).flatMap(inner => maybe.of(`${inner.a}, ${value2}`)).orNull())
+        expect(maybe.of(something, isNothing).mBind(inner => maybe.of(`${inner.a}, ${value2}`)).orNull())
             .toEqual(`${something.a}, ${value2}`);
+    });
+
+    test('or', () => {
+        expect(maybe.nothing<string>().or(() => maybe.some(SOMETHING)).orElse(NOTHING)).toEqual(SOMETHING);
+
+        expect(maybe.some(SOMETHING).or(() => fail('this should not happen')).orElse(NOTHING)).toBe(SOMETHING);
+    });
+
+    test('toResult', () => {
+        expect(maybe.nothing<string>().toResult().isOk).toEqual(false);
+        expect(maybe.nothing<string>().toResult().inspect()).toEqual('Err(null)');
+
+        expect(maybe.some(SOMETHING).toResult().isOk).toBe(true);
+        expect(maybe.some(SOMETHING).toResult().inspect()).toEqual(`Ok(${SOMETHING})`);
     });
 });
