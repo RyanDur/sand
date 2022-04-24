@@ -7,7 +7,7 @@ describe('The Result', () => {
     const data = faker.lorem.sentence();
     const reason = faker.lorem.sentence();
 
-    test('for an Ok', () => {
+    test('when Ok', () => {
         const aResult: Result<string, string> = result.ok(data);
 
         if (aResult.isOk) expect(aResult.value).toEqual(data);
@@ -35,7 +35,7 @@ describe('The Result', () => {
         expect(aResult.toMaybe().inspect()).toBe(`Some(${data})`);
     });
 
-    test('for an Err', () => {
+    test('when Err', () => {
         const aResult: Result<string, string> = result.err(reason);
 
         if (not(aResult.isOk)) expect(aResult.value).toEqual(reason);

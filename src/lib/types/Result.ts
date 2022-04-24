@@ -62,6 +62,6 @@ export declare namespace Result {
         readonly onSuccess: (consumer: Consumer<SUCCESS>) => Async<SUCCESS, FAILURE>;
         readonly onFailure: (consumer: Consumer<FAILURE>) => Async<SUCCESS, FAILURE>;
         readonly onComplete: (consumer: Consumer<Result<SUCCESS, FAILURE>>) => Async<SUCCESS, FAILURE>;
-        readonly inspect: () => string;
+        readonly inspect: () => Promise<string>;
     }
 }
