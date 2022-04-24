@@ -11,6 +11,10 @@ export declare namespace Result {
         readonly map: <NEW_VALUE>(mapper: (value: VALUE) => NEW_VALUE) => Result<NEW_VALUE, REASON>;
         readonly mBind: <NEW_VALUE>(mapper: (value: VALUE) => Result<NEW_VALUE, REASON>) => Result<NEW_VALUE, REASON>;
         readonly or: <NEW_REASON>(mapper: (reason: REASON) => Result<VALUE, NEW_REASON>) => Result<VALUE, NEW_REASON>;
+        readonly either: <NEW_VALUE>(
+            okF: (value: VALUE) => Result<NEW_VALUE, REASON>,
+            errF: (value: VALUE) => Result<VALUE, REASON>
+        ) => Result<NEW_VALUE, REASON>
         readonly onOk: (consumer: Consumer<VALUE>) => Result<VALUE, REASON>;
         readonly onErr: (consumer: Consumer<REASON>) => Result<VALUE, REASON>;
         readonly inspect: () => string;
@@ -24,6 +28,10 @@ export declare namespace Result {
         readonly map: <NEW_VALUE>(mapper: (value: VALUE) => NEW_VALUE) => Result<NEW_VALUE, REASON>;
         readonly mBind: <NEW_VALUE>(mapper: (value: VALUE) => Result<NEW_VALUE, REASON>) => Result<NEW_VALUE, REASON>;
         readonly or: <NEW_REASON>(mapper: (reason: REASON) => Result<VALUE, NEW_REASON>) => Result<VALUE, NEW_REASON>;
+        readonly either: <NEW_REASON>(
+            okF: (value: REASON) => Result<VALUE, REASON>,
+            errF: (value: REASON) => Result<VALUE, NEW_REASON>
+        ) => Result<VALUE, NEW_REASON>
         readonly onOk: (consumer: Consumer<VALUE>) => Result<VALUE, REASON>;
         readonly onErr: (consumer: Consumer<REASON>) => Result<VALUE, REASON>;
         readonly inspect: () => string;

@@ -13,10 +13,11 @@ const ok = <DATA, REASON>(value: DATA): Result.Ok<DATA, REASON> => shallowFreeze
     isOk: true,
     value,
     orNull: () => value,
-    orElse: () => value,
+    orElse: (_) => value,
     map: f => ok(f(value)),
     mBind: f => f(value),
     or: () => ok(value),
+    either: (okF) => okF(value),
     onOk: consumer => {
         consumer(value);
         return ok(value);
@@ -43,6 +44,7 @@ const err = <DATA, REASON>(value: REASON): Result.Err<DATA, REASON> => shallowFr
     map: () => err(value),
     mBind: () => err(value),
     or: f => f(value),
+    either: (okF, errF) => errF(value),
     onOk: () => err(value),
     onErr: consumer => {
         consumer(value);
