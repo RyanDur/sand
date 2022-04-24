@@ -1,4 +1,5 @@
 import {Consumer} from './Function';
+import {Maybe} from './Maybe';
 
 export type Result<DATA, REASON> = Result.Ok<DATA, REASON> | Result.Err<DATA, REASON>;
 
@@ -18,6 +19,7 @@ export declare namespace Result {
         readonly onOk: (consumer: Consumer<VALUE>) => Result<VALUE, REASON>;
         readonly onErr: (consumer: Consumer<REASON>) => Result<VALUE, REASON>;
         readonly inspect: () => string;
+        readonly toMaybe: () => Maybe<VALUE>
     }
 
     interface Err<VALUE, REASON> {
@@ -34,6 +36,7 @@ export declare namespace Result {
         ) => Result<VALUE, NEW_REASON>
         readonly onOk: (consumer: Consumer<VALUE>) => Result<VALUE, REASON>;
         readonly onErr: (consumer: Consumer<REASON>) => Result<VALUE, REASON>;
+        readonly toMaybe: () => Maybe<VALUE>;
         readonly inspect: () => string;
     }
 

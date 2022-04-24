@@ -1,5 +1,6 @@
 import {inspect, shallowFreeze} from './util';
 import {Result} from './types';
+import {maybe} from './maybe';
 
 /**
  * ```ts
@@ -23,6 +24,7 @@ const ok = <DATA, REASON>(value: DATA): Result.Ok<DATA, REASON> => shallowFreeze
         return ok(value);
     },
     onErr: () => ok(value),
+    toMaybe: () => maybe.some(value),
     inspect: () => `Ok(${inspect(value)})`
 });
 
@@ -50,6 +52,7 @@ const err = <VALUE, REASON>(value: REASON): Result.Err<VALUE, REASON> => shallow
         consumer(value);
         return err(value);
     },
+    toMaybe: () => maybe.nothing(),
     inspect: () => `Err(${inspect(value)})`
 });
 

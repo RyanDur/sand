@@ -1,6 +1,7 @@
 import * as faker from 'faker';
 import {result} from '../result';
 import {Result} from '../types';
+import {not} from '../util';
 
 describe('The Result', () => {
     const data = faker.lorem.sentence();
@@ -30,12 +31,14 @@ describe('The Result', () => {
             value => result.ok(value + reason),
             () => result.err('This should not happen')
         ).value).toEqual(data + reason);
+
+        expect(aResult.toMaybe().inspect()).toBe(`Some(${data})`);
     });
 
     test('for an Err', () => {
         const aResult: Result<string, string> = result.err(reason);
 
-        if (!aResult.isOk) expect(aResult.value).toEqual(reason);
+        if (not(aResult.isOk)) expect(aResult.value).toEqual(reason);
         else fail('This should not happen');
 
         expect(aResult.orNull()).toBeNull();
@@ -56,5 +59,7 @@ describe('The Result', () => {
             () => result.ok('This should not happen'),
             value => result.err(value + data),
         ).value).toEqual(reason + data);
+
+        expect(aResult.toMaybe().inspect()).toBe('Nothing');
     });
 });
