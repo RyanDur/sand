@@ -3,15 +3,14 @@ import {Result} from './types';
 import {inspect} from './util';
 
 const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>): Result.Async<SUCCESS, FAILURE> => ({
+    value: promise,
     orNull: () => promise.then(({orNull}) => orNull()),
     orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
-    failureOrElse: fallback => promise.then(({errOrElse}) => errOrElse(fallback)),
     map: mapping => ofPromise(promise.then(({map}) => map(mapping))),
-    mapFailure: mapping => ofPromise(promise.then(({mapErr}) => mapErr(mapping))),
-    flatMap: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+    mBind: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
         .onOk(value => mapping(value).onComplete(resolve))
         .onErr(explanation => resolve(result.err(explanation)))))),
-    flatMapFailure: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+    or: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
         .onOk(value => resolve(result.ok(value)))
         .onErr(explanation => mapping(explanation).onComplete(resolve))))),
     onPending: isPending => {

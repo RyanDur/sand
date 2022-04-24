@@ -8,23 +8,23 @@ import {Result} from './types';
  * okResult.errOrElse('definately this'); // produces: "definately this"
  * ```
  */
-const ok = <DATA, REASON>(data: DATA): Result<DATA, REASON> => shallowFreeze({
+
+const ok = <DATA, REASON>(value: DATA): Result.Ok<DATA, REASON> => shallowFreeze({
     isOk: true,
-    data,
-    orNull: () => data,
-    orElse: () => data,
-    errOrElse: fallback => fallback,
-    map: f => ok(f(data)),
-    mapErr: () => ok(data),
-    flatMap: f => f(data),
-    flatMapErr: () => ok(data),
+    value,
+    orNull: () => value,
+    orElse: () => value,
+    map: f => ok(f(value)),
+    mBind: f => f(value),
+    or: () => ok(value),
     onOk: consumer => {
-        consumer(data);
-        return ok(data);
+        consumer(value);
+        return ok(value);
     },
-    onErr: () => ok(data),
-    inspect: () => `Ok(${inspect(data)})`
+    onErr: () => ok(value),
+    inspect: () => `Ok(${inspect(value)})`
 });
+
 
 /**
  * ```ts
@@ -34,22 +34,21 @@ const ok = <DATA, REASON>(data: DATA): Result<DATA, REASON> => shallowFreeze({
  * ```
  */
 
-const err = <DATA, REASON>(reason: REASON): Result<DATA, REASON> => shallowFreeze({
+
+const err = <DATA, REASON>(value: REASON): Result.Err<DATA, REASON> => shallowFreeze({
     isOk: false,
-    reason,
+    value,
     orNull: () => null,
     orElse: fallback => fallback,
-    errOrElse: () => reason,
-    map: () => err(reason),
-    mapErr: f => err(f(reason)),
-    flatMap: () => err(reason),
-    flatMapErr: f => f(reason),
-    onOk: () => err(reason),
+    map: () => err(value),
+    mBind: () => err(value),
+    or: f => f(value),
+    onOk: () => err(value),
     onErr: consumer => {
-        consumer(reason);
-        return err(reason);
+        consumer(value);
+        return err(value);
     },
-    inspect: () => `Err(${inspect(reason)})`
+    inspect: () => `Err(${inspect(value)})`
 });
 
 /**

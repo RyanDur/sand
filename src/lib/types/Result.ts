@@ -3,44 +3,39 @@ import {Consumer} from './Function';
 export type Result<DATA, REASON> = Result.Ok<DATA, REASON> | Result.Err<DATA, REASON>;
 
 export declare namespace Result {
-    interface Ok<DATA, REASON> {
+    interface Ok<VALUE, REASON> {
         readonly isOk: true;
-        readonly data: DATA;
-        readonly orNull: () => DATA | null;
-        readonly orElse: (fallback: DATA) => DATA;
-        readonly errOrElse: (fallback: REASON) => REASON;
-        readonly map: <NEW_DATA>(mapper: (data: DATA) => NEW_DATA) => Result<NEW_DATA, REASON>;
-        readonly mapErr: <NEW_REASON>(mapper: (reason: REASON) => NEW_REASON) => Result<DATA, NEW_REASON>;
-        readonly flatMap: <NEW_DATA>(mapper: (data: DATA) => Result<NEW_DATA, REASON>) => Result<NEW_DATA, REASON>;
-        readonly flatMapErr: <NEW_REASON>(mapper: (reason: REASON) => Result<DATA, NEW_REASON>) => Result<DATA, NEW_REASON>;
-        readonly onOk: (consumer: Consumer<DATA>) => Result<DATA, REASON>;
-        readonly onErr: (consumer: Consumer<REASON>) => Result<DATA, REASON>;
+        readonly value: VALUE;
+        readonly orNull: () => VALUE;
+        readonly orElse: (fallback: VALUE) => VALUE;
+        readonly map: <NEW_VALUE>(mapper: (value: VALUE) => NEW_VALUE) => Result<NEW_VALUE, REASON>;
+        readonly mBind: <NEW_VALUE>(mapper: (value: VALUE) => Result<NEW_VALUE, REASON>) => Result<NEW_VALUE, REASON>;
+        readonly or: <NEW_REASON>(mapper: (reason: REASON) => Result<VALUE, NEW_REASON>) => Result<VALUE, NEW_REASON>;
+        readonly onOk: (consumer: Consumer<VALUE>) => Result<VALUE, REASON>;
+        readonly onErr: (consumer: Consumer<REASON>) => Result<VALUE, REASON>;
         readonly inspect: () => string;
     }
 
-    interface Err<DATA, REASON> {
+    interface Err<VALUE, REASON> {
         readonly isOk: false;
-        readonly reason: REASON;
-        readonly orNull: () => DATA | null;
-        readonly orElse: (fallback: DATA) => DATA;
-        readonly errOrElse: (fallback: REASON) => REASON;
-        readonly map: <NEW_DATA>(mapper: (data: DATA) => NEW_DATA) => Result<NEW_DATA, REASON>;
-        readonly mapErr: <NEW_REASON>(mapper: (reason: REASON) => NEW_REASON) => Result<DATA, NEW_REASON>;
-        readonly flatMap: <NEW_DATA>(mapper: (data: DATA) => Result<NEW_DATA, REASON>) => Result<NEW_DATA, REASON>;
-        readonly flatMapErr: <NEW_REASON>(mapper: (reason: REASON) => Result<DATA, NEW_REASON>) => Result<DATA, NEW_REASON>;
-        readonly onOk: (consumer: Consumer<DATA>) => Result<DATA, REASON>;
-        readonly onErr: (consumer: Consumer<REASON>) => Result<DATA, REASON>;
+        readonly value: REASON;
+        readonly orNull: () => null;
+        readonly orElse: (fallback: VALUE) => VALUE;
+        readonly map: <NEW_VALUE>(mapper: (value: VALUE) => NEW_VALUE) => Result<NEW_VALUE, REASON>;
+        readonly mBind: <NEW_VALUE>(mapper: (value: VALUE) => Result<NEW_VALUE, REASON>) => Result<NEW_VALUE, REASON>;
+        readonly or: <NEW_REASON>(mapper: (reason: REASON) => Result<VALUE, NEW_REASON>) => Result<VALUE, NEW_REASON>;
+        readonly onOk: (consumer: Consumer<VALUE>) => Result<VALUE, REASON>;
+        readonly onErr: (consumer: Consumer<REASON>) => Result<VALUE, REASON>;
         readonly inspect: () => string;
     }
 
     interface Async<SUCCESS, FAILURE> {
+        readonly value: Promise<Result<SUCCESS, FAILURE>>;
         readonly orNull: () => Promise<SUCCESS | null>;
         readonly orElse: (fallback: SUCCESS) => Promise<SUCCESS>;
-        readonly failureOrElse: (fallback: FAILURE) => Promise<FAILURE>;
         readonly map: <NEW_SUCCESS>(mapping: (data: SUCCESS) => NEW_SUCCESS) => Async<NEW_SUCCESS, FAILURE>;
-        readonly mapFailure: <NEW_FAILURE>(mapping: (reason: FAILURE) => NEW_FAILURE) => Async<SUCCESS, NEW_FAILURE>;
-        readonly flatMap: <NEW_SUCCESS>(mapping: (data: SUCCESS) => Async<NEW_SUCCESS, FAILURE>) => Async<NEW_SUCCESS, FAILURE>;
-        readonly flatMapFailure: <NEW_FAILURE>(mapping: (reason: FAILURE) => Async<SUCCESS, NEW_FAILURE>) => Async<SUCCESS, NEW_FAILURE>;
+        readonly mBind: <NEW_SUCCESS>(mapping: (data: SUCCESS) => Async<NEW_SUCCESS, FAILURE>) => Async<NEW_SUCCESS, FAILURE>;
+        readonly or: <NEW_FAILURE>(mapping: (reason: FAILURE) => Async<SUCCESS, NEW_FAILURE>) => Async<SUCCESS, NEW_FAILURE>;
         /**
          * onPending: A function that notifies the consuming function of the pending state.
          *

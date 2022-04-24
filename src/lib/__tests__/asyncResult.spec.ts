@@ -16,15 +16,12 @@ describe('the Async Result', () => {
             const resultMap = await aResult.map(inner => inner + reason).orNull();
             expect(resultMap).toEqual(data + reason);
 
-            const resultMapFailure = await aResult.mapFailure(unexpected).orNull();
-            expect(resultMapFailure).toEqual(data);
-
-            const resultFlatMap = await aResult.flatMap(inner =>
+            const resultFlatMap = await aResult.mBind(inner =>
                 asyncResult.of(Promise.resolve(inner + reason))
             ).orNull();
             expect(resultFlatMap).toEqual(data + reason);
 
-            const resultFlatMapFailure = await aResult.flatMapFailure(unexpected).orNull();
+            const resultFlatMapFailure = await aResult.or(unexpected).orNull();
             expect(resultFlatMapFailure).toEqual(data);
 
             const isPending = jest.fn();
@@ -38,8 +35,8 @@ describe('the Async Result', () => {
             const resultOnFailure = await aResult.onFailure(unexpected).orElse(FAIL);
             expect(resultOnFailure).toEqual(data);
 
-            await aResult.onComplete(value => {
-                if (value.isOk) expect(value.data).toEqual(data);
+            await aResult.onComplete(result => {
+                if (result.isOk) expect(result.value).toEqual(data);
                 else fail('this should not happen');
             }).orNull();
         };
@@ -50,34 +47,29 @@ describe('the Async Result', () => {
         test('directly', async () => await testFailure(asyncResult.failure(reason)));
 
         const testFailure = async (aResult: Result.Async<string, string>) => {
-            const resultMap = await aResult.map(unexpected).failureOrElse(FAIL);
-            expect(resultMap).toEqual(reason);
 
-            const resultMapFailure = await aResult.mapFailure(inner => inner + data).failureOrElse(FAIL);
-            expect(resultMapFailure).toEqual(reason + data);
+            const resultFlatMap = await aResult.mBind(unexpected).value;
+            expect(resultFlatMap.value).toEqual(reason);
 
-            const resultFlatMap = await aResult.flatMap(unexpected).failureOrElse(FAIL);
-            expect(resultFlatMap).toEqual(reason);
-
-            const resultFlatMapFailure = await aResult.flatMapFailure(inner =>
+            const resultOrFailure = await aResult.or(inner =>
                 asyncResult.of(Promise.reject(inner + data))
-            ).failureOrElse(FAIL);
-            expect(resultFlatMapFailure).toEqual(reason + data);
+            ).value;
+            expect(resultOrFailure.value).toEqual(reason + data);
 
             const isLoading = jest.fn();
             await aResult.onPending(isLoading).orNull();
             expect(isLoading).toHaveBeenNthCalledWith(1, true);
             expect(isLoading).toHaveBeenNthCalledWith(2, false);
 
-            const resultOnSuccess = await aResult.onSuccess(unexpected).failureOrElse(FAIL);
-            expect(resultOnSuccess).toEqual(reason);
+            const resultOnSuccess = await aResult.onSuccess(unexpected).value;
+            expect(resultOnSuccess.value).toEqual(reason);
 
-            const resultOnFailure = await aResult.onFailure(value => expect(value).toEqual(reason)).failureOrElse(FAIL);
-            expect(resultOnFailure).toEqual(reason);
+            const resultOnFailure = await aResult.onFailure(value => expect(value).toEqual(reason)).value;
+            expect(resultOnFailure.value).toEqual(reason);
 
-            await aResult.onComplete(value => {
-                if (value.isOk) fail('this should not happen');
-                else expect(value.reason).toEqual(reason);
+            await aResult.onComplete(result => {
+                if (result.isOk) fail('this should not happen');
+                else expect(result.value).toEqual(reason);
             });
         };
     });
