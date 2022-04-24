@@ -9,10 +9,10 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
     map: mapping => ofPromise(promise.then(({map}) => map(mapping))),
     mBind: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
         .onOk(value => mapping(value).onComplete(resolve))
-        .onErr(explanation => resolve(result.err(explanation)))))),
+        .onErr(value => resolve(result.err(value)))))),
     or: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
         .onOk(value => resolve(result.ok(value)))
-        .onErr(explanation => mapping(explanation).onComplete(resolve))))),
+        .onErr(value => mapping(value).onComplete(resolve))))),
     onPending: isPending => {
         isPending(true);
         return ofPromise(promise.then(value => {

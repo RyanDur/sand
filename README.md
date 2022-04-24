@@ -33,11 +33,13 @@ To handle the request, we make a http ***GET*** to the endpoint with the id. We 
 is structured correctly pass back the successful response, else pass back a failure with some explanation.
 
 ```typescript
+const failure = asyncResult.failure
+
 getArt: (id: string): Result.Async<Art, Explanation<HTTPError>> =>
     http.get(`/some-endpoint/${id}`)
-        .flatMap(response => maybe.of(valid(response))
+        .mBind(response => maybe.of(valid(response))
             .map(asyncResult.success)
-            .orElse(asyncResult.failure(explanation(HTTPError.CANNOT_DECODE))))
+            .orElse(failure({type: HTTPError.CANNOT_DECODE, cause: response})))
 ```
 
 To make the request, we fetch from the endpoint. If there is some kind of network error we give back an explanation. If
@@ -46,13 +48,15 @@ consider it a failure. Then we get the ***JSON*** out of the response. If there 
 it into an explanation.
 
 ```typescript
+import {asyncResult} from "./asyncResult";
+const failure = asyncResult.failure
+
 get: (endpoint: string): Result.Async<Art, Explanation<HTTPError>> =>
     asyncResult.of(fetch(endpoint))
-        .mapFailure(err => explanation(HTTPError.NETWORK_ERROR, maybe.some(err)))
-        .flatMap(response => response.status === HTTPStatus.OK ?
-            asyncResult.of(response.json()).mapFailure(
-                err => explanation(HTTPError.JSON_BODY_ERROR, maybe.some(err))
-            ) : fail(response));
+        .or(err => failure({type: HTTPError.NETWORK_ERROR, cause: err}))
+        .mBind(response => response.status === HTTPStatus.OK ? 
+            asyncResult.of(response.json()) : 
+            failure({type: HTTPError.NOT_OK, cause: response}));
 ```
 
 ## Examples of use
