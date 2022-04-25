@@ -10,7 +10,7 @@ import {maybe} from './maybe';
  * ```
  */
 
-const ok = <DATA, REASON>(value: DATA): Result.Ok<DATA, REASON> => shallowFreeze({
+const ok = <VALUE, ERROR>(value: VALUE): Result.Ok<VALUE, ERROR> => shallowFreeze({
     isOk: true,
     value,
     orNull: () => value,
@@ -38,7 +38,7 @@ const ok = <DATA, REASON>(value: DATA): Result.Ok<DATA, REASON> => shallowFreeze
  */
 
 
-const err = <VALUE, REASON>(value: REASON): Result.Err<VALUE, REASON> => shallowFreeze({
+const err = <VALUE, ERROR>(value: ERROR): Result.Err<VALUE, ERROR> => shallowFreeze({
     isOk: false,
     value,
     orNull: () => null,

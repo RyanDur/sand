@@ -1,7 +1,7 @@
 import {Consumer} from './Function';
 import {Maybe} from './Maybe';
 
-export type Result<DATA, REASON> = Result.Ok<DATA, REASON> | Result.Err<DATA, REASON>;
+export type Result<VALUE, ERROR> = Result.Ok<VALUE, ERROR> | Result.Err<VALUE, ERROR>;
 
 export declare namespace Result {
     interface Ok<VALUE, ERROR> {
@@ -9,15 +9,15 @@ export declare namespace Result {
         readonly value: VALUE;
         readonly orNull: () => VALUE;
         readonly orElse: (fallback: VALUE) => VALUE;
-        readonly map: <NEW_VALUE>(mapper: (value: VALUE) => NEW_VALUE) => Result<NEW_VALUE, ERROR>;
+        readonly map: <NEW_VALUE>(mapper: (value: VALUE) => NEW_VALUE) => Ok<NEW_VALUE, ERROR>;
         readonly mBind: <NEW_VALUE>(mapper: (value: VALUE) => Result<NEW_VALUE, ERROR>) => Result<NEW_VALUE, ERROR>;
-        readonly or: <NEW_ERROR>(mapper: (reason: ERROR) => Result<VALUE, NEW_ERROR>) => Result<VALUE, NEW_ERROR>;
+        readonly or: (mapper: (reason: ERROR) => Result<VALUE, ERROR>) => Ok<VALUE, ERROR>;
         readonly either: <NEW_VALUE>(
             okF: (value: VALUE) => Result<NEW_VALUE, ERROR>,
             errF: (value: VALUE) => Result<VALUE, ERROR>
         ) => Result<NEW_VALUE, ERROR>
-        readonly onOk: (consumer: Consumer<VALUE>) => Result<VALUE, ERROR>;
-        readonly onErr: (consumer: Consumer<ERROR>) => Result<VALUE, ERROR>;
+        readonly onOk: (consumer: Consumer<VALUE>) => Ok<VALUE, ERROR>;
+        readonly onErr: (consumer: Consumer<ERROR>) => Ok<VALUE, ERROR>;
         readonly inspect: () => string;
         readonly toMaybe: () => Maybe<VALUE>
     }
@@ -27,15 +27,15 @@ export declare namespace Result {
         readonly value: ERROR;
         readonly orNull: () => null;
         readonly orElse: (fallback: VALUE) => VALUE;
-        readonly map: <NEW_VALUE>(mapper: (value: VALUE) => NEW_VALUE) => Result<NEW_VALUE, ERROR>;
-        readonly mBind: <NEW_VALUE>(mapper: (value: VALUE) => Result<NEW_VALUE, ERROR>) => Result<NEW_VALUE, ERROR>;
+        readonly map: <NEW_VALUE = VALUE>(mapper: (value: VALUE) => NEW_VALUE) => Err<NEW_VALUE, ERROR>;
+        readonly mBind: (mapper: (value: VALUE) => Result<VALUE, ERROR>) => Err<VALUE, ERROR>;
         readonly or: <NEW_ERROR>(mapper: (reason: ERROR) => Result<VALUE, NEW_ERROR>) => Result<VALUE, NEW_ERROR>;
         readonly either: <NEW_ERROR>(
             okF: (value: ERROR) => Result<VALUE, ERROR>,
             errF: (value: ERROR) => Result<VALUE, NEW_ERROR>
         ) => Result<VALUE, NEW_ERROR>
-        readonly onOk: (consumer: Consumer<VALUE>) => Result<VALUE, ERROR>;
-        readonly onErr: (consumer: Consumer<ERROR>) => Result<VALUE, ERROR>;
+        readonly onOk: (consumer: Consumer<VALUE>) => Err<VALUE, ERROR>;
+        readonly onErr: (consumer: Consumer<ERROR>) => Err<VALUE, ERROR>;
         readonly toMaybe: () => Maybe<VALUE>;
         readonly inspect: () => string;
     }
