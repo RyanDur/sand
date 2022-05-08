@@ -3,7 +3,7 @@ import {Result} from './types';
 import {inspect} from './util';
 
 const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>): Result.Async<SUCCESS, FAILURE> => ({
-    value: promise,
+    value: promise.then(result => result.value),
     orNull: () => promise.then(({orNull}) => orNull()),
     orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
     map: mapping => ofPromise(promise.then(({map}) => map(mapping))),
@@ -22,9 +22,9 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
     },
     onSuccess: consumer => ofPromise(promise.then(({onOk}) => onOk(consumer))),
     onFailure: consumer => ofPromise(promise.then(({onErr}) => onErr(consumer))),
-    onComplete: consumer => ofPromise(promise.then(value => {
-        consumer(value);
-        return value;
+    onComplete: consumer => ofPromise(promise.then(result => {
+        consumer(result);
+        return result;
     })),
     inspect: () => promise.then(value => `Result.Async(${inspect(value)})`)
 });

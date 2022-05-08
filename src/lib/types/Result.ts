@@ -41,7 +41,7 @@ export declare namespace Result {
     }
 
     interface Async<SUCCESS, FAILURE> {
-        readonly value: Promise<Result<SUCCESS, FAILURE>>;
+        readonly value: Promise<SUCCESS | FAILURE>;
         readonly orNull: () => Promise<SUCCESS | null>;
         readonly orElse: (fallback: SUCCESS) => Promise<SUCCESS>;
         readonly map: <NEW_SUCCESS>(mapping: (data: SUCCESS) => NEW_SUCCESS) => Async<NEW_SUCCESS, FAILURE>;

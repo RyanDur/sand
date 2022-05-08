@@ -49,12 +49,12 @@ describe('the Async Result', () => {
         const testFailure = async (aResult: Result.Async<string, string>) => {
 
             const resultFlatMap = await aResult.mBind(unexpected).value;
-            expect(resultFlatMap.value).toEqual(reason);
+            expect(resultFlatMap).toEqual(reason);
 
             const resultOrFailure = await aResult.or(inner =>
                 asyncResult.of(Promise.reject(inner + data))
             ).value;
-            expect(resultOrFailure.value).toEqual(reason + data);
+            expect(resultOrFailure).toEqual(reason + data);
 
             const isLoading = jest.fn();
             await aResult.onPending(isLoading).orNull();
@@ -62,10 +62,10 @@ describe('the Async Result', () => {
             expect(isLoading).toHaveBeenNthCalledWith(2, false);
 
             const resultOnSuccess = await aResult.onSuccess(unexpected).value;
-            expect(resultOnSuccess.value).toEqual(reason);
+            expect(resultOnSuccess).toEqual(reason);
 
             const resultOnFailure = await aResult.onFailure(value => expect(value).toEqual(reason)).value;
-            expect(resultOnFailure.value).toEqual(reason);
+            expect(resultOnFailure).toEqual(reason);
 
             await aResult.onComplete(result => {
                 if (result.isOk) fail('this should not happen');

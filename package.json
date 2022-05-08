@@ -1,6 +1,6 @@
 {
   "name": "@ryandur/sand",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "helper objects and functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
