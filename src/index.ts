@@ -1,6 +1,6 @@
-export {result} from './lib/result';
+export {ok, err} from './lib/result';
 export {asyncResult} from './lib/asyncResult';
-export {maybe} from './lib/maybe';
+export {maybe, some, nothing} from './lib/maybe';
 export {
     not,
     empty,
