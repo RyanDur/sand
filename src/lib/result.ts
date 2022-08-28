@@ -1,45 +1,45 @@
 import {inspect, shallowFreeze} from './util';
-import {Result} from './types';
-import {maybe} from './maybe';
+import {nothing, some} from './maybe';
+import {Err, Ok} from './types';
 
 /**
  * ```ts
- * var okResult = result.ok('some value').map(value => value + ', another value');
+ * var okResult = success('some value').map(value => value + ', another value');
  * okResult.orNull(); // produces: "some value, another value"
- * okResult.errOrElse('definately this'); // produces: "definately this"
+ * okResult.orElse('definitely this'); // produces: "definitely this"
  * ```
  */
 
-const ok = <VALUE, ERROR>(value: VALUE): Result.Ok<VALUE, ERROR> => shallowFreeze({
-    isOk: true,
+const ok = <VALUE>(value: VALUE): Ok<VALUE> => shallowFreeze({
+    isSuccess: true,
     value,
     orNull: () => value,
-    orElse: (_) => value,
+    orElse: () => value,
     map: f => ok(f(value)),
     mBind: f => f(value),
     or: () => ok(value),
     either: (f, _) => f(value),
-    onOk: consumer => {
+    onSuccess: consumer => {
         consumer(value);
         return ok(value);
     },
-    onErr: () => ok(value),
-    toMaybe: () => maybe.some(value),
+    onFailure: () => ok(value),
+    toMaybe: () => some(value),
     inspect: () => `Ok(${inspect(value)})`
 });
 
 
 /**
  * ```ts
- * const errResult = result.err('some err').mapErr(value => value + ', another err');
- * errResult.orNull(); // produces: null
- * errResult.errOrElse('Not this'); // produces: "some err, another err"
+ * const failureResult = failure('some failure').mapErr(value => value + ', another failure');
+ * failureResult.orNull(); // produces: null
+ * failureResult.orElse('Not this'); // produces: "some failure, another failure"
  * ```
  */
 
 
-const err = <VALUE, ERROR>(value: ERROR): Result.Err<VALUE, ERROR> => shallowFreeze({
-    isOk: false,
+const err = <ERROR>(value: ERROR): Err<ERROR> => shallowFreeze({
+    isSuccess: false,
     value,
     orNull: () => null,
     orElse: fallback => fallback,
@@ -47,23 +47,23 @@ const err = <VALUE, ERROR>(value: ERROR): Result.Err<VALUE, ERROR> => shallowFre
     mBind: () => err(value),
     or: f => f(value),
     either: (_, f) => f(value),
-    onOk: () => err(value),
-    onErr: consumer => {
+    onSuccess: () => err(value),
+    onFailure: consumer => {
         consumer(value);
         return err(value);
     },
-    toMaybe: () => maybe.nothing(),
+    toMaybe: () => nothing(),
     inspect: () => `Err(${inspect(value)})`
 });
 
 /**
- * The Result is either ok or not. Depending on what type of result it is affects how the results functions behave.
- * For example, the 'orNull' function for an ok result will return the value of the result while err will return null.
+ * The Result is either success or not. Depending on what type of result it is affects how the results functions behave.
+ * For example, the 'orNull' function for a success result will return the value of the result while failure will return null.
  *
  * A factory for creating Result's
  *
  * @see implementation {@link https://github.com/RyanDur/sand/blob/main/sr/lib/result.ts}
  * @see test for ok {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L9}
- * @see test for err {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L29}
+ * @see test for failure {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L29}
  * */
-export const result = {ok, err};
+export {ok, err};

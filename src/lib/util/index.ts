@@ -54,7 +54,7 @@ export const matchOn = <MATCH extends string | number>(
     return <VALUE>(
         on: MATCH | null | undefined = null,
         cases: Record<MATCH, () => VALUE>
-    ): Maybe<VALUE> => maybe.of(cases[matcher(on as MATCH)]).map(value => value());
+    ): Maybe<VALUE> => maybe(cases[matcher(on as MATCH)]).map(value => value());
 };
 
 export const typeOf = (value: unknown): string => {

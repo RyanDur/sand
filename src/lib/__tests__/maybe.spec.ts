@@ -1,4 +1,4 @@
-import {maybe} from '../maybe';
+import {maybe, nothing, some} from '../maybe';
 import * as faker from 'faker';
 
 const SOMETHING = 'SOMETHING';
@@ -36,7 +36,6 @@ const somes = [
     -0n,
     46n,
     -346n,
-    Symbol(),
     SOMETHING,
     "", // eslint-disable-line
     '',
@@ -45,7 +44,7 @@ const somes = [
 
 describe('the Maybe', () => {
     [...nones, ...somes].forEach(({value, expectation}) => {
-        const maybeValue = maybe.of(value);
+        const maybeValue = maybe(value);
         test(`${maybeValue.isNothing ? `${value} is` : ''} ${maybeValue.inspect()} `, () =>
             expect(maybeValue.map(String).map(value => `SOME(${value})`).orElse(NOTHING)).toEqual(expectation));
     });
@@ -54,33 +53,37 @@ describe('the Maybe', () => {
     const value2 = faker.lorem.sentence();
 
     test('mBind', () => {
-        expect(maybe.of(value1).mBind(inner => maybe.of(`${inner}, ${value2}`)).orNull())
+        expect(maybe(value1).mBind(inner => maybe(`${inner}, ${value2}`)).orNull())
             .toEqual(`${value1}, ${value2}`);
 
-        expect(maybe.of().mBind(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
+        expect(maybe().mBind(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
     });
 
     test('custom none type discriminator', () => {
-        const isNothing = (value: unknown) => typeof value === 'string';
-        expect(maybe.of(value1, isNothing).mBind(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
+        expect(maybe(value1, false).mBind(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
 
         const something = {a: faker.lorem.sentence()};
 
-        expect(maybe.of(something, isNothing).mBind(inner => maybe.of(`${inner.a}, ${value2}`)).orNull())
+        expect(maybe(something, true).mBind(inner => maybe(`${inner.a}, ${value2}`)).orNull())
             .toEqual(`${something.a}, ${value2}`);
     });
 
     test('or', () => {
-        expect(maybe.nothing<string>().or(() => maybe.some(SOMETHING)).orElse(NOTHING)).toEqual(SOMETHING);
+        expect(nothing().or(() => some(SOMETHING)).orElse(NOTHING)).toEqual(SOMETHING);
 
-        expect(maybe.some(SOMETHING).or(() => fail('this should not happen')).orElse(NOTHING)).toBe(SOMETHING);
+        expect((maybe(SOMETHING)).or(() => fail('this should not happen')).orElse(NOTHING)).toBe(SOMETHING);
     });
 
     test('toResult', () => {
-        expect(maybe.nothing<string>().toResult().isOk).toEqual(false);
-        expect(maybe.nothing<string>().toResult().inspect()).toEqual('Err(null)');
+        expect(nothing().toResult().isSuccess).toEqual(false);
+        expect(nothing().toResult().inspect()).toEqual('Err(undefined)');
 
-        expect(maybe.some(SOMETHING).toResult().isOk).toBe(true);
-        expect(maybe.some(SOMETHING).toResult().inspect()).toEqual(`Ok(${SOMETHING})`);
+        expect(maybe(SOMETHING).toResult().isSuccess).toBe(true);
+        expect(maybe(SOMETHING).toResult().inspect()).toEqual(`Ok(${SOMETHING})`);
+    });
+
+    test('custom nothing definition', () => {
+        expect(maybe({type: SOMETHING},  false).toResult().isSuccess).toBe(false);
+        expect(maybe(SOMETHING).toResult().inspect()).toEqual(`Ok(${SOMETHING})`);
     });
 });

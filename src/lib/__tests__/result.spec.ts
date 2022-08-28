@@ -1,65 +1,78 @@
 import * as faker from 'faker';
-import {result} from '../result';
-import {Result} from '../types';
 import {not} from '../util';
+import {err, ok} from '../result';
+import {maybe} from '../maybe';
 
 describe('The Result', () => {
-    const data = faker.lorem.sentence();
-    const reason = faker.lorem.sentence();
+  const data = {t: faker.lorem.sentence()};
+  const reason = faker.lorem.sentence();
 
-    test('when Ok', () => {
-        const aResult: Result<string, string> = result.ok(data);
+  const aResult = (isSomething: boolean) =>
+    maybe(data, isSomething).toResult().or(() => err(reason));
 
-        if (aResult.isOk) expect(aResult.value).toEqual(data);
-        else fail('This should not happen');
+  test('when Ok', () => {
+    const anOkResult = aResult(true);
 
-        expect(aResult.orNull()).toEqual(data);
+    expect(anOkResult.orNull()).toEqual(data);
 
-        expect(aResult.onOk(value => expect(value).toEqual(data)).orElse(reason)).toEqual(data);
+    expect(anOkResult.onSuccess(value => expect(value).toEqual(data)).orElse(reason)).toEqual(data);
 
-        expect(aResult.onErr(() => fail('this should not happen')).orElse(reason)).toEqual(data);
+    expect(anOkResult.onFailure(() => fail('this should not happen')).orElse(reason)).toEqual(data);
 
-        expect(aResult.orElse(reason)).toEqual(data);
+    expect(anOkResult.orElse(reason)).toEqual(data);
 
-        expect(aResult.map(value => value + reason).orElse(reason)).toEqual(data + reason);
+    expect(anOkResult.map(value => value + reason).orElse(reason)).toEqual(data + reason);
 
-        expect(aResult.mBind(value => result.ok(value + reason)).orElse(reason)).toEqual(data + reason);
+    expect(anOkResult.mBind(value => ok(value + reason)).orElse(reason)).toEqual(data + reason);
+    expect(anOkResult.mBind(value => err(value + reason)).orElse(reason)).toEqual( reason);
 
-        expect(aResult.or(() => fail('this should not happen')).orElse(reason)).toEqual(data);
+    expect(anOkResult.or(() => fail('this should not happen')).orElse(reason)).toEqual(data);
 
-        expect(aResult.either(
-            value => result.ok(value + reason),
-            () => result.err('This should not happen')
-        ).value).toEqual(data + reason);
+    const actual = anOkResult.either(
+      value => err({t: value.t + reason}),
+      value => ok({t: value})
+    ).value;
+    expect(actual).toEqual({t: data.t + reason});
 
-        expect(aResult.toMaybe().inspect()).toBe(`Some(${data})`);
-    });
+    expect(anOkResult.toMaybe().inspect()).toBe(`Some(${data})`);
 
-    test('when Err', () => {
-        const aResult: Result<string, string> = result.err(reason);
+    if (anOkResult.isSuccess) expect(anOkResult.value).toEqual(data);
+    else fail('This should not happen');
+  });
 
-        if (not(aResult.isOk)) expect(aResult.value).toEqual(reason);
-        else fail('This should not happen');
+  test('when Err', () => {
+    const anErrResult = aResult(false);
 
-        expect(aResult.orNull()).toBeNull();
+    expect(anErrResult.orNull()).toBeNull();
 
-        expect(aResult.onOk(() => fail('this should not happen')).orElse(data)).toEqual(data);
+    expect(anErrResult.onSuccess(() => fail('this should not happen')).orElse(data)).toEqual(data);
 
-        expect(aResult.onErr(value => expect(value).toEqual(reason)).isOk).toBe(false);
+    expect(anErrResult.onFailure(value => expect(value).toEqual(reason)).isSuccess).toBe(false);
 
-        expect(aResult.orElse(data)).toEqual(data);
+    expect(anErrResult.orElse(data)).toEqual(data);
 
-        expect(aResult.map(() => 'this should not happen').orElse(data)).toEqual(data);
+    expect(anErrResult.map(() => 'this should not happen').orElse(data)).toEqual(data);
 
-        expect(aResult.mBind(() => result.err('this will not happen')).orElse(data)).toEqual(data);
+    expect(anErrResult.mBind(() => err('this will not happen')).orElse(data)).toEqual(data);
+    expect(anErrResult.mBind(() => ok('this will not happen')).orElse(data)).toEqual(data);
 
-        expect(aResult.or(explanation => result.err(explanation + data)).value).toEqual(reason + data);
+    expect(anErrResult.or(explanation => err(explanation + data)).orElse(data)).toEqual(data);
+    expect(anErrResult.or(explanation => ok(explanation + data)).orElse(data)).toEqual(reason + data);
 
-        expect(aResult.either(
-            () => result.ok('This should not happen'),
-            value => result.err(value + data),
-        ).value).toEqual(reason + data);
+    expect(anErrResult.either(
+      () => ok('This should not happen'),
+      value => err(value + data),
+    ).value).toEqual(reason + data);
 
-        expect(aResult.toMaybe().inspect()).toBe('Nothing');
-    });
+    const actual = anErrResult.either(
+      () => err('This should not happen'),
+      value => ok(value + data),
+    ).value;
+    expect(actual).toEqual(reason + data);
+
+    expect(anErrResult.toMaybe().inspect()).toBe('Nothing');
+
+    if (not(anErrResult.isSuccess)) expect(anErrResult.value).toEqual(reason);
+    else fail('This should not happen');
+  });
 });

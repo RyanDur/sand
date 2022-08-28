@@ -1,4 +1,4 @@
-import {result} from './result';
+import {ok, err} from './result';
 import {Result} from './types';
 import {inspect} from './util';
 
@@ -8,11 +8,11 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
     orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
     map: mapping => ofPromise(promise.then(({map}) => map(mapping))),
     mBind: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-        .onOk(value => mapping(value).onComplete(resolve))
-        .onErr(value => resolve(result.err(value)))))),
+        .onSuccess(value => mapping(value).onComplete(resolve))
+        .onFailure(value => resolve(err(value)))))),
     or: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-        .onOk(value => resolve(result.ok(value)))
-        .onErr(value => mapping(value).onComplete(resolve))))),
+        .onSuccess(value => resolve(ok(value)))
+        .onFailure(value => mapping(value).onComplete(resolve))))),
     onPending: isPending => {
         isPending(true);
         return ofPromise(promise.then(value => {
@@ -20,8 +20,8 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
             return value;
         }));
     },
-    onSuccess: consumer => ofPromise(promise.then(({onOk}) => onOk(consumer))),
-    onFailure: consumer => ofPromise(promise.then(({onErr}) => onErr(consumer))),
+    onSuccess: consumer => ofPromise(promise.then(({onSuccess}) => onSuccess(consumer))),
+    onFailure: consumer => ofPromise(promise.then(({onFailure}) => onFailure(consumer))),
     onComplete: consumer => ofPromise(promise.then(result => {
         consumer(result);
         return result;
@@ -39,16 +39,16 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
  * successfulResult.failureOrElse('definitely this'); // produces: "definitely this"
  * ```
  * */
-const success = <SUCCESS, FAILURE>(data: SUCCESS): Result.Async<SUCCESS, FAILURE> => ofPromise(Promise.resolve(result.ok(data)));
+const success = <SUCCESS, FAILURE>(data: SUCCESS): Result.Async<SUCCESS, FAILURE> => ofPromise(Promise.resolve(ok(data) as unknown as Result<SUCCESS, FAILURE>));
 
 /**
  * ```ts
- * const failureResult = await asyncResult.failure('some err').mapErr(value => value + ', another err');
+ * const failureResult = await asyncResult.failure('some failure').mapErr(value => value + ', another failure');
  * failureResult.orNull(); // produces: null
- * failureResult.failureOrElse('Not this'); // produces: "some err, another err"
+ * failureResult.failureOrElse('Not this'); // produces: "some failure, another failure"
  * ```
  * */
-const failure = <SUCCESS, FAILURE>(reason: FAILURE): Result.Async<SUCCESS, FAILURE> => ofPromise(Promise.resolve(result.err(reason)));
+const failure = <SUCCESS, FAILURE>(reason: FAILURE): Result.Async<SUCCESS, FAILURE> => ofPromise(Promise.resolve(err(reason) as unknown as Result<SUCCESS, FAILURE>));
 
 /**
  * ```ts
@@ -57,17 +57,17 @@ const failure = <SUCCESS, FAILURE>(reason: FAILURE): Result.Async<SUCCESS, FAILU
  * successfulResult.failureOrElse('definitely this'); // produces: "definitely this"
  * ```
  * ```ts
- * const failureResult = await asyncResult.of(Promise.reject('some err')).mapErr(value => value + ', another err');
+ * const failureResult = await asyncResult.of(Promise.reject('some failure')).mapErr(value => value + ', another failure');
  * failureResult.orNull(); // produces: null
- * failureResult.failureOrElse('Not this'); // produces: "some err, another err"
+ * failureResult.failureOrElse('Not this'); // produces: "some failure, another failure"
  * ```
  * */
 const of = <SUCCESS, FAILURE>(promise: Promise<SUCCESS>): Result.Async<SUCCESS, FAILURE> => ofPromise(promise
-    .then(value => result.ok(value))
-    .catch(reason => result.err(reason)));
+    .then(value => ok(value) as unknown as Result<SUCCESS, FAILURE>)
+    .catch(reason => err(reason) as unknown as Result<SUCCESS, FAILURE>));
 
 /**
- * The AsyncResult is something that [Damien LeBerrigaud](https://github.com/dam5s) has introduced me to. I had the chance
+ * The AsyncResult is something that [Damien LeBfailureigaud](https://github.com/dam5s) has introduced me to. I had the chance
  * to work with him on a project that inspired me to write this lib. Together we
  * collaborated on [React Redux Starter](https://github.com/dam5s/react-redux-starter) to aid us in developing future projects with
  * clients.

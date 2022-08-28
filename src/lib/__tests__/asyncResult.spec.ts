@@ -4,7 +4,7 @@ import {Result} from '../types';
 
 describe('the Async Result', () => {
     const FAIL = 'FAIL';
-    const data = faker.lorem.sentence();
+    const data = {type: faker.lorem.sentence()};
     const reason = faker.lorem.sentence();
     const unexpected = () => fail('this should not happen');
 
@@ -12,14 +12,14 @@ describe('the Async Result', () => {
         test('for a promise', async () => await testSuccess(asyncResult.of(Promise.resolve(data))));
         test('directly', async () => await testSuccess(asyncResult.success(data)));
 
-        const testSuccess = async (aResult: Result.Async<string, string>) => {
-            const resultMap = await aResult.map(inner => inner + reason).orNull();
-            expect(resultMap).toEqual(data + reason);
+        const testSuccess = async (aResult: Result.Async<{type: string}, {cause: string}>) => {
+            const resultMap = await aResult.map(inner => inner.type + reason).orNull();
+            expect(resultMap).toEqual(data.type + reason);
 
             const resultFlatMap = await aResult.mBind(inner =>
-                asyncResult.of(Promise.resolve(inner + reason))
+                asyncResult.of(Promise.resolve(inner.type + reason))
             ).orNull();
-            expect(resultFlatMap).toEqual(data + reason);
+            expect(resultFlatMap).toEqual(data.type + reason);
 
             const resultFlatMapFailure = await aResult.or(unexpected).orNull();
             expect(resultFlatMapFailure).toEqual(data);
@@ -32,12 +32,12 @@ describe('the Async Result', () => {
             const resultOnSuccess = await aResult.onSuccess(value => expect(value).toEqual(data)).orNull();
             expect(resultOnSuccess).toEqual(data);
 
-            const resultOnFailure = await aResult.onFailure(unexpected).orElse(FAIL);
+            const resultOnFailure = await aResult.onFailure(unexpected).orElse({type: FAIL});
             expect(resultOnFailure).toEqual(data);
 
             await aResult.onComplete(result => {
                 if (result.isOk) expect(result.value).toEqual(data);
-                else fail('this should not happen');
+                else expect(result.value).not.toEqual(data);
             }).orNull();
         };
     });
