@@ -12,6 +12,7 @@ module.exports = {
   rules: {
     quotes: ["error", "single", {avoidEscape: true}],
     "no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": 0,
     '@typescript-eslint/no-unused-vars': [
       'warn', // or error
       {
