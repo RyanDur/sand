@@ -11,7 +11,7 @@ import {Err, Ok} from './types';
  */
 
 const ok = <VALUE>(value: VALUE): Ok<VALUE> => shallowFreeze({
-    isSuccess: true,
+    isOk: true,
     value,
     orNull: () => value,
     orElse: () => value,
@@ -39,7 +39,7 @@ const ok = <VALUE>(value: VALUE): Ok<VALUE> => shallowFreeze({
 
 
 const err = <ERROR>(value: ERROR): Err<ERROR> => shallowFreeze({
-    isSuccess: false,
+    isOk: false,
     value,
     orNull: () => null,
     orElse: fallback => fallback,

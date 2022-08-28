@@ -36,7 +36,7 @@ describe('The Result', () => {
 
     expect(anOkResult.toMaybe().inspect()).toBe(`Some(${data})`);
 
-    if (anOkResult.isSuccess) expect(anOkResult.value).toEqual(data);
+    if (anOkResult.isOk) expect(anOkResult.value).toEqual(data);
     else fail('This should not happen');
   });
 
@@ -47,7 +47,7 @@ describe('The Result', () => {
 
     expect(anErrResult.onSuccess(() => fail('this should not happen')).orElse(data)).toEqual(data);
 
-    expect(anErrResult.onFailure(value => expect(value).toEqual(reason)).isSuccess).toBe(false);
+    expect(anErrResult.onFailure(value => expect(value).toEqual(reason)).isOk).toBe(false);
 
     expect(anErrResult.orElse(data)).toEqual(data);
 
@@ -72,7 +72,7 @@ describe('The Result', () => {
 
     expect(anErrResult.toMaybe().inspect()).toBe('Nothing');
 
-    if (not(anErrResult.isSuccess)) expect(anErrResult.value).toEqual(reason);
+    if (not(anErrResult.isOk)) expect(anErrResult.value).toEqual(reason);
     else fail('This should not happen');
   });
 });

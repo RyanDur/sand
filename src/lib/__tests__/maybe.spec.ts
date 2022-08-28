@@ -75,15 +75,15 @@ describe('the Maybe', () => {
     });
 
     test('toResult', () => {
-        expect(nothing().toResult().isSuccess).toEqual(false);
+        expect(nothing().toResult().isOk).toEqual(false);
         expect(nothing().toResult().inspect()).toEqual('Err(undefined)');
 
-        expect(maybe(SOMETHING).toResult().isSuccess).toBe(true);
+        expect(maybe(SOMETHING).toResult().isOk).toBe(true);
         expect(maybe(SOMETHING).toResult().inspect()).toEqual(`Ok(${SOMETHING})`);
     });
 
     test('custom nothing definition', () => {
-        expect(maybe({type: SOMETHING},  false).toResult().isSuccess).toBe(false);
+        expect(maybe({type: SOMETHING},  false).toResult().isOk).toBe(false);
         expect(maybe(SOMETHING).toResult().inspect()).toEqual(`Ok(${SOMETHING})`);
     });
 });

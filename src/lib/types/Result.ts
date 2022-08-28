@@ -4,7 +4,7 @@ import {Nothing, Some} from './Maybe';
 export type Result<VALUE, ERROR> = Ok<VALUE> | Err<ERROR>;
 
 export interface Ok<VALUE> {
-  readonly isSuccess: true;
+  readonly isOk: true;
   readonly value: VALUE;
   readonly orNull: () => VALUE;
   readonly orElse: () => VALUE;
@@ -22,7 +22,7 @@ export interface Ok<VALUE> {
 }
 
 export interface Err<ERROR> {
-  readonly isSuccess: false;
+  readonly isOk: false;
   readonly value: ERROR;
   readonly orNull: () => null;
   readonly orElse: <VALUE>(fallback: VALUE) => VALUE;
