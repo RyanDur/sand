@@ -36,7 +36,7 @@ describe('the Async Result', () => {
             expect(resultOnFailure).toEqual(data);
 
             await aResult.onComplete(result => {
-                if (result.isOk) expect(result.value).toEqual(data);
+                if (result.isSuccess) expect(result.value).toEqual(data);
                 else expect(result.value).not.toEqual(data);
             }).orNull();
         };
@@ -68,7 +68,7 @@ describe('the Async Result', () => {
             expect(resultOnFailure).toEqual(reason);
 
             await aResult.onComplete(result => {
-                if (result.isOk) fail('this should not happen');
+                if (result.isSuccess) fail('this should not happen');
                 else expect(result.value).toEqual(reason);
             });
         };

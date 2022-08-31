@@ -1,59 +1,59 @@
 import {inspect, shallowFreeze} from './util';
 import {nothing, some} from './maybe';
-import {Err, Ok} from './types';
+import {Failure, Success} from './types';
 
 /**
  * ```ts
- * var okResult = success('some value').map(value => value + ', another value');
- * okResult.orNull(); // produces: "some value, another value"
+ * var successResult = success('some value').map(value => value + ', another value');
+ * successResult.orNull(); // produces: "some value, another value"
  * okResult.orElse('definitely this'); // produces: "definitely this"
  * ```
  */
 
-const ok = <VALUE>(value: VALUE): Ok<VALUE> => shallowFreeze({
-    isOk: true,
+const success = <VALUE>(value: VALUE): Success<VALUE> => shallowFreeze({
+    isSuccess: true,
     value,
     orNull: () => value,
     orElse: () => value,
-    map: f => ok(f(value)),
+    map: f => success(f(value)),
     mBind: f => f(value),
-    or: () => ok(value),
+    or: () => success(value),
     either: (f, _) => f(value),
     onSuccess: consumer => {
         consumer(value);
-        return ok(value);
+        return success(value);
     },
-    onFailure: () => ok(value),
+    onFailure: () => success(value),
     toMaybe: () => some(value),
-    inspect: () => `Ok(${inspect(value)})`
+    inspect: () => `Success(${inspect(value)})`
 });
 
 
 /**
  * ```ts
- * const failureResult = failure('some failure').mapErr(value => value + ', another failure');
+ * const failureResult = failure('some failure').mapFailure(value => value + ', another failure');
  * failureResult.orNull(); // produces: null
  * failureResult.orElse('Not this'); // produces: "some failure, another failure"
  * ```
  */
 
 
-const err = <ERROR>(value: ERROR): Err<ERROR> => shallowFreeze({
-    isOk: false,
+const failure = <ERROR>(value: ERROR): Failure<ERROR> => shallowFreeze({
+    isSuccess: false,
     value,
     orNull: () => null,
     orElse: fallback => fallback,
-    map: () => err(value),
-    mBind: () => err(value),
+    map: () => failure(value),
+    mBind: () => failure(value),
     or: f => f(value),
     either: (_, f) => f(value),
-    onSuccess: () => err(value),
+    onSuccess: () => failure(value),
     onFailure: consumer => {
         consumer(value);
-        return err(value);
+        return failure(value);
     },
     toMaybe: () => nothing(),
-    inspect: () => `Err(${inspect(value)})`
+    inspect: () => `Failure(${inspect(value)})`
 });
 
 /**
@@ -63,7 +63,7 @@ const err = <ERROR>(value: ERROR): Err<ERROR> => shallowFreeze({
  * A factory for creating Result's
  *
  * @see implementation {@link https://github.com/RyanDur/sand/blob/main/sr/lib/result.ts}
- * @see test for ok {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L9}
+ * @see test for success {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L9}
  * @see test for failure {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L29}
  * */
-export {ok, err};
+export {success, failure};

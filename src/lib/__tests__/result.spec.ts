@@ -1,78 +1,107 @@
 import * as faker from 'faker';
-import {not} from '../util';
-import {err, ok} from '../result';
-import {maybe} from '../maybe';
+import {Result} from '../types';
+import {failure, success} from '../result';
 
 describe('The Result', () => {
+  const thisShouldNotHappen = (_: any) => fail('this should not happen');
   const data = {t: faker.lorem.sentence()};
   const reason = faker.lorem.sentence();
 
-  const aResult = (isSomething: boolean) =>
-    maybe(data, isSomething).toResult().or(() => err(reason));
+  describe('success', () => {
+    const aSuccess: Result<{t: string}, string> = success(data);
 
-  test('when Ok', () => {
-    const anOkResult = aResult(true);
+    describe('why it is a monad', () => {
+      test('orElse: should return the data', () =>
+          expect(aSuccess.orElse(reason)).toEqual(data));
 
-    expect(anOkResult.orNull()).toEqual(data);
+      test('map: should allow us to to produce a new value within a new success', () =>
+          expect(aSuccess.map(value => value + reason).orElse(reason)).toEqual(data + reason));
 
-    expect(anOkResult.onSuccess(value => expect(value).toEqual(data)).orElse(reason)).toEqual(data);
+      test('mBind: should allow us to bind to a new Result that produces a new value', () => {
+        expect(aSuccess.mBind(value => success(value + reason)).orElse(reason)).toEqual(data + reason);
+        expect(aSuccess.mBind(value => failure(value + reason)).orElse(reason)).toEqual(reason);
+      });
 
-    expect(anOkResult.onFailure(() => fail('this should not happen')).orElse(reason)).toEqual(data);
+      test('or: should be skipped', () =>
+          expect(aSuccess.or(thisShouldNotHappen).orElse(reason)).toEqual(data));
+    });
 
-    expect(anOkResult.orElse(reason)).toEqual(data);
+    test('orNull: should return the data', () =>
+        expect(aSuccess.orNull()).toEqual(data));
 
-    expect(anOkResult.map(value => value + reason).orElse(reason)).toEqual(data + reason);
+    describe('either: should call the success path', () => {
+      it('should allow us to change it to a failure', () =>
+          expect(aSuccess.either(
+              value => failure({t: value.t + reason}),
+              thisShouldNotHappen
+          ).value).toEqual({t: data.t + reason}));
 
-    expect(anOkResult.mBind(value => ok(value + reason)).orElse(reason)).toEqual(data + reason);
-    expect(anOkResult.mBind(value => err(value + reason)).orElse(reason)).toEqual( reason);
+      it('should allow us to change it to a different success', () =>
+          expect(aSuccess.either(
+              value => success(reason + value),
+              thisShouldNotHappen
+          ).value).toEqual(reason + data));
+    });
 
-    expect(anOkResult.or(() => fail('this should not happen')).orElse(reason)).toEqual(data);
+    test('onSuccess: should allow us to consume the value, and return the original value', () =>
+        expect(aSuccess.onSuccess(value => expect(value).toEqual(data)).orElse(reason)).toEqual(data));
 
-    const actual = anOkResult.either(
-      value => err({t: value.t + reason}),
-      value => ok({t: value})
-    ).value;
-    expect(actual).toEqual({t: data.t + reason});
+    test('onFailure: should be skipped', () =>
+        expect(aSuccess.onFailure(thisShouldNotHappen).orElse(reason)).toEqual(data));
 
-    expect(anOkResult.toMaybe().inspect()).toBe(`Some(${data})`);
+    test('toMaybe: should return a Some containing the value', () =>
+        expect(aSuccess.toMaybe().inspect()).toBe(`Some(${JSON.stringify(data)})`));
 
-    if (anOkResult.isOk) expect(anOkResult.value).toEqual(data);
-    else fail('This should not happen');
+    test('isSuccess: should be true', () =>
+        expect(aSuccess.isSuccess).toBe(true));
   });
 
-  test('when Err', () => {
-    const anErrResult = aResult(false);
+  describe('failure', () => {
+    const aFailure: Result<{t: string}, string> = failure(reason);
 
-    expect(anErrResult.orNull()).toBeNull();
+    describe('why it is a monad', () => {
+      test('orElse: should return the fallback value', () =>
+          expect(aFailure.orElse(data)).toEqual(data));
 
-    expect(anErrResult.onSuccess(() => fail('this should not happen')).orElse(data)).toEqual(data);
+      test('map: should be skipped', () =>
+          expect(aFailure.map(thisShouldNotHappen).orElse(reason)).toEqual(reason));
 
-    expect(anErrResult.onFailure(value => expect(value).toEqual(reason)).isOk).toBe(false);
+      test('mBind: should be skipped', () =>
+          expect(aFailure.mBind(thisShouldNotHappen).orElse(reason)).toEqual(reason));
 
-    expect(anErrResult.orElse(data)).toEqual(data);
+      test('or: should not allow us to bind to a new Result that produces a new value', () => {
+        expect(aFailure.or(value => success(value + reason)).orElse(reason)).toEqual(reason + reason);
+        expect(aFailure.or(value => failure(value + reason)).orElse(reason)).toEqual(reason);
+      });
+    });
 
-    expect(anErrResult.map(() => 'this should not happen').orElse(data)).toEqual(data);
+    test('orNull: should be null', () =>
+        expect(aFailure.orNull()).toBeNull());
 
-    expect(anErrResult.mBind(() => err('this will not happen')).orElse(data)).toEqual(data);
-    expect(anErrResult.mBind(() => ok('this will not happen')).orElse(data)).toEqual(data);
+    describe('either: should call the failure path', () => {
+      it('should allow us to change it to a failure', () =>
+          expect(aFailure.either(
+              thisShouldNotHappen,
+              value => success({t: value})
+          ).value).toEqual({t: reason}));
 
-    expect(anErrResult.or(explanation => err(explanation + data)).orElse(data)).toEqual(data);
-    expect(anErrResult.or(explanation => ok(explanation + data)).orElse(data)).toEqual(reason + data);
+      it('should allow us to change it to a different success', () =>
+          expect(aFailure.either(
+              thisShouldNotHappen,
+              value => failure(reason + value)
+          ).value).toEqual(reason + reason));
+    });
 
-    expect(anErrResult.either(
-      () => ok('This should not happen'),
-      value => err(value + data),
-    ).value).toEqual(reason + data);
+    test('onSuccess:: should be skipped', () =>
+        expect(aFailure.onSuccess(thisShouldNotHappen).value).toEqual(reason));
 
-    const actual = anErrResult.either(
-      () => err('This should not happen'),
-      value => ok(value + data),
-    ).value;
-    expect(actual).toEqual(reason + data);
+    test('onFailure should allow us to consume the value, and return the original value', () =>
+        expect(aFailure.onFailure(value => expect(value).toEqual(reason)).value).toEqual(reason));
 
-    expect(anErrResult.toMaybe().inspect()).toBe('Nothing');
+    test('toMaybe: should return Nothing', () =>
+        expect(aFailure.toMaybe().inspect()).toBe('Nothing'));
 
-    if (not(anErrResult.isOk)) expect(anErrResult.value).toEqual(reason);
-    else fail('This should not happen');
+    test('isSuccess: should be false', () =>
+        expect(aFailure.isSuccess).toBe(false));
   });
 });

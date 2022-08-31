@@ -3,7 +3,6 @@ import * as faker from 'faker';
 
 const SOMETHING = 'SOMETHING';
 const NOTHING = 'NOTHING';
-
 const lambda = () => NOTHING;
 const functionExpression = function () {
     return NOTHING;
@@ -13,15 +12,12 @@ function functionDeclaration() {
     return NOTHING;
 }
 
-const expectMaybeToBe = (expectation: 'SOMETHING' | 'NOTHING') => <T>(value: T) => expectation === SOMETHING ?
-    {value, expectation: `SOME(${String(value)})`} : {value, expectation};
-
-const nones = [
+const nothings = [
     NaN,
     null,
     undefined
-].map(expectMaybeToBe(NOTHING));
-const somes = [
+];
+const somethings = [
     {},
     false,
     true,
@@ -40,50 +36,71 @@ const somes = [
     "", // eslint-disable-line
     '',
     ``  // eslint-disable-line
-].map(expectMaybeToBe(SOMETHING));
+];
 
 describe('the Maybe', () => {
-    [...nones, ...somes].forEach(({value, expectation}) => {
-        const maybeValue = maybe(value);
-        test(`${maybeValue.isNothing ? `${value} is` : ''} ${maybeValue.inspect()} `, () =>
-            expect(maybeValue.map(String).map(value => `SOME(${value})`).orElse(NOTHING)).toEqual(expectation));
+    const thisShouldNotHappen = () => fail('this should not happen');
+    const otherValue = faker.lorem.sentence();
+
+    describe('something', () => {
+        somethings.forEach(value => {
+            const maybeValue = maybe(value);
+
+            describe('why it is a monad', () => {
+                test(`orElse: for ${value} should not provide the fallback value`, () =>
+                    expect(maybeValue.orElse(SOMETHING)).toEqual(value));
+
+                test(`map: for ${value} is ${maybeValue.inspect()} `, () =>
+                    expect(maybeValue.map(String).map(() => SOMETHING).orElse(NOTHING)).toEqual(SOMETHING));
+
+                test(`mBind: for ${value} should allow us to bind to another maybe`, () => {
+                    expect(maybeValue.mBind(inner => some(`${inner}, ${otherValue}`)).orNull())
+                        .toEqual(`${value}, ${otherValue}`);
+                    expect(maybeValue.mBind(() => nothing()).orNull())
+                        .toEqual(null);
+                });
+
+                test(`or: for ${value} is ${maybeValue.inspect()}`, () =>
+                    expect(maybeValue.or(thisShouldNotHappen).orElse(NOTHING)).toBe(value));
+            });
+
+            test(`toResult: for ${value} is ${maybeValue.inspect()} should be a Failure`, () =>
+                expect(maybeValue.toResult().isSuccess).toEqual(true));
+        });
     });
 
-    const value1 = faker.lorem.sentence();
-    const value2 = faker.lorem.sentence();
+    describe('nothing', () => {
+        nothings.forEach(value => {
+            const maybeValue = maybe(value);
 
-    test('mBind', () => {
-        expect(maybe(value1).mBind(inner => maybe(`${inner}, ${value2}`)).orNull())
-            .toEqual(`${value1}, ${value2}`);
+            describe('why it is a monad', () => {
+                test(`orElse: for ${value} should provide the fallback value`, () =>
+                    expect(maybeValue.orElse(SOMETHING)).toEqual(SOMETHING));
 
-        expect(maybe().mBind(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
+                test(`map: for ${value} should be skipped`, () =>
+                    expect(maybeValue.map(String).map(() => SOMETHING).orElse(NOTHING)).toEqual(NOTHING));
+
+                test(`mBind: for ${value} should be skipped`, () =>
+                    expect(maybeValue.mBind(thisShouldNotHappen).orNull()).toEqual(null));
+
+                test(`or: for ${value} is ${maybeValue.inspect()}`, () => {
+                    expect(maybeValue.or(() => some(otherValue)).orNull()).toEqual(otherValue);
+                    expect(maybeValue.mBind(() => nothing()).orNull()).toEqual(null);
+                });
+            });
+
+            test(`toResult: for ${value} is ${maybeValue.inspect()} should be a Failure`, () =>
+                expect(maybeValue.toResult().isSuccess).toEqual(false));
+        });
     });
 
-    test('custom none type discriminator', () => {
-        expect(maybe(value1, false).mBind(() => fail('This should not happen')).orElse(NOTHING)).toEqual(NOTHING);
+    describe('custom none type discriminator', () => {
+        it('should be nothing for a false value', () =>
+            expect(maybe(SOMETHING, false)
+                .map(thisShouldNotHappen).orElse(NOTHING)).toEqual(NOTHING));
 
-        const something = {a: faker.lorem.sentence()};
-
-        expect(maybe(something, true).mBind(inner => maybe(`${inner.a}, ${value2}`)).orNull())
-            .toEqual(`${something.a}, ${value2}`);
-    });
-
-    test('or', () => {
-        expect(nothing().or(() => some(SOMETHING)).orElse(NOTHING)).toEqual(SOMETHING);
-
-        expect((maybe(SOMETHING)).or(() => fail('this should not happen')).orElse(NOTHING)).toBe(SOMETHING);
-    });
-
-    test('toResult', () => {
-        expect(nothing().toResult().isOk).toEqual(false);
-        expect(nothing().toResult().inspect()).toEqual('Err(undefined)');
-
-        expect(maybe(SOMETHING).toResult().isOk).toBe(true);
-        expect(maybe(SOMETHING).toResult().inspect()).toEqual(`Ok(${SOMETHING})`);
-    });
-
-    test('custom nothing definition', () => {
-        expect(maybe({type: SOMETHING},  false).toResult().isOk).toBe(false);
-        expect(maybe(SOMETHING).toResult().inspect()).toEqual(`Ok(${SOMETHING})`);
+        it('should be something for a false value', () =>
+            expect(maybe(SOMETHING, true)
+                .map(value => value + SOMETHING ).orElse(NOTHING)).toEqual(SOMETHING + SOMETHING));
     });
 });

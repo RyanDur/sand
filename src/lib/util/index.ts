@@ -15,7 +15,8 @@ const nameOfBuiltInInstanceOf = (value: unknown): string | undefined => {
 
 export const shallowFreeze = <T>(obj: T): T => Object.freeze(obj);
 
-export const inspect = (value: unknown): string => has(value) && (value as Inspectable).inspect?.() || String(value);
+const toJson = (data: unknown) => JSON.stringify(data, (_, v) => typeof v === 'bigint' ? `${v}n` : v)?.replace(/"(-?\d+)n"/g, (_, a) => a);
+export const inspect = (value: unknown): string => has(value) && (value as Inspectable).inspect?.() || toJson(value);
 
 /**
  *

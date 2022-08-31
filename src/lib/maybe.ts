@@ -1,6 +1,6 @@
 import {Maybe, Nothing, Some} from './types';
 import {inspect, not, shallowFreeze, typeOf} from './util';
-import {err, ok} from './result';
+import {failure, success} from './result';
 
 /**
  * ```ts
@@ -14,7 +14,7 @@ const some = <THING>(thing: THING): Some<THING> => shallowFreeze({
   map: f => some(f(thing)),
   mBind: f => f(thing),
   or: () => some(thing),
-  toResult: () => ok(thing),
+  toResult: () => success(thing),
   inspect: () => `Some(${inspect(thing)})`
 });
 
@@ -30,7 +30,7 @@ const nothing = (): Nothing => shallowFreeze({
   map: () => nothing(),
   mBind: () => nothing(),
   or: f => f(),
-  toResult: () => err(undefined),
+  toResult: () => failure(undefined),
   inspect: () => 'Nothing'
 });
 

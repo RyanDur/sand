@@ -1,4 +1,4 @@
-import {ok, err} from './result';
+import {success as ok, failure as err} from './result';
 import {Result} from './types';
 import {inspect} from './util';
 

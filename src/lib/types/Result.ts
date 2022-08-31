@@ -1,40 +1,40 @@
 import {Consumer} from './Function';
 import {Nothing, Some} from './Maybe';
 
-export type Result<VALUE, ERROR> = Ok<VALUE> | Err<ERROR>;
+export type Result<VALUE, ERROR> = Success<VALUE> | Failure<ERROR>;
 
-export interface Ok<VALUE> {
-  readonly isOk: true;
+export interface Success<VALUE> {
+  readonly isSuccess: true;
   readonly value: VALUE;
   readonly orNull: () => VALUE;
-  readonly orElse: () => VALUE;
-  readonly map: <NEW_VALUE>(mapper: (value: VALUE) => NEW_VALUE) => Ok<NEW_VALUE>;
-  readonly mBind: <NEW_VALUE>(mapper: (value: VALUE) => Result<NEW_VALUE, any>) => Result<NEW_VALUE, any>;
-  readonly or: () => Ok<VALUE>;
+  readonly orElse: (fallback: unknown) => VALUE;
+  readonly map: <NEW_VALUE>(mapper: (value: VALUE) => NEW_VALUE) => Success<NEW_VALUE>;
+  readonly mBind: <NEW_VALUE>(binder: (value: VALUE) => Result<NEW_VALUE, NEW_VALUE>) => Result<NEW_VALUE, NEW_VALUE>;
+  readonly or: (binder: unknown) => Success<VALUE>;
   readonly either: <NEW_VALUE>(
-    okF: (value: VALUE) => Result<NEW_VALUE, unknown>,
-    errF: unknown
-  ) => Result<NEW_VALUE, unknown>;
-  readonly onSuccess: (consumer: Consumer<VALUE>) => Ok<VALUE>;
-  readonly onFailure: () => Ok<VALUE>;
+      successF: (value: VALUE) => Result<NEW_VALUE, NEW_VALUE>,
+      failureF: unknown
+  ) => Result<NEW_VALUE, NEW_VALUE>;
+  readonly onSuccess: (consumer: Consumer<VALUE>) => Success<VALUE>;
+  readonly onFailure: (consumer: unknown) => Success<VALUE>;
   readonly inspect: () => string;
   readonly toMaybe: () => Some<VALUE>;
 }
 
-export interface Err<ERROR> {
-  readonly isOk: false;
+export interface Failure<ERROR> {
+  readonly isSuccess: false;
   readonly value: ERROR;
   readonly orNull: () => null;
   readonly orElse: <VALUE>(fallback: VALUE) => VALUE;
-  readonly map: () => Err<ERROR>;
-  readonly mBind: () => Err<ERROR>;
-  readonly or: <NEW_ERROR>(mapper: (reason: ERROR) => Result<any, NEW_ERROR>) => Result<any, NEW_ERROR>;
+  readonly map: (mapper: unknown) => Failure<ERROR>;
+  readonly mBind: (binder: unknown) => Failure<ERROR>;
+  readonly or: <NEW_ERROR>(mapper: (reason: ERROR) => Result<NEW_ERROR, NEW_ERROR>) => Result<NEW_ERROR, NEW_ERROR>;
   readonly either: <NEW_ERROR>(
-    okF: unknown,
-    errF: (error: ERROR) => Result<unknown, NEW_ERROR>
-  ) => Result<unknown, NEW_ERROR>;
-  readonly onSuccess: () => Err<ERROR>;
-  readonly onFailure: (consumer: Consumer<ERROR>) => Err<ERROR>;
+      successF: unknown,
+      failureF: (error: ERROR) => Result<NEW_ERROR, NEW_ERROR>
+  ) => Result<NEW_ERROR, NEW_ERROR>;
+  readonly onSuccess: (consumer: unknown) => Failure<ERROR>;
+  readonly onFailure: (consumer: Consumer<ERROR>) => Failure<ERROR>;
   readonly toMaybe: () => Nothing;
   readonly inspect: () => string;
 }
