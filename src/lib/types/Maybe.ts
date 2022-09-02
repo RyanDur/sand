@@ -4,8 +4,8 @@ export type Maybe<THING> = Some<THING> | Nothing
 
 export interface Some<THING> {
     readonly isNothing: false;
-    readonly orElse: () => THING;
     readonly orNull: () => THING;
+    readonly orElse: (fallback: unknown) => THING;
     readonly map: <NEW_THING>(f: (value: THING) => NEW_THING) => Some<NEW_THING>;
     readonly mBind: <NEW_THING>(f: (value: THING) => Maybe<NEW_THING>) => Maybe<NEW_THING>;
     readonly or: (f: unknown) => Some<THING>;

@@ -8,6 +8,55 @@ describe('the Maybe', () => {
     const thisShouldNotHappen = () => fail('this should not happen');
     const otherValue = faker.lorem.sentence();
 
+    describe('something', () => {
+        const maybeValue = some(SOMETHING);
+
+        describe('why it is a monad', () => {
+            test('orElse: for undefined should not provide the fallback value', () =>
+                expect(maybeValue.orElse(OTHER_THING)).toBe(SOMETHING));
+
+            test(`map: for undefined is ${maybeValue.inspect?.()} `, () =>
+                expect(maybeValue.map(() => OTHER_THING).orElse(SOMETHING)).toEqual(OTHER_THING));
+
+            test('mBind: for undefined should allow us to bind to another maybe', () => {
+                expect(maybeValue.mBind(inner => some(`${inner}, ${otherValue}`)).orNull())
+                    .toEqual(`${SOMETHING}, ${otherValue}`);
+                expect(maybeValue.mBind(() => nothing()).orNull())
+                    .toEqual(null);
+            });
+
+            test(`or: for undefined is ${maybeValue.inspect?.()}`, () =>
+                expect(maybeValue.or(thisShouldNotHappen).orElse(OTHER_THING)).toBe(SOMETHING));
+        });
+
+        test(`toResult: for undefined is ${maybeValue.inspect?.()} should be a Success`, () =>
+            expect(maybeValue.toResult?.().isSuccess).toEqual(true));
+    });
+
+    describe('nothing', () => {
+        const maybeValue = nothing();
+
+        describe('why it is a monad', () => {
+            test('orElse: for SOMETHING should provide the fallback value', () =>
+                expect(maybeValue.orElse(NOTHING)).toEqual(NOTHING));
+
+            test('map: for SOMETHING should be skipped', () =>
+                expect(maybeValue.map(thisShouldNotHappen).orElse(NOTHING)).toEqual(NOTHING));
+
+            test('mBind: for SOMETHING should be skipped', () =>
+                expect(maybeValue.mBind(thisShouldNotHappen).orNull()).toEqual(null));
+
+            test(`or: for SOMETHING is ${maybeValue.inspect?.()}`, () => {
+                expect(maybeValue.or(() => some(otherValue)).orNull()).toEqual(otherValue);
+                expect(maybeValue.mBind(() => nothing()).orNull()).toEqual(null);
+            });
+        });
+
+        test(`toResult: for SOMETHING is ${maybeValue.inspect?.()} should be a Failure`, () => {
+            expect(maybeValue.toResult?.().isSuccess).toEqual(false);
+        });
+    });
+
     describe('with custom isSomething definition', () => {
         describe('something', () => {
             const maybeValue = maybe(NOTHING, true);
