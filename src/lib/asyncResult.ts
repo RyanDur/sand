@@ -1,4 +1,4 @@
-import {success as ok, failure as err} from './result';
+import {failure as err, success as ok} from './result';
 import {Result} from './types';
 import {inspect} from './util';
 
@@ -7,12 +7,12 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
     orNull: () => promise.then(({orNull}) => orNull()),
     orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
     map: mapping => ofPromise(promise.then(({map}) => map(mapping))),
-    mBind: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-        .onSuccess(value => mapping(value).onComplete(resolve))
+    mBind: binding => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+        .onSuccess(value => binding(value).onComplete(resolve))
         .onFailure(value => resolve(err(value)))))),
-    or: mapping => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+    or: binding => ofPromise(new Promise(resolve => promise.then(pipe => pipe
         .onSuccess(value => resolve(ok(value)))
-        .onFailure(value => mapping(value).onComplete(resolve))))),
+        .onFailure(value => binding(value).onComplete(resolve))))),
     onPending: isPending => {
         isPending(true);
         return ofPromise(promise.then(value => {
