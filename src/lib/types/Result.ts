@@ -47,6 +47,10 @@ export declare namespace Result {
     readonly map: <NEW_SUCCESS>(mapping: (data: SUCCESS) => NEW_SUCCESS) => Async<NEW_SUCCESS, FAILURE>;
     readonly mBind: <NEW_SUCCESS>(binder: (data: SUCCESS) => Async<NEW_SUCCESS, FAILURE>) => Async<NEW_SUCCESS, FAILURE>;
     readonly or: <NEW_FAILURE>(binder: (reason: FAILURE) => Async<SUCCESS, NEW_FAILURE>) => Async<SUCCESS, NEW_FAILURE>;
+    readonly either: <NEW_VALUE>(
+        successF:  (data: SUCCESS) => Async<NEW_VALUE, FAILURE>,
+        failureF: (reason: FAILURE) => Async<SUCCESS, NEW_VALUE>
+    ) => Async<NEW_VALUE, NEW_VALUE>;
     /**
      * onPending: A function that notifies the consuming function of the pending state.
      *

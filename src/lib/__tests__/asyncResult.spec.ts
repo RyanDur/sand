@@ -24,6 +24,16 @@ describe('the Async Result', () => {
                 asyncResult.failure({cause: inner.type + reason})
             ).value).toEqual({cause: data.type + reason});
 
+            expect(await aResult.either(
+                inner => asyncResult.failure({cause: inner.type + reason}),
+                unexpected
+            ).value).toEqual({cause: data.type + reason});
+
+            expect(await aResult.either(
+                inner => asyncResult.success({type: inner.type + reason}),
+                unexpected
+            ).value).toEqual({type: data.type + reason});
+
             const resultFlatMapFailure = await aResult.or(unexpected).orNull();
             expect(resultFlatMapFailure).toEqual(data);
 
@@ -59,8 +69,18 @@ describe('the Async Result', () => {
             ).value).toEqual(reason + data);
 
             expect(await aResult.or(inner =>
-                asyncResult.success({bar: inner +data})
+                asyncResult.success({bar: inner + data})
             ).value).toEqual({bar: reason + data});
+
+            expect(await aResult.either(
+                unexpected,
+                inner => asyncResult.success({bar: inner + data})
+            ).value).toEqual({bar: reason + data});
+
+            expect(await aResult.either(
+                unexpected,
+                inner => asyncResult.failure(inner + data)
+            ).value).toEqual(reason + data);
 
             const isLoading = jest.fn();
             await aResult.onPending(isLoading).orNull();

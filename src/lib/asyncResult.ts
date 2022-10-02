@@ -13,6 +13,9 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
     or: binding => ofPromise(new Promise(resolve => promise.then(pipe => pipe
         .onSuccess(value => resolve(ok(value as any)))
         .onFailure(value => binding(value).onComplete(resolve))))),
+    either: (successF, failureF) => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+        .onSuccess(value => successF(value).onComplete(resolve as any))
+        .onFailure(value => failureF(value).onComplete(resolve as any))))),
     onPending: is => {
         is(true);
         return ofPromise(promise.then(value => {
