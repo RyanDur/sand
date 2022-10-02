@@ -45,8 +45,8 @@ export declare namespace Result {
     readonly orNull: () => Promise<SUCCESS | null>;
     readonly orElse: (fallback: SUCCESS) => Promise<SUCCESS>;
     readonly map: <NEW_SUCCESS>(mapping: (data: SUCCESS) => NEW_SUCCESS) => Async<NEW_SUCCESS, FAILURE>;
-    readonly mBind: <NEW_SUCCESS, NEW_FAILURE>(binder: (data: SUCCESS) => Async<NEW_SUCCESS, NEW_FAILURE>) => Async<NEW_SUCCESS, NEW_FAILURE>;
-    readonly or: <NEW_SUCCESS, NEW_FAILURE>(binder: (reason: FAILURE) => Async<NEW_SUCCESS, NEW_FAILURE>) => Async<NEW_SUCCESS, NEW_FAILURE>;
+    readonly mBind: <NEW_SUCCESS>(binder: (data: SUCCESS) => Async<NEW_SUCCESS, FAILURE>) => Async<NEW_SUCCESS, FAILURE>;
+    readonly or: <NEW_FAILURE>(binder: (reason: FAILURE) => Async<SUCCESS, NEW_FAILURE>) => Async<SUCCESS, NEW_FAILURE>;
     /**
      * onPending: A function that notifies the consuming function of the pending state.
      *
