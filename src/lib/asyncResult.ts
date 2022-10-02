@@ -9,14 +9,14 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
     map: mapping => ofPromise(promise.then(({map}) => map(mapping))),
     mBind: binding => ofPromise(new Promise(resolve => promise.then(pipe => pipe
         .onSuccess(value => binding(value).onComplete(resolve))
-        .onFailure(value => resolve(err(value)))))),
+        .onFailure(value => resolve(err(value as any)))))),
     or: binding => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-        .onSuccess(value => resolve(ok(value)))
+        .onSuccess(value => resolve(ok(value as any)))
         .onFailure(value => binding(value).onComplete(resolve))))),
-    onPending: isPending => {
-        isPending(true);
+    onPending: is => {
+        is(true);
         return ofPromise(promise.then(value => {
-            isPending(false);
+            is(false);
             return value;
         }));
     },

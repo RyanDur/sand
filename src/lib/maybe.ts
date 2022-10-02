@@ -50,8 +50,8 @@ const isSomethingValue = <T>(thing: T): boolean => {
  * */
 const maybe = <THING>(
   value?: THING | null,
-  isSomething = isSomethingValue(value)
-): Maybe<THING> => isSomething ? some(value as THING) : nothing();
+  is = isSomethingValue(value)
+): Maybe<THING> => is ? some(value as THING) : nothing();
 
 /**
  * A Maybe is either something or nothing.

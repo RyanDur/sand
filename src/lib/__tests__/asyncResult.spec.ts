@@ -16,10 +16,13 @@ describe('the Async Result', () => {
             const resultMap = await aResult.map(inner => inner.type + reason).orNull();
             expect(resultMap).toEqual(data.type + reason);
 
-            const resultFlatMap = await aResult.mBind(inner =>
-                asyncResult.of(Promise.resolve(inner.type + reason))
-            ).orNull();
-            expect(resultFlatMap).toEqual(data.type + reason);
+            expect(await aResult.mBind(inner =>
+                asyncResult.success(inner.type + reason as unknown)
+            ).value).toEqual(data.type + reason);
+
+            expect(await aResult.mBind(inner =>
+                asyncResult.failure(inner.type + reason as unknown)
+            ).value).toEqual(data.type + reason);
 
             const resultFlatMapFailure = await aResult.or(unexpected).orNull();
             expect(resultFlatMapFailure).toEqual(data);
@@ -51,10 +54,13 @@ describe('the Async Result', () => {
             const resultFlatMap = await aResult.mBind(unexpected).value;
             expect(resultFlatMap).toEqual(reason);
 
-            const resultOrFailure = await aResult.or(inner =>
-                asyncResult.of(Promise.reject(inner + data))
-            ).value;
-            expect(resultOrFailure).toEqual(reason + data);
+            expect(await aResult.or(inner =>
+                asyncResult.success((inner + data) as unknown)
+            ).value).toEqual(reason + data);
+
+            expect(await aResult.or(inner =>
+                asyncResult.failure((inner + data) as unknown)
+            ).value).toEqual(reason + data);
 
             const isLoading = jest.fn();
             await aResult.onPending(isLoading).orNull();
