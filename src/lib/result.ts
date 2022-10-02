@@ -24,6 +24,11 @@ const success = <VALUE>(value: VALUE): Success<VALUE> => shallowFreeze({
         return success(value);
     },
     onFailure: () => success(value),
+    onComplete: consumer => {
+        const aSuccess = success(value);
+        consumer(aSuccess);
+        return aSuccess;
+    },
     toMaybe: () => some(value),
     inspect: () => `Success(${inspect(value)})`
 });
@@ -51,6 +56,11 @@ const failure = <ERROR>(value: ERROR): Failure<ERROR> => shallowFreeze({
     onFailure: consumer => {
         consumer(value);
         return failure(value);
+    },
+    onComplete: consumer => {
+        const aFailure = failure(value);
+        consumer(aFailure);
+        return aFailure;
     },
     toMaybe: () => nothing(),
     inspect: () => `Failure(${inspect(value)})`

@@ -13,8 +13,7 @@ describe('the Async Result', () => {
         test('directly', async () => await testSuccess(asyncResult.success(data)));
 
         const testSuccess = async (aResult: Result.Async<{ type: string }, { cause: string }>) => {
-            const resultMap = await aResult.map(inner => inner.type + reason).orNull();
-            expect(resultMap).toEqual(data.type + reason);
+            expect(await aResult.map(inner => inner.type + reason).orNull()).toEqual(data.type + reason);
 
             expect(await aResult.mBind(inner =>
                 asyncResult.success(inner.type + reason)
@@ -50,7 +49,7 @@ describe('the Async Result', () => {
 
             await aResult.onComplete(result => {
                 if (result.isSuccess) expect(result.value).toEqual(data);
-                else expect(result.value).not.toEqual(data);
+                else unexpected();
             }).orNull();
         };
     });
@@ -60,9 +59,7 @@ describe('the Async Result', () => {
         test('directly', async () => await testFailure(asyncResult.failure(reason)));
 
         const testFailure = async (aResult: Result.Async<{ bar: string }, string>) => {
-
-            const resultFlatMap = await aResult.mBind(unexpected).value;
-            expect(resultFlatMap).toEqual(reason);
+            expect(await aResult.mBind(unexpected).value).toEqual(reason);
 
             expect(await aResult.or(inner =>
                 asyncResult.failure(inner + data)
@@ -94,7 +91,7 @@ describe('the Async Result', () => {
             expect(resultOnFailure).toEqual(reason);
 
             await aResult.onComplete(result => {
-                if (result.isSuccess) fail('this should not happen');
+                if (result.isSuccess) unexpected();
                 else expect(result.value).toEqual(reason);
             });
         };

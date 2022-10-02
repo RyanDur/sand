@@ -12,7 +12,7 @@ describe('The Result', () => {
 
     describe('why it is a monad', () => {
       test('orElse: should return the data', () =>
-          expect(aSuccess.orElse(reason)).toEqual(data));
+          expect(aSuccess.orElse({t: reason})).toEqual(data));
 
       test('map: should allow us to to produce a new value within a new success', () =>
           expect(aSuccess.map(value => value + reason).orElse(reason)).toEqual(data + reason));
@@ -23,7 +23,7 @@ describe('The Result', () => {
       });
 
       test('or: should be skipped', () =>
-          expect(aSuccess.or(thisShouldNotHappen).orElse(reason)).toEqual(data));
+          expect(aSuccess.or(thisShouldNotHappen).orElse({t: reason})).toEqual(data));
     });
 
     test('orNull: should return the data', () =>
@@ -44,10 +44,13 @@ describe('The Result', () => {
     });
 
     test('onSuccess: should allow us to consume the value, and return the original value', () =>
-        expect(aSuccess.onSuccess(value => expect(value).toEqual(data)).orElse(reason)).toEqual(data));
+        expect(aSuccess.onSuccess(value => expect(value).toEqual(data)).orElse({t: reason})).toEqual(data));
 
     test('onFailure: should be skipped', () =>
-        expect(aSuccess.onFailure(thisShouldNotHappen).orElse(reason)).toEqual(data));
+        expect(aSuccess.onFailure(thisShouldNotHappen).orElse({t: reason})).toEqual(data));
+
+    test('onComplete should allow us to consume the value, and return the original value', () =>
+        expect(aSuccess.onComplete(result => expect(result.value).toEqual(data)).value).toEqual(data));
 
     test('toMaybe: should return a Some containing the value', () =>
         expect(aSuccess.toMaybe().inspect()).toBe(`Some(${JSON.stringify(data)})`));
@@ -97,6 +100,9 @@ describe('The Result', () => {
 
     test('onFailure should allow us to consume the value, and return the original value', () =>
         expect(aFailure.onFailure(value => expect(value).toEqual(reason)).value).toEqual(reason));
+
+    test('onComplete should allow us to consume the value, and return the original value', () =>
+        expect(aFailure.onComplete(result => expect(result.value).toEqual(reason)).value).toEqual(reason));
 
     test('toMaybe: should return Nothing', () =>
         expect(aFailure.toMaybe().inspect()).toBe('Nothing'));

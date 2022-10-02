@@ -6,16 +6,17 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
     value: promise.then(result => result.value),
     orNull: () => promise.then(({orNull}) => orNull()),
     orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
-    map: mapping => ofPromise(promise.then(({map}) => map(mapping))),
-    mBind: binding => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-        .onSuccess(value => binding(value).onComplete(resolve))
-        .onFailure(value => resolve(err(value as any)))))),
-    or: binding => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-        .onSuccess(value => resolve(ok(value as any)))
-        .onFailure(value => binding(value).onComplete(resolve))))),
-    either: (successF, failureF) => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-        .onSuccess(value => successF(value).onComplete(resolve as any))
-        .onFailure(value => failureF(value).onComplete(resolve as any))))),
+    map: fn => ofPromise(promise.then(({map}) => map(fn))),
+    mBind: fn => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+        .onSuccess(value => fn(value).onComplete(resolve))
+        .onFailure(value => err(value).onComplete(resolve))))),
+    or: fn => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+        .onSuccess(value => ok(value).onComplete(resolve))
+        .onFailure(value => fn(value).onComplete(resolve))
+    ))),
+    either: (onSuccess, onFailure) => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+        .onSuccess(value => onSuccess(value).onComplete(resolve))
+        .onFailure(value => onFailure(value).onComplete(resolve))))),
     onPending: is => {
         is(true);
         return ofPromise(promise.then(value => {
@@ -25,10 +26,7 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
     },
     onSuccess: consumer => ofPromise(promise.then(({onSuccess}) => onSuccess(consumer))),
     onFailure: consumer => ofPromise(promise.then(({onFailure}) => onFailure(consumer))),
-    onComplete: consumer => ofPromise(promise.then(result => {
-        consumer(result);
-        return result;
-    })),
+    onComplete: consumer => ofPromise(promise.then(({onComplete}) => onComplete(consumer))),
     inspect: () => promise.then(value => `Result.Async(${inspect(value)})`)
 });
 
