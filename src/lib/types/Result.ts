@@ -29,10 +29,10 @@ export interface Failure<ERROR> {
   readonly map: (mapper: unknown) => Failure<ERROR>;
   readonly mBind: (binding: unknown) => Failure<ERROR>;
   readonly or: <NEW_VALUE>(binding: (reason: ERROR) => Result<NEW_VALUE, NEW_VALUE>) => Result<NEW_VALUE, NEW_VALUE>;
-  readonly either: <NEW_ERROR>(
+  readonly either: <NEW_VALUE>(
       successF: unknown,
-      failureF: (error: ERROR) => Result<NEW_ERROR, NEW_ERROR>
-  ) => Result<NEW_ERROR, NEW_ERROR>;
+      failureF: (error: ERROR) => Result<NEW_VALUE, NEW_VALUE>
+  ) => Result<NEW_VALUE, NEW_VALUE>;
   readonly onSuccess: (consumer: unknown) => Failure<ERROR>;
   readonly onFailure: (consumer: Consumer<ERROR>) => Failure<ERROR>;
   readonly toMaybe: () => Nothing;
@@ -45,8 +45,8 @@ export declare namespace Result {
     readonly orNull: () => Promise<SUCCESS | null>;
     readonly orElse: (fallback: SUCCESS) => Promise<SUCCESS>;
     readonly map: <NEW_SUCCESS>(mapping: (data: SUCCESS) => NEW_SUCCESS) => Async<NEW_SUCCESS, FAILURE>;
-    readonly mBind: <NEW_SUCCESS>(mapping: (data: SUCCESS) => Async<NEW_SUCCESS, FAILURE>) => Async<NEW_SUCCESS, FAILURE>;
-    readonly or: <NEW_FAILURE>(mapping: (reason: FAILURE) => Async<SUCCESS, NEW_FAILURE>) => Async<SUCCESS, NEW_FAILURE>;
+    readonly mBind: <NEW_SUCCESS, NEW_FAILURE>(binder: (data: SUCCESS) => Async<NEW_SUCCESS, NEW_FAILURE>) => Async<NEW_SUCCESS, NEW_FAILURE>;
+    readonly or: <NEW_SUCCESS, NEW_FAILURE>(binder: (reason: FAILURE) => Async<NEW_SUCCESS, NEW_FAILURE>) => Async<NEW_SUCCESS, NEW_FAILURE>;
     /**
      * onPending: A function that notifies the consuming function of the pending state.
      *

@@ -12,12 +12,16 @@ describe('the Async Result', () => {
         test('for a promise', async () => await testSuccess(asyncResult.of(Promise.resolve(data))));
         test('directly', async () => await testSuccess(asyncResult.success(data)));
 
-        const testSuccess = async (aResult: Result.Async<{type: string}, {cause: string}>) => {
+        const testSuccess = async (aResult: Result.Async<{ type: string }, { cause: string }>) => {
             const resultMap = await aResult.map(inner => inner.type + reason).orNull();
             expect(resultMap).toEqual(data.type + reason);
 
             expect(await aResult.mBind(inner =>
-                asyncResult.success(inner.type + reason as unknown)
+                asyncResult.success(inner.type + reason)
+            ).value).toEqual(data.type + reason);
+
+            expect(await aResult.mBind(inner =>
+                asyncResult.failure(inner.type + reason)
             ).value).toEqual(data.type + reason);
 
             const resultFlatMapFailure = await aResult.or(unexpected).orNull();
@@ -52,6 +56,10 @@ describe('the Async Result', () => {
 
             expect(await aResult.or(inner =>
                 asyncResult.failure(inner + data)
+            ).value).toEqual(reason + data);
+
+            expect(await aResult.or(inner =>
+                asyncResult.success(inner + data)
             ).value).toEqual(reason + data);
 
             const isLoading = jest.fn();
