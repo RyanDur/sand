@@ -14,6 +14,7 @@ const some = <THING>(thing: THING): Some<THING> => shallowFreeze({
   map: f => some(f(thing)),
   mBind: f => f(thing),
   or: () => some(thing),
+  and: otherMaybe => otherMaybe.map(value => [thing, value]),
   toResult: () => success(thing),
   inspect: () => `Some(${inspect(thing)})`
 });
@@ -30,6 +31,7 @@ const nothing = (): Nothing => shallowFreeze({
   map: () => nothing(),
   mBind: () => nothing(),
   or: f => f(),
+  and: () => nothing(),
   toResult: () => failure(undefined),
   inspect: () => 'Nothing'
 });

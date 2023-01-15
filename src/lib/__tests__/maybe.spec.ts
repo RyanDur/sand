@@ -71,6 +71,37 @@ describe('the Maybe', () => {
         testNothing(maybe(SOMETHING, false));
     });
 
+    describe('and - combine all values into an array passed to the functions', () => {
+        it('should work for same types', () => {
+            expect(maybe(3).and(maybe(4)).map(([a, b]) => a + b).orElse(0)).toEqual(7);
+        });
+        it('should work for mixed types', () => {
+            expect(maybe(3).and(maybe('4')).map(([a, b]) => a + b).orElse(0)).toEqual('34');
+        });
+
+        it('should handle chaining', () => {
+            expect(maybe(3).and(maybe(4).and(maybe(13)))
+                .map(([a, [b, c]]) => a + b + c).orElse(0)).toEqual(20);
+
+            expect(maybe(3).and(maybe(4)).and(maybe(13))
+                .map(([[a, b], c]) => a + b + c).orElse(0)).toEqual(20);
+
+            expect(maybe(3).and(maybe(4)).and(maybe(13)).and(maybe(10))
+                .map(([[[a, b], c], d]) => a + b + c + d).orElse(0)).toEqual(30);
+
+            expect(maybe(3).and(maybe(4)).and(maybe(13).and(maybe(10)))
+                .map(([a, b]) =>
+                    a.reduce((acc, num) => acc + num, 0) +
+                    b.reduce((acc, num) => acc + num, 0)).orElse(0)
+            ).toEqual(30);
+        });
+
+        it('should handle "nothing"', () => {
+            expect(maybe(3).and(nothing()).isNothing).toBe(true);
+            expect(nothing().and(maybe(3)).isNothing).toBe(true);
+        });
+    });
+
     describe('with default isSomething definition', () => {
         describe.skip('what is nothing', () => {
             [
