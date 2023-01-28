@@ -1,6 +1,6 @@
 {
   "name": "@ryandur/sand",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "helper objects and functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -25,7 +25,7 @@
     "test:ci": "npm run test:badges -- --ci --runInBand"
   },
   "author": "Ryan Durling",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/faker": "^5.5.1",
     "@types/jest": "^27.0.1",
