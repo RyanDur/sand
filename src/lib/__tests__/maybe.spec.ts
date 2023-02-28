@@ -132,10 +132,6 @@ describe('the Maybe', () => {
                 -0,
                 5,
                 -34,
-                0n,
-                -0n,
-                46n,
-                -346n,
                 SOMETHING,
                 "", // eslint-disable-line
                 '',

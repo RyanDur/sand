@@ -1,11 +1,12 @@
 {
   "name": "@ryandur/sand",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "helper objects and functions",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "homepage": "https://ryandur.github.io/sand/",
   "repository": "https://github.com/RyanDur/sand",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
   "files": [
     "dist/**"
   ],
@@ -17,8 +18,11 @@
   ],
   "scripts": {
     "test": "jest",
-    "build": "webpack --env production && typedoc --excludeInternal",
-    "predeploy": "npm run build",
+    "clean": "rm -rf ./dist",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm && typedoc --excludeInternal",
+    "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
+    "build:esm": "tsc -p ./tsconfig.json",
+    "prepublish": "npm run build",
     "deploy": "gh-pages -d docs",
     "test:coverage": "npm test -- src/lib --coverage",
     "test:badges": "npm run test:coverage && jest-coverage-badges --output './docs/badges'",
@@ -43,8 +47,6 @@
     "ts-node": "^9.1.1",
     "tsdoc": "^0.0.4",
     "typedoc": "^0.22.6",
-    "typescript": "^4.2.3",
-    "webpack": "^5.30.0",
-    "webpack-cli": "^4.6.0"
+    "typescript": "^4.2.3"
   }
 }
