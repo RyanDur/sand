@@ -145,4 +145,4 @@ export const empty = (value: unknown): boolean => {
  * ```
  *
  * */
-export const has = (value: unknown): boolean => not(empty(value));
+export const has = <T>(value: T): value is T => not(empty(value));
