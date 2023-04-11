@@ -1,11 +1,12 @@
 import {maybe, nothing, some} from '../maybe';
 import * as faker from 'faker';
 import {Maybe} from '../types';
+import {expect} from 'vitest';
 
 describe('the Maybe', () => {
     const SOMETHING = 'SOMETHING';
     const NOTHING = undefined;
-    const thisShouldNotHappen = () => fail('this should not happen');
+    const thisShouldNotHappen = () => expect.fail('this should not happen');
     const otherValue = faker.lorem.sentence();
 
     const testSomething = <T>(maybeValue: Maybe<T>, expected: T) => {

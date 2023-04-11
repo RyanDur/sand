@@ -1,31 +1,23 @@
 {
   "compilerOptions": {
     "target": "ES2015",
+    "useDefineForClassFields": true,
     "module": "ESNext",
-    "lib": ["esnext", "dom"],
-    "moduleResolution": "node",
+    "lib": ["ESNext", "DOM"],
+    "types": ["vitest/globals"],
+    "moduleResolution": "Node",
     "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "declarationDir": "./dist/types",
-    "outDir": "./dist/esm",
-    "rootDirs": [
-      "./src/result/types"
-    ],
-    "types": [
-      "jest"
-    ],
-    "skipLibCheck": true
+    "noEmit": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": [
-    "./src"
-  ],
-  "exclude": [
-    "src/development",
-    "**/types/**",
-    "**/__tests__/**"
-  ],
+  "include": ["src", "setupTests.ts"],
   "typedocOptions": {
     "entryPoints": [
       "src/index.ts"

@@ -1,9 +1,10 @@
 import * as faker from 'faker';
 import {Result} from '../types';
 import {failure, success} from '../result';
+import {expect} from 'vitest';
 
 describe('The Result', () => {
-  const thisShouldNotHappen = (_: any) => fail('this should not happen');
+  const thisShouldNotHappen = (_: any) => expect.fail('this should not happen');
   const data = {t: faker.lorem.sentence()};
   const reason = faker.lorem.sentence();
 

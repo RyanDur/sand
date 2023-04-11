@@ -12,26 +12,6 @@ export type Tail = {
     <T>(a: T[]): T[];
 }
 
-type TailF<T extends any[]> = T extends [head: any, ...tail: infer Tail_]
-    ? Tail_
-    : never;
-
-interface Take1_<T extends any[]> {
-    type: T extends { 0: infer U } ? [U]
-        : T extends { 0?: infer U } ? [U?]
-            : never;
-}
-
-type Take1<T extends any[]> = Take1_<T>['type'];
-type Curry<F extends (...args: any[]) => any,
-    P extends any[] = Parameters<F>, // P: are the parameters of F
-    R = ReturnType<F> // R: the return type of F
-    > =
-    Take1<TailF<P>> extends never
-        ? F // F is () => any | (a: any) => any | (a: any, ...args: any[]) => any
-        : (...args: Take1<P>) => Curry<(...args: TailF<P>) => R>;
-
-
 export const map: MapFunc = func => ([head, ...tail]) =>
     has(tail) ? [func(head), ...map(func)(tail) || []] : [func(head)];
 

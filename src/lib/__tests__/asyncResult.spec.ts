@@ -6,7 +6,7 @@ describe('the Async Result', () => {
     const FAIL = 'FAIL';
     const data = {type: faker.lorem.sentence()};
     const reason = faker.lorem.sentence();
-    const unexpected = () => fail('this should not happen');
+    const unexpected = () => expect.fail('this should not happen');
 
     describe('success', () => {
         test('for a promise', async () => await testSuccess(asyncResult.of(Promise.resolve(data))));
@@ -36,7 +36,7 @@ describe('the Async Result', () => {
             const resultFlatMapFailure = await aResult.or(unexpected).orNull();
             expect(resultFlatMapFailure).toEqual(data);
 
-            const isPending = jest.fn();
+            const isPending = vi.fn();
             await aResult.onPending(isPending).orNull();
             expect(isPending).toHaveBeenCalledWith(true);
             expect(isPending).toHaveBeenLastCalledWith(false);
@@ -79,7 +79,7 @@ describe('the Async Result', () => {
                 inner => asyncResult.failure(inner + data)
             ).value).toEqual(reason + data);
 
-            const isLoading = jest.fn();
+            const isLoading = vi.fn();
             await aResult.onPending(isLoading).orNull();
             expect(isLoading).toHaveBeenNthCalledWith(1, true);
             expect(isLoading).toHaveBeenNthCalledWith(2, false);
