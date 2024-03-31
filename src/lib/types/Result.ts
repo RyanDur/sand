@@ -43,8 +43,7 @@ export interface Failure<ERROR> {
 
 export declare namespace Result {
   interface Async<SUCCESS, FAILURE> {
-    readonly isSuccess: Promise<boolean>;
-    readonly identity: Promise<SUCCESS | FAILURE>;
+    readonly identity: Promise<Result<SUCCESS, FAILURE>>;
     readonly orNull: () => Promise<SUCCESS | null>;
     readonly orElse: (fallback: SUCCESS) => Promise<SUCCESS>;
     readonly map: <U>(f: (value: SUCCESS) => U) => Async<U, FAILURE>;

@@ -1,4 +1,4 @@
-import {empty, has, matchOn, typeOf} from '../index';
+import {empty, has, matchOn, notEmpty, typeOf} from '../index';
 import {faker} from '@faker-js/faker';
 
 describe('util', () => {
@@ -113,9 +113,14 @@ describe('util', () => {
         {k: [], q: NaN, v: {k: [[{}, ['NOT _EMPTY']]], v: {x: undefined}, t: ''}, t: ''}
       ]
     ].map(toBe(true));
-    [...emptyValues, ...notEmptyValues].forEach(({value, expectation}) =>
+
+    [...emptyValues, ...notEmptyValues].forEach(({value, expectation}) => {
       test(`has(${String(value)}) of ${typeOf(value)} is ${expectation}`,
-        () => expect(has(value)).toEqual(expectation)));
+        () => expect(has(value)).toEqual(expectation));
+
+      test(`notEmpty(${String(value)}) of ${typeOf(value)} is ${expectation}`,
+        () => expect(notEmpty(value)).toEqual(expectation));
+    });
   });
 
   describe('pattern matching', () => {

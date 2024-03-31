@@ -1,4 +1,4 @@
-import {asyncResult} from '../asyncResult';
+import {asyncFailure, asyncResult, asyncSuccess} from '../asyncResult';
 import {Result} from '../types';
 import {nextTick} from 'process';
 
@@ -8,35 +8,30 @@ describe('result', () => {
   const successValue = 'successValue';
   const failureValue = 'failureValue';
   const defaultValue = 'defaultValue';
-  const asyncSuccess: Result.Async<string, string> = asyncResult.of(Promise.resolve(successValue));
-  const asyncFailure: Result.Async<string, string> = asyncResult.of(Promise.reject(failureValue));
-
-  test('isSuccess', async () => {
-    expect(await asyncSuccess.isSuccess).toBe(true);
-    expect(await asyncFailure.isSuccess).toBe(false);
-  });
+  const success: Result.Async<string, string> = asyncResult(Promise.resolve(successValue));
+  const failure: Result.Async<string, string> = asyncResult(Promise.reject(failureValue));
 
   test('orElse', async () => {
-    expect(await asyncSuccess.orElse(defaultValue)).toBe(successValue);
-    expect(await asyncFailure.orElse(defaultValue)).toBe(defaultValue);
+    expect(await success.orElse(defaultValue)).toBe(successValue);
+    expect(await failure.orElse(defaultValue)).toBe(defaultValue);
   });
 
   test('orNull', async () => {
-    expect(await asyncSuccess.orNull()).toBe(successValue);
-    expect(await asyncFailure.orNull()).toBeNull();
+    expect(await success.orNull()).toBe(successValue);
+    expect(await failure.orNull()).toBeNull();
   });
 
   describe('onSuccess', () => {
     test('success', async () => {
       const func = vi.fn();
-      asyncSuccess.onSuccess(func);
+      success.onSuccess(func);
       await resolvePromises();
       expect(func).toHaveBeenCalledWith(successValue);
     });
 
     test('failure', async () => {
       const func = vi.fn();
-      asyncFailure.onSuccess(func);
+      failure.onSuccess(func);
       await resolvePromises();
       expect(func).not.toHaveBeenCalled();
     });
@@ -45,14 +40,14 @@ describe('result', () => {
   describe('onFailure', () => {
     test('success', async () => {
       const func = vi.fn();
-      asyncSuccess.onFailure(func);
+      success.onFailure(func);
       await resolvePromises();
       expect(func).not.toHaveBeenCalled();
     });
 
     test('failure', async () => {
       const func = vi.fn();
-      asyncFailure.onFailure(func);
+      failure.onFailure(func);
       await resolvePromises();
       expect(func).toHaveBeenCalledWith(failureValue);
     });
@@ -61,7 +56,7 @@ describe('result', () => {
   describe('onPending', () => {
     test('success', async () => {
       const func = vi.fn();
-      asyncSuccess.onPending(func);
+      success.onPending(func);
       expect(func).toHaveBeenCalledWith(true);
       await resolvePromises();
       expect(func).toHaveBeenCalledWith(false);
@@ -69,7 +64,7 @@ describe('result', () => {
 
     test('failure', async () => {
       const func = vi.fn();
-      asyncFailure.onPending(func);
+      failure.onPending(func);
       expect(func).toHaveBeenCalledWith(true);
       await resolvePromises();
       expect(func).toHaveBeenCalledWith(false);
@@ -79,14 +74,14 @@ describe('result', () => {
   describe('onComplete', () => {
     test('success', async () => {
       const func = vi.fn();
-      asyncSuccess.onComplete(func);
+      success.onComplete(func);
       await resolvePromises();
       expect(func).toHaveBeenCalledWith(expect.objectContaining({isSuccess: true, identity: successValue}));
     });
 
     test('failure', async () => {
       const func = vi.fn();
-      asyncFailure.onComplete(func);
+      failure.onComplete(func);
       await resolvePromises();
       expect(func).toHaveBeenCalledWith(expect.objectContaining({isSuccess: false, identity: failureValue}));
     });
@@ -96,31 +91,27 @@ describe('result', () => {
     const value = 'value';
 
     test('success', async () => {
-      expect(await asyncSuccess.map(() => value).isSuccess).toBe(true);
-      expect(await asyncSuccess.map(() => value).orElse(defaultValue)).toBe(value);
-      expect(await asyncSuccess.map((v) => v + value).orElse(defaultValue)).toBe(successValue + value);
+      expect(await success.map(() => value).orElse(defaultValue)).toBe(value);
+      expect(await success.map((v) => v + value).orElse(defaultValue)).toBe(successValue + value);
     });
 
     test('failure', async () => {
-      expect(await asyncFailure.map(() => value).isSuccess).toBe(false);
-      expect(await asyncFailure.map(() => value).orElse(defaultValue)).toBe(defaultValue);
-      expect(await asyncFailure.map((v: string) => v + value).orElse(defaultValue)).toBe(defaultValue);
+      expect(await failure.map(() => value).orElse(defaultValue)).toBe(defaultValue);
+      expect(await failure.map((v: string) => v + value).orElse(defaultValue)).toBe(defaultValue);
     });
   });
 
   describe('mBind', () => {
     describe('success', () => {
       test('to success', async () => {
-        expect(await asyncSuccess.mBind(() => asyncResult.success(successValue)).isSuccess).toBe(true);
-        expect(await asyncSuccess.mBind(() => asyncResult.success(successValue)).orElse(defaultValue)).toBe(successValue);
-        expect(await asyncSuccess.mBind((v) => asyncResult.success(v + successValue)).orElse(defaultValue)).toBe(successValue + successValue);
+        expect(await success.mBind(() => asyncSuccess(successValue)).orElse(defaultValue)).toBe(successValue);
+        expect(await success.mBind((v) => asyncSuccess(v + successValue)).orElse(defaultValue)).toBe(successValue + successValue);
       });
 
       test('to failure', async () => {
-        expect(await asyncSuccess.mBind(() => asyncResult.failure(failureValue)).isSuccess).toBe(false);
-        expect(await asyncSuccess.mBind(() => asyncResult.failure(failureValue)).orElse(defaultValue)).toBe(defaultValue);
+        expect(await success.mBind(() => asyncFailure(failureValue)).orElse(defaultValue)).toBe(defaultValue);
         const func = vi.fn();
-        asyncSuccess.mBind((v) => asyncResult.failure(v + failureValue)).onFailure(func);
+        success.mBind((v) => asyncFailure(v + failureValue)).onFailure(func);
         await resolvePromises();
         expect(func).toHaveBeenCalledWith(successValue + failureValue);
       });
@@ -128,16 +119,14 @@ describe('result', () => {
 
     describe('failure', () => {
       test('to success', async () => {
-        expect(await asyncFailure.mBind(() => asyncResult.success(successValue)).isSuccess).toBe(false);
-        expect(await asyncFailure.mBind(() => asyncResult.success(successValue)).orElse(defaultValue)).toBe(defaultValue);
-        expect(await asyncFailure.mBind((v: string) => asyncResult.success(v + successValue)).orElse(defaultValue)).toBe(defaultValue);
+        expect(await failure.mBind(() => asyncSuccess(successValue)).orElse(defaultValue)).toBe(defaultValue);
+        expect(await failure.mBind((v: string) => asyncSuccess(v + successValue)).orElse(defaultValue)).toBe(defaultValue);
       });
 
       test('to failure', async () => {
-        expect(await asyncFailure.mBind(() => asyncResult.failure(failureValue)).isSuccess).toBe(false);
-        expect(await asyncFailure.mBind(() => asyncResult.failure(failureValue)).orElse(defaultValue)).toBe(defaultValue);
+        expect(await failure.mBind(() => asyncFailure(failureValue)).orElse(defaultValue)).toBe(defaultValue);
         const func = vi.fn();
-        asyncFailure.mBind((v: string) => asyncResult.failure(v + failureValue)).onFailure(func);
+        failure.mBind((v: string) => asyncFailure(v + failureValue)).onFailure(func);
         await resolvePromises();
         expect(func).toHaveBeenCalledWith(failureValue);
       });
@@ -147,30 +136,26 @@ describe('result', () => {
   describe('or', () => {
     describe('success', () => {
       test('to success', async () => {
-        expect(await asyncSuccess.or(() => asyncResult.success(successValue)).isSuccess).toBe(true);
-        expect(await asyncSuccess.or(() => asyncResult.success(successValue)).orElse(defaultValue)).toBe(successValue);
-        expect(await asyncSuccess.or((v: string) => asyncResult.success(v + successValue)).orElse(defaultValue)).toBe(successValue);
+        expect(await success.or(() => asyncSuccess(successValue)).orElse(defaultValue)).toBe(successValue);
+        expect(await success.or((v: string) => asyncSuccess(v + successValue)).orElse(defaultValue)).toBe(successValue);
       });
 
       test('to failure', async () => {
-        expect(await asyncSuccess.or(() => asyncResult.failure(failureValue)).isSuccess).toBe(true);
-        expect(await asyncSuccess.or(() => asyncResult.failure(failureValue)).orElse(defaultValue)).toBe(successValue);
-        expect(await asyncSuccess.or((v) => asyncResult.failure(v + failureValue)).orElse(defaultValue)).toBe(successValue);
+        expect(await success.or(() => asyncFailure(failureValue)).orElse(defaultValue)).toBe(successValue);
+        expect(await success.or((v) => asyncFailure(v + failureValue)).orElse(defaultValue)).toBe(successValue);
       });
     });
 
     describe('failure', () => {
       test('to success', async () => {
-        expect(await asyncFailure.or(() => asyncResult.success(successValue)).isSuccess).toBe(true);
-        expect(await asyncFailure.or(() => asyncResult.success(successValue)).orElse(defaultValue)).toBe(successValue);
-        expect(await asyncFailure.or((v) => asyncResult.success(v + successValue)).orElse(defaultValue)).toBe(failureValue + successValue);
+        expect(await failure.or(() => asyncSuccess(successValue)).orElse(defaultValue)).toBe(successValue);
+        expect(await failure.or((v) => asyncSuccess(v + successValue)).orElse(defaultValue)).toBe(failureValue + successValue);
       });
 
       test('to failure', async () => {
-        expect(await asyncFailure.or(() => asyncResult.failure(failureValue)).isSuccess).toBe(false);
-        expect(await asyncFailure.or(() => asyncResult.failure(failureValue)).orElse(defaultValue)).toBe(defaultValue);
+        expect(await failure.or(() => asyncFailure(failureValue)).orElse(defaultValue)).toBe(defaultValue);
         const func = vi.fn();
-        asyncFailure.or((v) => asyncResult.failure(v + failureValue)).onFailure(func);
+        failure.or((v) => asyncFailure(v + failureValue)).onFailure(func);
         await resolvePromises();
         expect(func).toHaveBeenCalledWith(failureValue + failureValue);
       });
@@ -178,17 +163,17 @@ describe('result', () => {
   });
 
   describe('either', () => {
-    const failureResult = (): Result.Async<string, string> => asyncResult.failure(failureValue);
-    const successResult = (): Result.Async<string, string> => asyncResult.success(successValue);
+    const failureResult = (): Result.Async<string, string> => asyncFailure(failureValue);
+    const successResult = (): Result.Async<string, string> => asyncSuccess(successValue);
 
     test('when success it invokes the left hand parameter', async () => {
-      expect(await asyncSuccess.either(successResult, failureResult).isSuccess).toBe(true);
-      expect(await asyncSuccess.either(failureResult, successResult).isSuccess).toBe(false);
+      expect((await success.either(successResult, failureResult).identity).isSuccess).toBe(true);
+      expect((await success.either(failureResult, successResult).identity).isSuccess).toBe(false);
     });
 
     test('when failure it invokes the right hand parameter', async () => {
-      expect(await asyncFailure.either(successResult, failureResult).isSuccess).toBe(false);
-      expect(await asyncFailure.either(failureResult, successResult).isSuccess).toBe(true);
+      expect((await failure.either(successResult, failureResult).identity).isSuccess).toBe(false);
+      expect((await failure.either(failureResult, successResult).identity).isSuccess).toBe(true);
     });
   });
 });
