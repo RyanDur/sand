@@ -37,7 +37,7 @@ getArt: (id: string): Result.Async<Art, AnError> =>
     http.get(`/some-endpoint/${id}`)
         .mBind(response => maybe(valid(response))
             .map(asyncSuccess)
-            .orElse(asyncFailure({type: AnError.CANNOT_DECODE, cause: response})))
+            .orElse(asyncFailure({type: Problem.CANNOT_DECODE, cause: response})))
 ```
 
 To make the request, we fetch from the endpoint. If there is some kind of network error we give back an explanation. If
@@ -49,9 +49,9 @@ it into an explanation.
 get: (endpoint: string): Result.Async<Art, AnError> =>
     asyncResult(fetch(endpoint))
         .or(err => asyncFailure({type: AnError.NETWORK_ERROR, cause: err}))
-        .mBind(response => response.status === HTTPStatus.OK ? 
-            asyncResult(response.json()) : 
-            asyncFailure({type: AnError.NOT_OK, cause: response}));
+        .mBind(response => response.status === HTTPStatus.OK 
+          ? asyncResult(response.json()) 
+          : asyncFailure({type: Problem.NOT_OK, cause: response}));
 ```
 
 ## Examples of use
