@@ -4,15 +4,20 @@ import {inspect} from './util';
 
 const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>): Result.Async<SUCCESS, FAILURE> => ({
   isSuccess: promise.then(({isSuccess}) => isSuccess),
-  identity: promise,
+  identity: promise.then(({identity}) => identity),
   orNull: () => promise.then(({orNull}) => orNull()),
   orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
   map: fn => ofPromise(promise.then(({map}) => map(fn))),
-  mBind: (f) => ofPromise(promise.then((result) => (result.isSuccess ? f(result.identity).identity : result))),
-  or: (f) => ofPromise(promise.then((result) => (result.isSuccess ? result : f(result.identity).identity))),
-  either: (onSuccess, onFailure) => ofPromise(promise.then((result) => (result.isSuccess
-    ? onSuccess(result.identity).identity
-    : onFailure(result.identity).identity))),
+  mBind: (f) => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+    .onSuccess(value => f(value).onComplete(resolve))
+    .onFailure(value => err(value).onComplete(resolve))))),
+  or: (f) => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+    .onSuccess(value => ok(value).onComplete(resolve))
+    .onFailure(value => f(value).onComplete(resolve))
+  ))),
+  either: (onSuccess, onFailure) => ofPromise(new Promise(resolve => promise.then(pipe => pipe
+    .onSuccess(value => onSuccess(value).onComplete(resolve))
+    .onFailure(value => onFailure(value).onComplete(resolve))))),
   onPending: (waiting) => {
     waiting(true);
     return ofPromise(promise.then((result) => result.onComplete(() => waiting(false))));
@@ -33,7 +38,7 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
  * successfulResult.failureOrElse('definitely this'); // produces: "definitely this"
  * ```
  * */
-const success = <SUCCESS, FAILURE>(data: SUCCESS): Result.Async<SUCCESS, FAILURE> => ofPromise(Promise.resolve(ok(data) as unknown as Result<SUCCESS, FAILURE>));
+const success = <S, F>(value: S): Result.Async<S, F> => ofPromise<S, F>(Promise.resolve(ok<S>(value)));
 
 /**
  * ```ts
@@ -42,7 +47,7 @@ const success = <SUCCESS, FAILURE>(data: SUCCESS): Result.Async<SUCCESS, FAILURE
  * failureResult.failureOrElse('Not this'); // produces: "some failure, another failure"
  * ```
  * */
-const failure = <SUCCESS, FAILURE>(reason: FAILURE): Result.Async<SUCCESS, FAILURE> => ofPromise(Promise.resolve(err(reason) as unknown as Result<SUCCESS, FAILURE>));
+const failure = <S, F>(value: F): Result.Async<S, F> => ofPromise<S, F>(Promise.resolve(err<F>(value)));
 
 /**
  * ```ts
@@ -56,9 +61,7 @@ const failure = <SUCCESS, FAILURE>(reason: FAILURE): Result.Async<SUCCESS, FAILU
  * failureResult.failureOrElse('Not this'); // produces: "some failure, another failure"
  * ```
  * */
-const of = <SUCCESS, FAILURE>(promise: Promise<SUCCESS>): Result.Async<SUCCESS, FAILURE> => ofPromise(promise
-  .then(value => ok(value) as unknown as Result<SUCCESS, FAILURE>)
-  .catch(reason => err(reason) as unknown as Result<SUCCESS, FAILURE>));
+const of = <S, F>(promise: Promise<S>): Result.Async<S, F> => ofPromise<S, F>(promise.then(ok<S>).catch(err<F>));
 
 /**
  * The AsyncResult is something that [Damien LeBfailureigaud](https://github.com/dam5s) has introduced me to. I had the chance
