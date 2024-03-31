@@ -41,6 +41,7 @@
     "@types/faker": "^6.6.9",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
+    "@vitest/coverage-v8": "^1.4.0",
     "eslint": "^8.57.0",
     "eslint-plugin-tsdoc": "^0.2.14",
     "eslint-webpack-plugin": "^4.1.0",

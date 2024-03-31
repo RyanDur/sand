@@ -14,6 +14,9 @@ export default defineConfig({
     },
   },
   test: {
-    globals: true
+    globals: true,
+    coverage: {
+      exclude: ['src/development', 'setupTests.ts', 'src/index.ts', '**/types*/**'],
+    }
   },
 });
