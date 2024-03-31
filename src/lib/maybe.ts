@@ -4,7 +4,7 @@ import {failure, success} from './result';
 
 /**
  * ```ts
- * maybe.some('some').map(value => value + ' more').orNull() // produces: "some more"
+ * some('some').map(value => value + ' more').orNull() // produces: "some more"
  * ```
  * */
 const some = <THING>(thing: THING): Some<THING> => shallowFreeze({
@@ -21,7 +21,7 @@ const some = <THING>(thing: THING): Some<THING> => shallowFreeze({
 
 /**
  * ```ts
- * maybe.nothing().map(value => value + ' more').orNull() // produces: null
+ * nothing().map(value => value + ' more').orNull() // produces: null
  * ```
  * */
 const nothing = (): Nothing => shallowFreeze({
