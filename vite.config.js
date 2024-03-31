@@ -15,7 +15,9 @@ export default defineConfig({
   },
   test: {
     globals: true,
+    watch: false,
     coverage: {
+      reporter: ['text', 'json-summary'],
       exclude: ['src/development', 'setupTests.ts', 'src/index.ts', '**/types*/**'],
     }
   },
