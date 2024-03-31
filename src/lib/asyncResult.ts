@@ -10,9 +10,9 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
   map: fn => ofPromise(promise.then(({map}) => map(fn))),
   mBind: (fn) => ofPromise(new Promise(resolve => promise.then(result => result.isSuccess
     ? fn(result.identity).onComplete(resolve)
-    : resolve(result)))),
+    : result.onComplete(resolve)))),
   or: (fn) => ofPromise(new Promise(resolve => promise.then(result => result.isSuccess
-    ? resolve(result)
+    ? result.onComplete(resolve)
     : fn(result.identity).onComplete(resolve)))),
   either: (onSuccess, onFailure) => ofPromise(new Promise(resolve => promise.then(result => result.isSuccess
     ? onSuccess(result.identity).onComplete(resolve)
