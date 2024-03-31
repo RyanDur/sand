@@ -37,7 +37,7 @@ const failure = asyncResult.failure
 
 getArt: (id: string): Result.Async<Art, Explanation<HTTPError>> =>
     http.get(`/some-endpoint/${id}`)
-        .mBind(response => maybe.of(valid(response))
+        .mBind(response => maybe(valid(response))
             .map(asyncResult.success)
             .orElse(failure({type: HTTPError.CANNOT_DECODE, cause: response})))
 ```
