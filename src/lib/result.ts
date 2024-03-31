@@ -9,7 +9,6 @@ import {Failure, Success} from './types';
  * okResult.orElse('definitely this'); // produces: "definitely this"
  * ```
  */
-
 const success = <VALUE>(value: VALUE): Success<VALUE> => shallowFreeze({
     isSuccess: true,
     identity: value,
@@ -41,8 +40,6 @@ const success = <VALUE>(value: VALUE): Success<VALUE> => shallowFreeze({
  * failureResult.orElse('Not this'); // produces: "some failure, another failure"
  * ```
  */
-
-
 const failure = <ERROR>(value: ERROR): Failure<ERROR> => shallowFreeze({
     isSuccess: false,
     identity: value,
