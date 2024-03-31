@@ -48,7 +48,7 @@ it into an explanation.
 ```typescript
 get: (endpoint: string): Result.Async<Art, AnError> =>
     asyncResult(fetch(endpoint))
-        .or(err => asyncFailure({type: AnError.NETWORK_ERROR, cause: err}))
+        .or(err => asyncFailure({type: Problem.NETWORK_ERROR, cause: err}))
         .mBind(response => response.status === HTTPStatus.OK 
           ? asyncResult(response.json()) 
           : asyncFailure({type: Problem.NOT_OK, cause: response}));
