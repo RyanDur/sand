@@ -31,7 +31,7 @@
     "prepublish": "npm run build",
     "deploy": "gh-pages -d docs",
     "test:coverage": "npm test -- src/lib --coverage",
-    "test:ci": "npm run test:coverage -- --ci --runInBand"
+    "ci": "npm run test:coverage"
   },
   "author": "Ryan Durling",
   "license": "MIT",
