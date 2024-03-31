@@ -8,16 +8,15 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
   orNull: () => promise.then(({orNull}) => orNull()),
   orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
   map: fn => ofPromise(promise.then(({map}) => map(fn))),
-  mBind: (f) => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-    .onSuccess(value => f(value).onComplete(resolve))
-    .onFailure(value => err(value).onComplete(resolve))))),
-  or: (f) => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-    .onSuccess(value => ok(value).onComplete(resolve))
-    .onFailure(value => f(value).onComplete(resolve))
-  ))),
-  either: (onSuccess, onFailure) => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-    .onSuccess(value => onSuccess(value).onComplete(resolve))
-    .onFailure(value => onFailure(value).onComplete(resolve))))),
+  mBind: (fn) => ofPromise(new Promise(resolve => promise.then(result => result.isSuccess
+    ? fn(result.identity).onComplete(resolve)
+    : resolve(result)))),
+  or: (fn) => ofPromise(new Promise(resolve => promise.then(result => result.isSuccess
+    ? resolve(result)
+    : fn(result.identity).onComplete(resolve)))),
+  either: (onSuccess, onFailure) => ofPromise(new Promise(resolve => promise.then(result => result.isSuccess
+    ? onSuccess(result.identity).onComplete(resolve)
+    : onFailure(result.identity).onComplete(resolve)))),
   onPending: (waiting) => {
     waiting(true);
     return ofPromise(promise.then((result) => result.onComplete(() => waiting(false))));
