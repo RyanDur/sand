@@ -42,6 +42,19 @@ export interface Failure<ERROR> {
 }
 
 export declare namespace Result {
+  /**
+   * The AsyncResult is something that [Damien LeBfailureigaud](https://github.com/dam5s) has introduced me to. I had the chance
+   * to work with him on a project that inspired me to write this lib. Together we
+   * collaborated on [React Redux Starter](https://github.com/dam5s/react-redux-starter) to aid us in developing future projects with
+   * clients.
+   *
+   * The type allows you to work with a promise in the same way you would work with a Result, with some extra helpers.
+   *
+   * A factory for creating AsyncResult's
+   *
+   * @see Implementation:  {@link https://github.com/RyanDur/sand/blob/main/src/lib/asyncResult.ts}
+   * @see Test: {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/asyncResult.spec.ts}
+   * */
   interface Async<SUCCESS, FAILURE> {
     readonly identity: Promise<Result<SUCCESS, FAILURE>>;
     readonly orNull: () => Promise<SUCCESS | null>;

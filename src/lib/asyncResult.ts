@@ -27,7 +27,7 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
  *
  * {@link https://github.com/RyanDur/sand/blob/f36b1bbc5e93b319400dd4a8f53decc5dc7d60ea/src/lib/asyncResult.ts#L8 | failureOrElse Implementation}
  * ```ts
- * const successfulResult = await asyncResult.success('some value').map(value => value + ', another value');
+ * const successfulResult = await asyncSuccess('some value').map(value => value + ', another value');
  * successfulResult.orNull(); // produces: "some value, another value"
  * successfulResult.failureOrElse('definitely this'); // produces: "definitely this"
  * ```
@@ -36,7 +36,7 @@ export const asyncSuccess = <S, F>(value: S): Result.Async<S, F> => ofPromise<S,
 
 /**
  * ```ts
- * const failureResult = await asyncResult.failure('some failure').mapErr(value => value + ', another failure');
+ * const failureResult = await asyncFailure('some failure').mapErr(value => value + ', another failure');
  * failureResult.orNull(); // produces: null
  * failureResult.failureOrElse('Not this'); // produces: "some failure, another failure"
  * ```
@@ -50,23 +50,9 @@ export const asyncFailure = <S, F>(value: F): Result.Async<S, F> => ofPromise<S,
  * successfulResult.failureOrElse('definitely this'); // produces: "definitely this"
  * ```
  * ```ts
- * const failureResult = await asyncResult.of(Promise.reject('some failure')).mapErr(value => value + ', another failure');
+ * const failureResult = await asyncResult(Promise.reject('some failure')).mapErr(value => value + ', another failure');
  * failureResult.orNull(); // produces: null
  * failureResult.failureOrElse('Not this'); // produces: "some failure, another failure"
  * ```
  * */
 export const asyncResult = <S, F>(promise: Promise<S>): Result.Async<S, F> => ofPromise<S, F>(promise.then(ok<S>).catch(err<F>));
-
-/**
- * The AsyncResult is something that [Damien LeBfailureigaud](https://github.com/dam5s) has introduced me to. I had the chance
- * to work with him on a project that inspired me to write this lib. Together we
- * collaborated on [React Redux Starter](https://github.com/dam5s/react-redux-starter) to aid us in developing future projects with
- * clients.
- *
- * The type allows you to work with a promise in the same way you would work with a Result, with some extra helpers.
- *
- * A factory for creating AsyncResult's
- *
- * @see Implementation:  {@link https://github.com/RyanDur/sand/blob/main/src/lib/asyncResult.ts}
- * @see Test: {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/asyncResult.spec.ts}
- * */
