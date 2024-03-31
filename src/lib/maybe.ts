@@ -43,10 +43,10 @@ const isSomethingValue = <T>(thing: T): boolean => {
 
 /**
  * ```ts
- * maybe.of('something').map(value => value + ' more').orNull() // produces: "something more"
- * maybe.of(null).map(value => value + ' more').orNull() // produces: null
- * maybe.of(undefined).map(value => value + ' more').orNull() // produces: null
- * maybe.of(NaN).map(value => value + ' more').orNull() // produces: null
+ * maybe('something').map(value => value + ' more').orNull() // produces: "something more"
+ * maybe(null).map(value => value + ' more').orNull() // produces: null
+ * maybe(undefined).map(value => value + ' more').orNull() // produces: null
+ * maybe(NaN).map(value => value + ' more').orNull() // produces: null
  * ```
  * @defaultValue for isSomething === not('undefined' || type === 'null' || type === 'nan')
  * */
