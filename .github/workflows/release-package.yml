@@ -27,7 +27,7 @@ jobs:
       - name: Copy badges to docs
         run: cp -r badges docs
       - name: Deploy Documentation 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.1.5
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
           folder: docs
