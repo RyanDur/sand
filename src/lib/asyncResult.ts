@@ -3,31 +3,24 @@ import {Result} from './types';
 import {inspect} from './util';
 
 const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>): Result.Async<SUCCESS, FAILURE> => ({
-    value: promise.then(result => result.value),
-    orNull: () => promise.then(({orNull}) => orNull()),
-    orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
-    map: fn => ofPromise(promise.then(({map}) => map(fn))),
-    mBind: fn => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-        .onSuccess(value => fn(value).onComplete(resolve))
-        .onFailure(value => err(value).onComplete(resolve))))),
-    or: fn => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-        .onSuccess(value => ok(value).onComplete(resolve))
-        .onFailure(value => fn(value).onComplete(resolve))
-    ))),
-    either: (onSuccess, onFailure) => ofPromise(new Promise(resolve => promise.then(pipe => pipe
-        .onSuccess(value => onSuccess(value).onComplete(resolve))
-        .onFailure(value => onFailure(value).onComplete(resolve))))),
-    onPending: is => {
-        is(true);
-        return ofPromise(promise.then(value => {
-            is(false);
-            return value;
-        }));
-    },
-    onSuccess: consumer => ofPromise(promise.then(({onSuccess}) => onSuccess(consumer))),
-    onFailure: consumer => ofPromise(promise.then(({onFailure}) => onFailure(consumer))),
-    onComplete: consumer => ofPromise(promise.then(({onComplete}) => onComplete(consumer))),
-    inspect: () => promise.then(value => `Result.Async(${inspect(value)})`)
+  isSuccess: promise.then(({isSuccess}) => isSuccess),
+  identity: promise,
+  orNull: () => promise.then(({orNull}) => orNull()),
+  orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
+  map: fn => ofPromise(promise.then(({map}) => map(fn))),
+  mBind: (f) => ofPromise(promise.then((result) => (result.isSuccess ? f(result.identity).identity : result))),
+  or: (f) => ofPromise(promise.then((result) => (result.isSuccess ? result : f(result.identity).identity))),
+  either: (onSuccess, onFailure) => ofPromise(promise.then((result) => (result.isSuccess
+    ? onSuccess(result.identity).identity
+    : onFailure(result.identity).identity))),
+  onPending: (waiting) => {
+    waiting(true);
+    return ofPromise(promise.then((result) => result.onComplete(() => waiting(false))));
+  },
+  onSuccess: consumer => ofPromise(promise.then(({onSuccess}) => onSuccess(consumer))),
+  onFailure: consumer => ofPromise(promise.then(({onFailure}) => onFailure(consumer))),
+  onComplete: consumer => ofPromise(promise.then(({onComplete}) => onComplete(consumer))),
+  inspect: () => promise.then(value => `Result.Async(${inspect(value)})`)
 });
 
 /**
@@ -64,8 +57,8 @@ const failure = <SUCCESS, FAILURE>(reason: FAILURE): Result.Async<SUCCESS, FAILU
  * ```
  * */
 const of = <SUCCESS, FAILURE>(promise: Promise<SUCCESS>): Result.Async<SUCCESS, FAILURE> => ofPromise(promise
-    .then(value => ok(value) as unknown as Result<SUCCESS, FAILURE>)
-    .catch(reason => err(reason) as unknown as Result<SUCCESS, FAILURE>));
+  .then(value => ok(value) as unknown as Result<SUCCESS, FAILURE>)
+  .catch(reason => err(reason) as unknown as Result<SUCCESS, FAILURE>));
 
 /**
  * The AsyncResult is something that [Damien LeBfailureigaud](https://github.com/dam5s) has introduced me to. I had the chance

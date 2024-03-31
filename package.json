@@ -1,6 +1,6 @@
 {
   "name": "@ryandur/sand",
-  "version": "1.4.4",
+  "version": "2.0.0",
   "type": "module",
   "description": "helper objects and functions",
   "homepage": "https://ryandur.github.io/sand/",
@@ -37,18 +37,19 @@
   "author": "Ryan Durling",
   "license": "MIT",
   "devDependencies": {
-    "@types/faker": "^5.5.1",
-    "@typescript-eslint/eslint-plugin": "^4.24.0",
-    "@typescript-eslint/parser": "^4.23.0",
-    "eslint": "^7.26.0",
+    "@faker-js/faker": "^8.4.1",
+    "@types/faker": "^6.6.9",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "eslint": "^8.57.0",
     "eslint-plugin-tsdoc": "^0.2.14",
-    "eslint-webpack-plugin": "^2.5.4",
+    "eslint-webpack-plugin": "^4.1.0",
     "faker": "^5.5.3",
-    "gh-pages": "^3.2.3",
-    "typescript": "^5.0.4",
-    "unplugin-auto-import": "^0.15.2",
-    "vite": "^4.2.0",
-    "vite-plugin-dts": "^2.2.0",
-    "vitest": "^0.30.0"
+    "gh-pages": "^6.1.1",
+    "typescript": "^5.4.3",
+    "unplugin-auto-import": "^0.17.5",
+    "vite": "^5.2.7",
+    "vite-plugin-dts": "^3.8.1",
+    "vitest": "^1.4.0"
   }
 }

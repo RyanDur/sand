@@ -1,114 +1,178 @@
-import * as faker from 'faker';
-import {Result} from '../types';
 import {failure, success} from '../result';
 import {expect} from 'vitest';
 
-describe('The Result', () => {
-  const thisShouldNotHappen = (_: any) => expect.fail('this should not happen');
-  const data = {t: faker.lorem.sentence()};
-  const reason = faker.lorem.sentence();
+describe('result', () => {
+  const value = 'value';
+  const newValue = 'newValue';
+  const defaultValue = 'defaultValue';
 
-  describe('success', () => {
-    const aSuccess: Result<{t: string}, string> = success(data);
-
-    describe('why it is a monad', () => {
-      test('orElse: should return the data', () =>
-          expect(aSuccess.orElse({t: reason})).toEqual(data));
-
-      test('map: should allow us to to produce a new value within a new success', () =>
-          expect(aSuccess.map(value => value + reason).orElse(reason)).toEqual(data + reason));
-
-      test('mBind: should allow us to bind to a new Result that produces a new value', () => {
-        expect(aSuccess.mBind(value => success(value + reason)).orElse(reason)).toEqual(data + reason);
-        expect(aSuccess.mBind(value => failure(value + reason)).orElse(reason)).toEqual(reason);
-      });
-
-      test('or: should be skipped', () =>
-          expect(aSuccess.or(thisShouldNotHappen).orElse({t: reason})).toEqual(data));
-    });
-
-    test('orNull: should return the data', () =>
-        expect(aSuccess.orNull()).toEqual(data));
-
-    describe('either: should call the success path', () => {
-      it('should allow us to change it to a failure', () =>
-          expect(aSuccess.either(
-              value => failure({t: value.t + reason}),
-              thisShouldNotHappen
-          ).value).toEqual({t: data.t + reason}));
-
-      it('should allow us to change it to a different success', () =>
-          expect(aSuccess.either(
-              value => success(reason + value),
-              thisShouldNotHappen
-          ).value).toEqual(reason + data));
-    });
-
-    test('onSuccess: should allow us to consume the value, and return the original value', () =>
-        expect(aSuccess.onSuccess(value => expect(value).toEqual(data)).orElse({t: reason})).toEqual(data));
-
-    test('onFailure: should be skipped', () =>
-        expect(aSuccess.onFailure(thisShouldNotHappen).orElse({t: reason})).toEqual(data));
-
-    test('onComplete should allow us to consume the value, and return the original value', () =>
-        expect(aSuccess.onComplete(result => expect(result.value).toEqual(data)).value).toEqual(data));
-
-    test('toMaybe: should return a Some containing the value', () =>
-        expect(aSuccess.toMaybe().inspect()).toBe(`Some(${JSON.stringify(data)})`));
-
-    test('isSuccess: should be true', () =>
-        expect(aSuccess.isSuccess).toBe(true));
+  test('isSuccess', () => {
+    expect(success(value).isSuccess).toBe(true);
+    expect(failure(value).isSuccess).toBe(false);
   });
 
-  describe('failure', () => {
-    const aFailure: Result<{t: string}, string> = failure(reason);
+  test('orElse', () => {
+    expect(success(value).orElse('fail')).toBe(value);
+    expect(failure(value).orElse(newValue)).toBe(newValue);
+  });
 
-    describe('why it is a monad', () => {
-      test('orElse: should return the fallback value', () =>
-          expect(aFailure.orElse(data)).toEqual(data));
+  test('orNull', () => {
+    expect(success(value).orNull()).toBe(value);
+    expect(failure(value).orNull()).toBeNull();
+  });
 
-      test('map: should be skipped', () =>
-          expect(aFailure.map(thisShouldNotHappen).orElse(reason)).toEqual(reason));
+  describe('onSuccess', () => {
+    test('success', () => {
+      const func = vi.fn();
+      success(value).onSuccess(func);
+      expect(func).toHaveBeenCalledWith(value);
+    });
 
-      test('mBind: should be skipped', () =>
-          expect(aFailure.mBind(thisShouldNotHappen).orElse(reason)).toEqual(reason));
+    test('failure', () => {
+      const func = vi.fn();
+      failure(value).onSuccess(func);
+      expect(func).not.toHaveBeenCalled();
+    });
+  });
 
-      test('or: should not allow us to bind to a new Result that produces a new value', () => {
-        expect(aFailure.or(value => success(value + reason)).orElse(reason)).toEqual(reason + reason);
-        expect(aFailure.or(value => failure(value + reason)).orElse(reason)).toEqual(reason);
+  describe('onFailure', () => {
+    test('success', () => {
+      const func = vi.fn();
+      success(value).onFailure(func);
+      expect(func).not.toHaveBeenCalled();
+    });
+
+    test('failure', () => {
+      const func = vi.fn();
+      failure(value).onFailure(func);
+      expect(func).toHaveBeenCalledWith(value);
+    });
+  });
+
+  describe('onComplete', () => {
+    test('success', () => {
+      const func = vi.fn();
+      success(value).onComplete(func);
+      expect(func).toHaveBeenCalledWith(expect.objectContaining({
+        isSuccess: true,
+        identity: value,
+      }));
+    });
+
+    test('failure', () => {
+      const func = vi.fn();
+      failure(value).onComplete(func);
+      expect(func).toHaveBeenCalledWith(expect.objectContaining({
+        isSuccess: false,
+        identity: value,
+      }));
+    });
+  });
+
+  describe('map', () => {
+    test('success', () => {
+      expect(success(value).map(() => newValue)).toEqual(expect.objectContaining({
+        isSuccess: true,
+        identity: newValue,
+      }));
+      expect(success(value).map((v) => v + newValue)).toEqual(expect.objectContaining({
+        isSuccess: true,
+        identity: value + newValue,
+      }));
+    });
+
+    test('failure', () => {
+      expect(failure(value).map(() => newValue)).toEqual(expect.objectContaining({
+        isSuccess: false,
+        identity: value,
+      }));
+      expect(failure(value).map((v: string) => v + newValue)).toEqual(expect.objectContaining({
+        isSuccess: false,
+        identity: value,
+      }));
+    });
+  });
+
+  describe('mBind', () => {
+    describe('success', () => {
+      test('to success', () => {
+        expect(success(value).mBind(() => success(newValue)).isSuccess).toBe(true);
+        expect(
+          success(value)
+            .mBind(() => success(newValue))
+            .orElse(defaultValue),
+        ).toBe(newValue);
+        expect(
+          success(value)
+            .mBind((v) => success(v + newValue))
+            .orElse(defaultValue),
+        ).toBe(value + newValue);
+      });
+
+      test('to failure', () => {
+        expect(success(value).mBind(() => failure(newValue)).isSuccess).toBe(false);
+        expect(
+          success(value)
+            .mBind(() => failure(newValue))
+            .orElse(defaultValue),
+        ).toBe(defaultValue);
+        expect(
+          success(value)
+            .mBind((v) => failure(v + newValue))
+            .orElse(defaultValue),
+        ).toBe(defaultValue);
       });
     });
 
-    test('orNull: should be null', () =>
-        expect(aFailure.orNull()).toBeNull());
+    test('failure', () => {
+      expect(failure(value).mBind(() => success('fail')).isSuccess).toBe(false);
+    });
+  });
 
-    describe('either: should call the failure path', () => {
-      it('should allow us to change it to a failure', () =>
-          expect(aFailure.either(
-              thisShouldNotHappen,
-              value => success({t: value})
-          ).value).toEqual({t: reason}));
-
-      it('should allow us to change it to a different success', () =>
-          expect(aFailure.either(
-              thisShouldNotHappen,
-              value => failure(reason + value)
-          ).value).toEqual(reason + reason));
+  describe('or', () => {
+    test('success', () => {
+      expect(
+        success(value)
+          .or(() => failure('fail'))
+          .orElse('fail'),
+      ).toBe(value);
     });
 
-    test('onSuccess:: should be skipped', () =>
-        expect(aFailure.onSuccess(thisShouldNotHappen).value).toEqual(reason));
+    describe('failure', () => {
+      test('to success', () => {
+        expect(failure(value).or(() => success(newValue)).isSuccess).toBe(true);
+        failure(value)
+          .or(() => failure(newValue))
+          .onSuccess((v) => expect(v).toBe(newValue));
+        failure(value)
+          .or((v) => failure(v + newValue))
+          .onSuccess((v) => expect(v).toBe(value + newValue));
+      });
 
-    test('onFailure should allow us to consume the value, and return the original value', () =>
-        expect(aFailure.onFailure(value => expect(value).toEqual(reason)).value).toEqual(reason));
+      test('to failure', () => {
+        expect(failure(value).or(() => failure(newValue)).isSuccess).toBe(false);
+        failure(value)
+          .or(() => failure(newValue))
+          .onFailure((v) => expect(v).toBe(newValue));
+        failure(value)
+          .or((v) => failure(v + newValue))
+          .onFailure((v) => expect(v).toBe(value + newValue));
+      });
+    });
 
-    test('onComplete should allow us to consume the value, and return the original value', () =>
-        expect(aFailure.onComplete(result => expect(result.value).toEqual(reason)).value).toEqual(reason));
+    describe('either', () => {
+      const failureResult = () => failure('failureValue');
+      const successResult = () => success('successValue');
 
-    test('toMaybe: should return Nothing', () =>
-        expect(aFailure.toMaybe().inspect()).toBe('Nothing'));
+      test('when success it invokes the left hand parameter', () => {
+        expect(success(value).either(successResult, failureResult).isSuccess).toBe(true);
+        expect(success(value).either(failureResult, successResult).isSuccess).toBe(false);
+      });
 
-    test('isSuccess: should be false', () =>
-        expect(aFailure.isSuccess).toBe(false));
+      test('when failure it invokes the right hand parameter', () => {
+        expect(failure(value).either(successResult, failureResult).isSuccess).toBe(false);
+        expect(failure(value).either(failureResult, successResult).isSuccess).toBe(true);
+      });
+    });
   });
 });
