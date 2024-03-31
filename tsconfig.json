@@ -29,6 +29,7 @@
     "node_modules",
     "dist",
     "docs",
+    "**/__tests__/**",
     "src/development"
   ],
   "typedocOptions": {
