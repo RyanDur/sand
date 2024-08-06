@@ -52,8 +52,8 @@ const isSomethingValue = <T>(thing: T): boolean => {
  * */
 const maybe = <THING>(
   value?: THING | null,
-  is: Predicate<THING | undefined | null> = isSomethingValue
-): Maybe<THING> => is(value) ? some(value as THING) : nothing();
+  is: Predicate<THING> = isSomethingValue
+): Maybe<THING> => is(value as THING) ? some(value as THING) : nothing();
 
 /**
  * A Maybe is either something or nothing.
