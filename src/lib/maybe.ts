@@ -1,4 +1,4 @@
-import {Maybe, Nothing, Some} from './types';
+import {Maybe, Nothing, Predicate, Some} from './types';
 import {inspect, not, shallowFreeze, typeOf} from './util';
 import {failure, success} from './result';
 
@@ -52,8 +52,8 @@ const isSomethingValue = <T>(thing: T): boolean => {
  * */
 const maybe = <THING>(
   value?: THING | null,
-  is = isSomethingValue(value)
-): Maybe<THING> => is ? some(value as THING) : nothing();
+  is: Predicate<THING | undefined | null> = isSomethingValue
+): Maybe<THING> => is(value) ? some(value as THING) : nothing();
 
 /**
  * A Maybe is either something or nothing.

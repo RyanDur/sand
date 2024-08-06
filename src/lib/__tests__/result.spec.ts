@@ -55,7 +55,7 @@ describe('result', () => {
       success(value).onComplete(func);
       expect(func).toHaveBeenCalledWith(expect.objectContaining({
         isSuccess: true,
-        identity: value,
+        value,
       }));
     });
 
@@ -64,7 +64,7 @@ describe('result', () => {
       failure(value).onComplete(func);
       expect(func).toHaveBeenCalledWith(expect.objectContaining({
         isSuccess: false,
-        identity: value,
+        reason: value,
       }));
     });
   });
@@ -73,22 +73,22 @@ describe('result', () => {
     test('success', () => {
       expect(success(value).map(() => newValue)).toEqual(expect.objectContaining({
         isSuccess: true,
-        identity: newValue,
+        value: newValue,
       }));
       expect(success(value).map((v) => v + newValue)).toEqual(expect.objectContaining({
         isSuccess: true,
-        identity: value + newValue,
+        value: value + newValue,
       }));
     });
 
     test('failure', () => {
       expect(failure(value).map(() => newValue)).toEqual(expect.objectContaining({
         isSuccess: false,
-        identity: value,
+        reason: value,
       }));
       expect(failure(value).map((v: string) => v + newValue)).toEqual(expect.objectContaining({
         isSuccess: false,
-        identity: value,
+        reason: value,
       }));
     });
   });

@@ -5,7 +5,7 @@ export type Result<VALUE, ERROR> = Success<VALUE> | Failure<ERROR>;
 
 export interface Success<VALUE> {
   readonly isSuccess: true;
-  readonly identity: VALUE;
+  readonly value: VALUE;
   readonly orNull: () => VALUE;
   readonly orElse: (fallback: unknown) => VALUE;
   readonly map: <NEW_VALUE>(fn: (value: VALUE) => NEW_VALUE) => Success<NEW_VALUE>;
@@ -24,7 +24,7 @@ export interface Success<VALUE> {
 
 export interface Failure<ERROR> {
   readonly isSuccess: false;
-  readonly identity: ERROR;
+  readonly reason: ERROR;
   readonly orNull: () => null;
   readonly orElse: <VALUE>(fallback: VALUE) => VALUE;
   readonly map: (fn: unknown) => Failure<ERROR>;
@@ -56,7 +56,7 @@ export declare namespace Result {
    * @see Test: {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/asyncResult.spec.ts}
    * */
   interface Async<SUCCESS, FAILURE> {
-    readonly identity: Promise<Result<SUCCESS, FAILURE>>;
+    readonly value: Promise<Result<SUCCESS, FAILURE>>;
     readonly orNull: () => Promise<SUCCESS | null>;
     readonly orElse: (fallback: SUCCESS) => Promise<SUCCESS>;
     readonly map: <U>(f: (value: SUCCESS) => U) => Async<U, FAILURE>;

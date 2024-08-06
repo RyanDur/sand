@@ -3,15 +3,15 @@ import {Result} from './types';
 import {inspect} from './util';
 
 const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>): Result.Async<SUCCESS, FAILURE> => ({
-  identity: promise,
+  value: promise,
   orNull: () => promise.then(({orNull}) => orNull()),
   orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
   map: fn => ofPromise(promise.then(({map}) => map(fn))),
-  mBind: (fn) => ofPromise(promise.then((result) => result.isSuccess ? fn(result.identity).identity : result)),
-  or: (fn) => ofPromise(promise.then(result => result.isSuccess ? result : fn(result.identity).identity)),
+  mBind: (fn) => ofPromise(promise.then((result) => result.isSuccess ? fn(result.value).value : result)),
+  or: (fn) => ofPromise(promise.then(result => result.isSuccess ? result : fn(result.reason).value)),
   either: (onSuccess, onFailure) => ofPromise(promise.then(result => result.isSuccess
-    ? onSuccess(result.identity).identity
-    : onFailure(result.identity).identity)),
+    ? onSuccess(result.value).value
+    : onFailure(result.reason).value)),
   onPending: (waiting) => {
     waiting(true);
     return ofPromise(promise.then((result) => result.onComplete(() => waiting(false))));

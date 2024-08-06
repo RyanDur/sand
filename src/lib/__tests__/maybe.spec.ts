@@ -68,8 +68,8 @@ describe('the Maybe', () => {
     testNothing(nothing());
 
     describe('with custom isSomething definition', () => {
-        testSomething(maybe(NOTHING, true), NOTHING);
-        testNothing(maybe(SOMETHING, false));
+        testSomething(maybe(NOTHING, () => true), NOTHING);
+        testNothing(maybe(SOMETHING, () => false));
     });
 
     describe('and - combine all values into an array passed to the functions', () => {

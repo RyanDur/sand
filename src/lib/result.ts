@@ -11,7 +11,7 @@ import {Failure, Success} from './types';
  */
 const success = <VALUE>(value: VALUE): Success<VALUE> => shallowFreeze({
     isSuccess: true,
-    identity: value,
+    value,
     orNull: () => value,
     orElse: () => value,
     map: (f) => success(f(value)),
@@ -42,7 +42,7 @@ const success = <VALUE>(value: VALUE): Success<VALUE> => shallowFreeze({
  */
 const failure = <ERROR>(value: ERROR): Failure<ERROR> => shallowFreeze({
     isSuccess: false,
-    identity: value,
+    reason: value,
     orNull: () => null,
     orElse: fallback => fallback,
     map: () => failure(value),

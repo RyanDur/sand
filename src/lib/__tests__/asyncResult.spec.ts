@@ -76,14 +76,14 @@ describe('result', () => {
       const func = vi.fn();
       success.onComplete(func);
       await resolvePromises();
-      expect(func).toHaveBeenCalledWith(expect.objectContaining({isSuccess: true, identity: successValue}));
+      expect(func).toHaveBeenCalledWith(expect.objectContaining({isSuccess: true, value: successValue}));
     });
 
     test('failure', async () => {
       const func = vi.fn();
       failure.onComplete(func);
       await resolvePromises();
-      expect(func).toHaveBeenCalledWith(expect.objectContaining({isSuccess: false, identity: failureValue}));
+      expect(func).toHaveBeenCalledWith(expect.objectContaining({isSuccess: false, reason: failureValue}));
     });
   });
 
@@ -167,13 +167,13 @@ describe('result', () => {
     const successResult = (): Result.Async<string, string> => asyncSuccess(successValue);
 
     test('when success it invokes the left hand parameter', () => {
-      expect(success.either(successResult, failureResult).identity).resolves.toEqual(expect.objectContaining({isSuccess: true}));
-      expect(success.either(failureResult, successResult).identity).resolves.toEqual(expect.objectContaining({isSuccess: false}));
+      expect(success.either(successResult, failureResult).value).resolves.toEqual(expect.objectContaining({isSuccess: true}));
+      expect(success.either(failureResult, successResult).value).resolves.toEqual(expect.objectContaining({isSuccess: false}));
     });
 
     test('when failure it invokes the right hand parameter', () => {
-      expect(failure.either(successResult, failureResult).identity).resolves.toEqual(expect.objectContaining({isSuccess: false}));
-      expect(failure.either(failureResult, successResult).identity).resolves.toEqual(expect.objectContaining({isSuccess: true}));
+      expect(failure.either(successResult, failureResult).value).resolves.toEqual(expect.objectContaining({isSuccess: false}));
+      expect(failure.either(failureResult, successResult).value).resolves.toEqual(expect.objectContaining({isSuccess: true}));
     });
   });
 });
