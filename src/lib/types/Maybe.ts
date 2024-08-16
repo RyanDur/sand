@@ -10,7 +10,7 @@ export interface Some<THING> {
     readonly mBind: <NEW_THING>(f: (value: THING) => Maybe<NEW_THING>) => Maybe<NEW_THING>;
     readonly or: (f: unknown) => Some<THING>;
     readonly and: <NEW_THING>(other: Maybe<NEW_THING>) => Maybe<[THING, NEW_THING]>
-    readonly toResult: () => Success<THING>;
+    readonly toResult: (fallback: THING) => Success<THING>;
     readonly inspect: () => string;
 }
 
