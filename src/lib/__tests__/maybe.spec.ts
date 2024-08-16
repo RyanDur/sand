@@ -33,7 +33,7 @@ describe('the Maybe', () => {
             });
 
             test(`toResult: for SOMETHING is ${maybeValue.inspect?.()} should be a Success`, () =>
-                expect(maybeValue.toResult?.().isSuccess).toEqual(true));
+                expect(maybeValue.toResult?.('fallback').isSuccess).toEqual(true));
         });
     };
 
@@ -61,7 +61,7 @@ describe('the Maybe', () => {
             });
 
             test(`toResult: for undefined is ${maybeValue.inspect?.()} should be a Failure`, () =>
-                expect(maybeValue.toResult?.().isSuccess).toEqual(false));
+                expect(maybeValue.toResult?.('fallback').isSuccess).toEqual(false));
         });
     };
 

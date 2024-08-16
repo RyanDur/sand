@@ -32,7 +32,7 @@ const nothing = (): Nothing => shallowFreeze({
   mBind: () => nothing(),
   or: f => f(),
   and: () => nothing(),
-  toResult: () => failure(undefined),
+  toResult: (fallback) => failure(fallback),
   inspect: () => 'Nothing'
 });
 

@@ -21,7 +21,7 @@ export interface Nothing {
     readonly map: (f: unknown) => Nothing;
     readonly mBind: (f: unknown) => Nothing;
     readonly or: <THING>(f: () => Maybe<THING>) => Maybe<THING>;
-    readonly and: <THING>(other: Maybe<THING>) => Nothing
-    readonly toResult: () => Failure<undefined>;
+    readonly and: <THING>(other: Maybe<THING>) => Nothing;
+    readonly toResult: <T>(fallback: T) => Failure<T>;
     readonly inspect: () => string;
 }
