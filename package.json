@@ -1,15 +1,15 @@
 {
   "name": "@ryandur/sand",
-  "version": "5.0.4",
+  "version": "5.0.5",
   "type": "module",
   "description": "helper objects and functions",
   "homepage": "https://ryandur.github.io/sand/",
   "repository": "https://github.com/RyanDur/sand",
   "main": "dist/sand.umd.cjs",
   "module": "dist/sand.js",
-  "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/sand.js",
       "require": "./dist/sand.umd.cjs"
     }
@@ -48,7 +48,7 @@
     "typedoc": "^0.25.12",
     "typescript": "^5.4.3",
     "unplugin-auto-import": "^0.17.5",
-    "vite": "^5.2.7",
+    "vite": "5.4.10",
     "vite-plugin-dts": "^3.8.1",
     "vitest": "^1.4.0"
   }
