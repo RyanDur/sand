@@ -9,6 +9,87 @@ more about the functional paradigm.
 
 ![branches](./badges/coverage-branches.svg)  ![Functions](./badges/coverage-functions.svg)  ![lines](./badges/coverage-lines.svg)  ![statements](./badges/coverage-statements.svg)
 
+## Install
+
+```shell
+npm install @ryandur/sand
+```
+
+## The pieces
+
+### Result
+
+A `Result` is either a `success` or a `failure`. Every operation on it says which side it cares about, so the
+happy path chains without a single null check, and the failure rides along untouched until you decide what to
+do with it.
+
+```typescript
+import {success, failure} from '@ryandur/sand';
+
+success(2)
+    .map(value => value + 1)
+    .mBind(value => value > 0 ? success(value) : failure('negative'))
+    .orElse(0); // produces: 3
+
+failure<string, number>('boom')
+    .map(value => value + 1) // never runs
+    .orNull(); // produces: null
+```
+
+When both sides deserve an answer, fold the two branches into one value with `either`.
+
+```typescript
+success<number, string>(2).either(value => `got ${value}`, reason => `oops, ${reason}`); // produces: "got 2"
+```
+
+The types ride along with the chain: `mBind` unions in any new error type it introduces, `or` unions in any
+new value type a recovery introduces, and nothing ever widens to `unknown`.
+
+### Maybe
+
+A `Maybe` is either `some` thing or `nothing`. The `maybe` factory decides for you: `null`, `undefined`, and
+`NaN` become `nothing`, anything else becomes `some`.
+
+```typescript
+import {maybe, some, nothing} from '@ryandur/sand';
+
+maybe('something').map(value => value + ' more').orNull(); // produces: "something more"
+maybe(null).map(value => value + ' more').orNull(); // produces: null
+maybe(NaN).orElse('fallback'); // produces: "fallback"
+
+some(1).and(some(2)).map(([one, two]) => one + two).orNull(); // produces: 3
+nothing().or(() => some('recovered')).orNull(); // produces: "recovered"
+```
+
+### AsyncResult
+
+A `Result.Async` lets you work with a promise the same way you work with a `Result`, plus `onPending` for
+loading states. The story below shows it in action.
+
+### allOf / someOf
+
+Both fold a batch onto a seed. `allOf` requires every item to succeed; `someOf` keeps the ones that do and
+skips the ones that don't. Either way, a failure from the reducer itself fails the whole fold.
+
+One function covers all three containers: the arguments carry the types, so whatever kind the seed is —
+`Result`, `Maybe`, or `Result.Async` — is what comes back, with nothing annotated at the call site.
+
+```typescript
+import {allOf, someOf, success, failure, some, nothing, asyncSuccess} from '@ryandur/sand';
+
+allOf([success(1), success(2), success(3)], (total, value) => success(total + value), success(0))
+    .orNull(); // produces: 6
+
+allOf([some(1), nothing(), some(3)], (total, value) => some(total + value), some(0))
+    .orNull(); // produces: null (allOf needs every one)
+
+someOf([success<number, string>(1), failure('x'), success(3)], (total, value) => success(total + value), success(0))
+    .orNull(); // produces: 4 (someOf skips the failure)
+
+await someOf([asyncSuccess<number, string>(1), asyncSuccess<number, string>(2)], (total, value) => asyncSuccess(total + value), asyncSuccess(0))
+    .orNull(); // produces: 3
+```
+
 ## Maybe how you would like to use it.
 
 Let's look at how we might use this lib. Imagine we are creating an

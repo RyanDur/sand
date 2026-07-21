@@ -23,9 +23,7 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
 });
 
 /**
- * {@link https://github.com/RyanDur/sand/blob/f36b1bbc5e93b319400dd4a8f53decc5dc7d60ea/src/lib/asyncResult.ts#L6 | orNull Implementation}
- *
- * {@link https://github.com/RyanDur/sand/blob/f36b1bbc5e93b319400dd4a8f53decc5dc7d60ea/src/lib/asyncResult.ts#L8 | orElse Implementation}
+ * {@link https://github.com/RyanDur/sand/blob/main/src/lib/asyncResult.ts | Implementation}
  * ```ts
  * const successfulResult = asyncSuccess('some value').map(value => value + ', another value');
  * await successfulResult.orNull(); // produces: "some value, another value"

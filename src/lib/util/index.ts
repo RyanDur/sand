@@ -20,7 +20,7 @@ export const inspect = (value: unknown): string => has(value) && (value as Inspe
 
 /**
  *
- * @see [test for matchOn](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L123)
+ * @see [test for matchOn](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts)
  *
  * Example:
  *
@@ -91,7 +91,7 @@ export const is = (value: unknown): boolean => !not(value);
 /**
  * tests whether a value is empty
  *
- * @see [test for empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L7)
+ * @see [test for empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts)
  *
  * Example:
  *
@@ -137,7 +137,7 @@ export const empty = (value: unknown): boolean => {
 /**
  * A value that is [not](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts).
  *
- * @see [test for has](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L65)
+ * @see [test for has](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts)
  *
  * Example:
  *
@@ -161,7 +161,7 @@ export const notEmpty = <T>(value: T): value is T => not(empty(value));
 /**
  * A value that is [not](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts).
  *
- * @see [test for has](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts#L65)
+ * @see [test for has](https://github.com/RyanDur/sand/blob/main/src/lib/util/__tests__/util.spec.ts)
  *
  * Example:
  *

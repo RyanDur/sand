@@ -75,7 +75,6 @@ const failure = <ERROR, VALUE = never>(reason: ERROR): Failure<VALUE, ERROR> => 
  * A factory for creating Result's
  *
  * @see implementation {@link https://github.com/RyanDur/sand/blob/main/src/lib/result.ts}
- * @see test for success {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L9}
- * @see test for failure {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L29}
+ * @see test {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts}
  * */
 export {success, failure};
