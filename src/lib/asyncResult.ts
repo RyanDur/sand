@@ -4,11 +4,11 @@ import {inspect} from './util';
 
 const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>): Result.Async<SUCCESS, FAILURE> => ({
   value: promise,
-  orNull: () => promise.then(({orNull}) => orNull()),
-  orElse: fallback => promise.then(({orElse}) => orElse(fallback)),
-  map: fn => ofPromise(promise.then(({map}) => map(fn))),
-  mBind: (fn) => ofPromise(promise.then((result) => result.isSuccess ? fn(result.value).value : result)),
-  or: (fn) => ofPromise(promise.then(result => result.isSuccess ? result : fn(result.reason).value)),
+  orNull: () => promise.then(result => result.orNull()),
+  orElse: fallback => promise.then(result => result.orElse(fallback)),
+  map: fn => ofPromise(promise.then(result => result.map(fn))),
+  mBind: <U>(fn: (value: SUCCESS) => Result.Async<U, FAILURE>) => ofPromise<U, FAILURE>(promise.then((result) => result.isSuccess ? fn(result.value).value : err<FAILURE, U>(result.reason))),
+  or: <U>(fn: (reason: FAILURE) => Result.Async<SUCCESS, U>) => ofPromise<SUCCESS, U>(promise.then(result => result.isSuccess ? ok<SUCCESS, U>(result.value) : fn(result.reason).value)),
   either: (onSuccess, onFailure) => ofPromise(promise.then(result => result.isSuccess
     ? onSuccess(result.value).value
     : onFailure(result.reason).value)),
@@ -16,9 +16,9 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
     waiting(true);
     return ofPromise(promise.then((result) => result.onComplete(() => waiting(false))));
   },
-  onSuccess: consumer => ofPromise(promise.then(({onSuccess}) => onSuccess(consumer))),
-  onFailure: consumer => ofPromise(promise.then(({onFailure}) => onFailure(consumer))),
-  onComplete: consumer => ofPromise(promise.then(({onComplete}) => onComplete(consumer))),
+  onSuccess: consumer => ofPromise(promise.then(result => result.onSuccess(consumer))),
+  onFailure: consumer => ofPromise(promise.then(result => result.onFailure(consumer))),
+  onComplete: consumer => ofPromise(promise.then(result => result.onComplete(consumer))),
   inspect: () => promise.then(value => `Result.Async(${inspect(value)})`)
 });
 
@@ -32,7 +32,7 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
  * await successfulResult.orElse('fallback'); // produces: "some value, another value" (orElse returns the value for a success)
  * ```
  * */
-export const asyncSuccess = <S, F>(value: S): Result.Async<S, F> => ofPromise<S, F>(Promise.resolve(ok<S>(value)));
+export const asyncSuccess = <S, F>(value: S): Result.Async<S, F> => ofPromise<S, F>(Promise.resolve(ok<S, F>(value)));
 
 /**
  * ```ts
@@ -41,7 +41,7 @@ export const asyncSuccess = <S, F>(value: S): Result.Async<S, F> => ofPromise<S,
  * await failureResult.orElse('Not this'); // produces: "Not this" (orElse returns the fallback for a failure)
  * ```
  * */
-export const asyncFailure = <S, F>(value: F): Result.Async<S, F> => ofPromise<S, F>(Promise.resolve(err<F>(value)));
+export const asyncFailure = <S, F>(value: F): Result.Async<S, F> => ofPromise<S, F>(Promise.resolve(err<F, S>(value)));
 
 /**
  * ```ts
@@ -54,4 +54,30 @@ export const asyncFailure = <S, F>(value: F): Result.Async<S, F> => ofPromise<S,
  * await failureResult.orElse('Not this'); // produces: "Not this"
  * ```
  * */
-export const asyncResult = <S, F>(promise: Promise<S>): Result.Async<S, F> => ofPromise<S, F>(promise.then(ok<S>).catch(err<F>));
+export const asyncResult = <S, F>(promise: Promise<S>): Result.Async<S, F> => ofPromise<S, F>(promise.then(ok<S, F>).catch(err<F, S>));
+
+const allOf = <VALUE, ERROR, ACC>(
+  results: readonly Result.Async<VALUE, ERROR>[],
+  reducer: (accumulator: ACC, value: VALUE) => Result.Async<ACC, ERROR>,
+  seed: ACC
+): Result.Async<ACC, ERROR> =>
+  results.reduce<Result.Async<ACC, ERROR>>(
+    (accumulator, item) => accumulator.mBind(a => item.mBind(v => reducer(a, v))),
+    asyncSuccess<ACC, ERROR>(seed)
+  );
+
+const someOf = <VALUE, ERROR, ACC>(
+  results: readonly Result.Async<VALUE, ERROR>[],
+  reducer: (accumulator: ACC, value: VALUE) => Result.Async<ACC, ERROR>,
+  seed: ACC
+): Result.Async<ACC, ERROR> =>
+  results.reduce<Result.Async<ACC, ERROR>>(
+    (accumulator, item) => accumulator.mBind(a => item.either(v => reducer(a, v), () => asyncSuccess<ACC, ERROR>(a))),
+    asyncSuccess<ACC, ERROR>(seed)
+  );
+
+/**
+ * `AsyncResult.all` requires every result to succeed; `AsyncResult.some` keeps the ones that do.
+ * Both fold a batch of pending results onto a seed.
+ */
+export const AsyncResult = {allOf, someOf};

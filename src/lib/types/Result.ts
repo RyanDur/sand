@@ -1,49 +1,48 @@
 import {Consumer} from './Function';
 import {Nothing, Some} from './Maybe';
 
-export type Result<VALUE, ERROR> = Success<VALUE> | Failure<ERROR>;
+export type Result<VALUE, ERROR> = Success<VALUE, ERROR> | Failure<VALUE, ERROR>;
 
-export interface Success<VALUE> {
+/**
+ * A Result is either a {@link Success} or a {@link Failure}. Both variants are
+ * parameterized by BOTH the value and error types so that every operation keeps
+ * both types through a chain (e.g. `mBind` and `or` never widen to `unknown`).
+ */
+export interface Success<VALUE, ERROR> {
   readonly isSuccess: true;
   readonly value: VALUE;
-  readonly orNull: () => VALUE;
-  readonly orElse: (fallback: unknown) => VALUE;
-  readonly map: <NEW_VALUE>(fn: (value: VALUE) => NEW_VALUE) => Success<NEW_VALUE>;
-  readonly mBind: <NEW_VALUE>(fn: (value: VALUE) => Result<NEW_VALUE, unknown>) => Result<NEW_VALUE, unknown>;
-  readonly or: (fn: unknown) => Success<VALUE>;
-  readonly either: <NEW_VALUE, ERROR>(
-    onSuccess: (value: VALUE) => Result<NEW_VALUE, ERROR>,
-    onFailure: unknown
-  ) => Result<NEW_VALUE, ERROR>;
-  readonly onSuccess: (consumer: Consumer<VALUE>) => Success<VALUE>;
-  readonly onFailure: (consumer: unknown) => Success<VALUE>;
-  readonly onComplete: (consumer: Consumer<Success<VALUE>>) => Success<VALUE>;
-  readonly inspect: () => string;
-  readonly toMaybe: () => Some<VALUE>;
+  orNull(): VALUE;
+  orElse(fallback: VALUE): VALUE;
+  map<NEW_VALUE>(fn: (value: VALUE) => NEW_VALUE): Success<NEW_VALUE, ERROR>;
+  mBind<NEW_VALUE>(fn: (value: VALUE) => Result<NEW_VALUE, ERROR>): Result<NEW_VALUE, ERROR>;
+  or<NEW_ERROR>(fn: (reason: ERROR) => Result<VALUE, NEW_ERROR>): Result<VALUE, NEW_ERROR>;
+  either<T>(onSuccess: (value: VALUE) => T, onFailure: (reason: ERROR) => T): T;
+  onSuccess(consumer: Consumer<VALUE>): Result<VALUE, ERROR>;
+  onFailure(consumer: Consumer<ERROR>): Result<VALUE, ERROR>;
+  onComplete(consumer: Consumer<Result<VALUE, ERROR>>): Result<VALUE, ERROR>;
+  toMaybe(): Some<VALUE>;
+  inspect(): string;
 }
 
-export interface Failure<ERROR> {
+export interface Failure<VALUE, ERROR> {
   readonly isSuccess: false;
   readonly reason: ERROR;
-  readonly orNull: () => null;
-  readonly orElse: <VALUE>(fallback: VALUE) => VALUE;
-  readonly map: (fn: unknown) => Failure<ERROR>;
-  readonly mBind: (fn: unknown) => Failure<ERROR>;
-  readonly or: <NEW_ERROR>(fn: (reason: ERROR) => Result<unknown, NEW_ERROR>) => Result<unknown, NEW_ERROR>;
-  readonly either: <VALUE, NEW_ERROR>(
-    onSuccess: unknown,
-    onFailure: (err: ERROR) => Result<VALUE, NEW_ERROR>
-  ) => Result<VALUE, NEW_ERROR>;
-  readonly onSuccess: (consumer: unknown) => Failure<ERROR>;
-  readonly onFailure: (consumer: Consumer<ERROR>) => Failure<ERROR>;
-  readonly onComplete: (consumer: Consumer<Failure<ERROR>>) => Failure<ERROR>;
-  readonly toMaybe: () => Nothing;
-  readonly inspect: () => string;
+  orNull(): null;
+  orElse(fallback: VALUE): VALUE;
+  map<NEW_VALUE>(fn: (value: VALUE) => NEW_VALUE): Failure<NEW_VALUE, ERROR>;
+  mBind<NEW_VALUE>(fn: (value: VALUE) => Result<NEW_VALUE, ERROR>): Result<NEW_VALUE, ERROR>;
+  or<NEW_ERROR>(fn: (reason: ERROR) => Result<VALUE, NEW_ERROR>): Result<VALUE, NEW_ERROR>;
+  either<T>(onSuccess: (value: VALUE) => T, onFailure: (reason: ERROR) => T): T;
+  onSuccess(consumer: Consumer<VALUE>): Result<VALUE, ERROR>;
+  onFailure(consumer: Consumer<ERROR>): Result<VALUE, ERROR>;
+  onComplete(consumer: Consumer<Result<VALUE, ERROR>>): Result<VALUE, ERROR>;
+  toMaybe(): Nothing;
+  inspect(): string;
 }
 
 export declare namespace Result {
   /**
-   * The AsyncResult is something that [Damien LeBfailureigaud](https://github.com/dam5s) has introduced me to. I had the chance
+   * The AsyncResult is something that [Damien LeBerrigaud](https://github.com/dam5s) has introduced me to. I had the chance
    * to work with him on a project that inspired me to write this lib. Together we
    * collaborated on [React Redux Starter](https://github.com/dam5s/react-redux-starter) to aid us in developing future projects with
    * clients.
