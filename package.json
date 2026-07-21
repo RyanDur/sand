@@ -4,7 +4,10 @@
   "type": "module",
   "description": "helper objects and functions",
   "homepage": "https://ryandur.github.io/sand/",
-  "repository": "https://github.com/RyanDur/sand",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RyanDur/sand.git"
+  },
   "main": "dist/sand.umd.cjs",
   "module": "dist/sand.js",
   "exports": {
