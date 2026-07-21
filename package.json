@@ -31,25 +31,23 @@
     "prepublish": "npm run build",
     "deploy": "gh-pages -d docs",
     "test:coverage": "npm test -- src/lib --coverage",
-    "ci": "npm run test:coverage"
+    "ci": "npm run test:coverage",
+    "lint": "oxlint --type-aware",
+    "docs": "npx --yes -p typedoc@0.28.20 -p typescript@6.0.2 typedoc"
   },
   "author": "Ryan Durling",
   "license": "MIT",
   "devDependencies": {
-    "@faker-js/faker": "^8.4.1",
-    "@typescript-eslint/eslint-plugin": "^7.4.0",
-    "@typescript-eslint/parser": "^7.4.0",
-    "@vitest/coverage-v8": "^1.4.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-tsdoc": "^0.2.14",
-    "eslint-webpack-plugin": "^4.1.0",
-    "faker": "^5.5.3",
+    "@faker-js/faker": "^10.5.0",
+    "@typescript/typescript6": "^6.0.2",
+    "@vitest/coverage-v8": "^4.1.10",
     "gh-pages": "^6.1.1",
-    "typedoc": "^0.25.12",
-    "typescript": "^5.4.3",
-    "unplugin-auto-import": "^0.17.5",
-    "vite": "5.4.10",
-    "vite-plugin-dts": "^3.8.1",
-    "vitest": "^1.4.0"
-  }
+    "oxlint": "^1.74.0",
+    "oxlint-tsgolint": "^0.25.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.5",
+    "vite-plugin-dts": "^5.0.3",
+    "vitest": "^4.1.10"
+  },
+  "overrides": {}
 }

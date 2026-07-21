@@ -10,7 +10,7 @@
     "types": [
       "vitest/globals"
     ],
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "strict": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
