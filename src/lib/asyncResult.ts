@@ -39,7 +39,7 @@ export const asyncSuccess = <S, F = never>(value: S): Result.Async<S, F> => ofPr
  * await failureResult.orElse('Not this'); // produces: "Not this" (orElse returns the fallback for a failure)
  * ```
  * */
-export const asyncFailure = <S, F>(value: F): Result.Async<S, F> => ofPromise<S, F>(Promise.resolve(err<F, S>(value)));
+export const asyncFailure = <F, S = never>(value: F): Result.Async<S, F> => ofPromise<S, F>(Promise.resolve(err<F, S>(value)));
 
 /**
  * ```ts

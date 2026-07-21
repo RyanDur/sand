@@ -40,7 +40,7 @@ describe('allOf', () => {
       expect(await allOf([asyncSuccess<number, string>(1), asyncSuccess<number, string>(2)], (a, b) => asyncSuccess(a + b), asyncSuccess(0)).orNull()).toEqual(3));
 
     it('short-circuits to the first failure', async () =>
-      expect(await allOf([asyncSuccess<number, string>(1), asyncFailure<number, string>('x'), asyncSuccess<number, string>(3)], (a, b) => asyncSuccess(a + b), asyncSuccess(0)).orNull()).toBeNull());
+      expect(await allOf([asyncSuccess<number, string>(1), asyncFailure('x'), asyncSuccess<number, string>(3)], (a, b) => asyncSuccess(a + b), asyncSuccess(0)).orNull()).toBeNull());
 
     it('returns the seed for an empty batch', async () =>
       expect(await allOf([], (a) => asyncSuccess<number, string>(a), asyncSuccess<number, string>(42)).orNull()).toEqual(42));
@@ -69,9 +69,9 @@ describe('someOf', () => {
 
   describe('async results', () => {
     it('keeps the successes and skips the failures', async () =>
-      expect(await someOf([asyncSuccess<number, string>(1), asyncFailure<number, string>('x'), asyncSuccess<number, string>(3)], (a, b) => asyncSuccess(a + b), asyncSuccess(0)).orNull()).toEqual(4));
+      expect(await someOf([asyncSuccess<number, string>(1), asyncFailure('x'), asyncSuccess<number, string>(3)], (a, b) => asyncSuccess(a + b), asyncSuccess(0)).orNull()).toEqual(4));
 
     it('propagates a failure from the reducer', async () =>
-      expect(await someOf([asyncSuccess<number, string>(1), asyncSuccess<number, string>(2)], () => asyncFailure<number, string>('nope'), asyncSuccess<number, string>(0)).orNull()).toBeNull());
+      expect(await someOf([asyncSuccess<number, string>(1), asyncSuccess<number, string>(2)], () => asyncFailure('nope'), asyncSuccess<number, string>(0)).orNull()).toBeNull());
   });
 });
