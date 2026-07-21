@@ -75,7 +75,7 @@ export declare namespace Result {
      * @remarks
      * The provided consumer gets called twice.
      *
-     * @param consumer - consumes the pending state.
+     * @param f - consumes the pending state.
      * */
     readonly onPending: (f: (waiting: boolean) => void) => Async<SUCCESS, FAILURE>;
     readonly onSuccess: (f: (value: SUCCESS) => void) => Async<SUCCESS, FAILURE>;

@@ -4,9 +4,9 @@ import {Failure, Success} from './types';
 
 /**
  * ```ts
- * var successResult = success('some value').map(value => value + ', another value');
+ * const successResult = success('some value').map(value => value + ', another value');
  * successResult.orNull(); // produces: "some value, another value"
- * okResult.orElse('definitely this'); // produces: "definitely this"
+ * successResult.orElse('fallback'); // produces: "some value, another value" (orElse returns the value for a success)
  * ```
  */
 const success = <VALUE>(value: VALUE): Success<VALUE> => shallowFreeze({
@@ -35,9 +35,10 @@ const success = <VALUE>(value: VALUE): Success<VALUE> => shallowFreeze({
 
 /**
  * ```ts
- * const failureResult = failure('some failure').mapFailure(value => value + ', another failure');
+ * const failureResult = failure('some failure').or(reason => failure(reason + ', another failure'));
  * failureResult.orNull(); // produces: null
- * failureResult.orElse('Not this'); // produces: "some failure, another failure"
+ * failureResult.orElse('Not this'); // produces: "Not this" (orElse returns the fallback for a failure)
+ * failureResult.either(value => value, reason => reason); // produces: "some failure, another failure"
  * ```
  */
 const failure = <ERROR>(value: ERROR): Failure<ERROR> => shallowFreeze({
@@ -69,7 +70,7 @@ const failure = <ERROR>(value: ERROR): Failure<ERROR> => shallowFreeze({
  *
  * A factory for creating Result's
  *
- * @see implementation {@link https://github.com/RyanDur/sand/blob/main/sr/lib/result.ts}
+ * @see implementation {@link https://github.com/RyanDur/sand/blob/main/src/lib/result.ts}
  * @see test for success {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L9}
  * @see test for failure {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L29}
  * */

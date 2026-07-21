@@ -61,7 +61,7 @@ const maybe = <THING>(
  * A factory for creating Maybe's
  *
  * @see implementation  {@link https://github.com/RyanDur/sand/blob/main/src/lib/maybe.ts}
- * @see test {@link https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts}
+ * @see test {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/maybe.spec.ts}
  * */
 export {
   maybe,
