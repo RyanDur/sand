@@ -1,6 +1,6 @@
 {
   "name": "@ryandur/sand",
-  "version": "5.0.5",
+  "version": "5.1.0",
   "type": "module",
   "description": "helper objects and functions",
   "homepage": "https://ryandur.github.io/sand/",
@@ -28,7 +28,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "deploy": "gh-pages -d docs",
     "test:coverage": "npm test -- src/lib --coverage",
     "ci": "npm run test:coverage",

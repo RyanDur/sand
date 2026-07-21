@@ -10,12 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: "18.x"
-      - run: npm install
+          node-version: "22.x"
+          cache: npm
+      - run: npm ci
       - run: npm run build
       - run: npm run ci
       - name: Generating coverage badges
@@ -23,7 +24,7 @@ jobs:
         with:
           branches: main
       - name: Create the docs directory locally in CI
-        run: npx typedoc src/index.ts
+        run: npm run docs
       - name: Copy badges to docs
         run: cp -r badges docs
       - name: Deploy Documentation 🚀
