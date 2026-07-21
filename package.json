@@ -10,6 +10,7 @@
   },
   "main": "dist/sand.umd.cjs",
   "module": "dist/sand.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
