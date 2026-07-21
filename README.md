@@ -93,7 +93,7 @@ await someOf([asyncSuccess<number, string>(1), asyncSuccess<number, string>(2)],
 ## Maybe how you would like to use it.
 
 Let's look at how we might use this lib. Imagine we are creating an
-art [gallery](https://peaceful-heyrovsky-96583c.netlify.app/gallery?page=1&size=8&tab=aic), and we want to take a closer
+art [gallery](https://ryandur.github.io/ChosenPicachu/gallery?page=1&size=8&tab=aic), and we want to take a closer
 look at one of the pieces. To get the piece of art we send a request to a backend referencing it by id. The response
 might take a little while, so we need a way to notify the user that the request is pending. Once we have
 obtained the piece we will need to display it, or if the call has failed we need to notify that something went wrong.
@@ -137,7 +137,7 @@ get: (endpoint: string): Result.Async<Art, AnError> =>
 
 ## Examples of use
 
-[Art Gallery](https://peaceful-heyrovsky-96583c.netlify.app/gallery?page=1&size=8&tab=aic)
+[Art Gallery](https://ryandur.github.io/ChosenPicachu/gallery?page=1&size=8&tab=aic)
 
 * [Art](https://github.com/RyanDur/ChosenPicachu/blob/main/src/components/Gallery/Art/index.tsx#L19)
 * [ArtPiece](https://github.com/RyanDur/ChosenPicachu/blob/main/src/components/Gallery/ArtPiece/index.tsx#L19)
