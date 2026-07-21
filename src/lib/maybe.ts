@@ -73,35 +73,3 @@ export {
   some
 };
 
-export type Maybe<THING> = MaybeType<THING>;
-
-const allOf = <VALUE, ACC>(
-  maybes: readonly MaybeType<VALUE>[],
-  reducer: (accumulator: ACC, value: VALUE) => MaybeType<ACC>,
-  seed: ACC
-): MaybeType<ACC> =>
-  maybes.reduce<MaybeType<ACC>>(
-    (accumulator, item) => accumulator.mBind(a => item.mBind(v => reducer(a, v))),
-    some(seed)
-  );
-
-const someOf = <VALUE, ACC>(
-  maybes: readonly MaybeType<VALUE>[],
-  reducer: (accumulator: ACC, value: VALUE) => MaybeType<ACC>,
-  seed: ACC
-): MaybeType<ACC> => {
-  let accumulator: MaybeType<ACC> = some(seed);
-  for (const item of maybes) {
-    if (!item.isNothing) {
-      accumulator = accumulator.mBind(a => item.mBind(v => reducer(a, v)));
-      if (accumulator.isNothing) return accumulator;
-    }
-  }
-  return accumulator;
-};
-
-/**
- * `Maybe.allOf` requires every maybe to be something; `Maybe.someOf` keeps the ones that are.
- * Both fold a batch onto a seed.
- */
-export const Maybe = {allOf, someOf};

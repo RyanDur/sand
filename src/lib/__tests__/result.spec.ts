@@ -1,5 +1,4 @@
 import {failure, success} from '../result';
-import {expect} from 'vitest';
 
 describe('result', () => {
   const value = 'value';
@@ -126,6 +125,23 @@ describe('result', () => {
 
     test('failure', () => {
       expect(failure(value).mBind(() => success('fail')).isSuccess).toBe(false);
+    });
+  });
+
+  describe('no-op operations return the same instance', () => {
+    test('or on success', () => {
+      const result = success(value);
+      expect(result.or(() => failure('fail'))).toBe(result);
+    });
+
+    test('map on failure', () => {
+      const result = failure(value);
+      expect(result.map(() => newValue)).toBe(result);
+    });
+
+    test('mBind on failure', () => {
+      const result = failure(value);
+      expect(result.mBind(() => success(newValue))).toBe(result);
     });
   });
 

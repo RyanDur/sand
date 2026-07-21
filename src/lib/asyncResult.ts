@@ -5,10 +5,10 @@ import {inspect} from './util';
 const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>): Result.Async<SUCCESS, FAILURE> => ({
   value: promise,
   orNull: () => promise.then(result => result.orNull()),
-  orElse: fallback => promise.then(result => result.orElse(fallback)),
+  orElse: <FALLBACK>(fallback: FALLBACK): Promise<SUCCESS | FALLBACK> => promise.then(result => result.orElse(fallback)),
   map: fn => ofPromise(promise.then(result => result.map(fn))),
-  mBind: <U>(fn: (value: SUCCESS) => Result.Async<U, FAILURE>) => ofPromise<U, FAILURE>(promise.then((result) => result.isSuccess ? fn(result.value).value : err<FAILURE, U>(result.reason))),
-  or: <U>(fn: (reason: FAILURE) => Result.Async<SUCCESS, U>) => ofPromise<SUCCESS, U>(promise.then(result => result.isSuccess ? ok<SUCCESS, U>(result.value) : fn(result.reason).value)),
+  mBind: <U, NEW_FAILURE>(fn: (value: SUCCESS) => Result.Async<U, NEW_FAILURE>) => ofPromise<U, FAILURE | NEW_FAILURE>(promise.then<Result<U, FAILURE | NEW_FAILURE>>(result => result.isSuccess ? fn(result.value).value : err<FAILURE | NEW_FAILURE, U>(result.reason))),
+  or: <NEW_FAILURE, U>(fn: (reason: FAILURE) => Result.Async<U, NEW_FAILURE>) => ofPromise<SUCCESS | U, NEW_FAILURE>(promise.then<Result<SUCCESS | U, NEW_FAILURE>>(result => result.isSuccess ? ok<SUCCESS | U, NEW_FAILURE>(result.value) : fn(result.reason).value)),
   either: (onSuccess, onFailure) => ofPromise(promise.then(result => result.isSuccess
     ? onSuccess(result.value).value
     : onFailure(result.reason).value)),
@@ -32,7 +32,7 @@ const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>)
  * await successfulResult.orElse('fallback'); // produces: "some value, another value" (orElse returns the value for a success)
  * ```
  * */
-export const asyncSuccess = <S, F>(value: S): Result.Async<S, F> => ofPromise<S, F>(Promise.resolve(ok<S, F>(value)));
+export const asyncSuccess = <S, F = never>(value: S): Result.Async<S, F> => ofPromise<S, F>(Promise.resolve(ok<S, F>(value)));
 
 /**
  * ```ts
@@ -55,29 +55,3 @@ export const asyncFailure = <S, F>(value: F): Result.Async<S, F> => ofPromise<S,
  * ```
  * */
 export const asyncResult = <S, F>(promise: Promise<S>): Result.Async<S, F> => ofPromise<S, F>(promise.then(ok<S, F>).catch(err<F, S>));
-
-const allOf = <VALUE, ERROR, ACC>(
-  results: readonly Result.Async<VALUE, ERROR>[],
-  reducer: (accumulator: ACC, value: VALUE) => Result.Async<ACC, ERROR>,
-  seed: ACC
-): Result.Async<ACC, ERROR> =>
-  results.reduce<Result.Async<ACC, ERROR>>(
-    (accumulator, item) => accumulator.mBind(a => item.mBind(v => reducer(a, v))),
-    asyncSuccess<ACC, ERROR>(seed)
-  );
-
-const someOf = <VALUE, ERROR, ACC>(
-  results: readonly Result.Async<VALUE, ERROR>[],
-  reducer: (accumulator: ACC, value: VALUE) => Result.Async<ACC, ERROR>,
-  seed: ACC
-): Result.Async<ACC, ERROR> =>
-  results.reduce<Result.Async<ACC, ERROR>>(
-    (accumulator, item) => accumulator.mBind(a => item.either(v => reducer(a, v), () => asyncSuccess<ACC, ERROR>(a))),
-    asyncSuccess<ACC, ERROR>(seed)
-  );
-
-/**
- * `AsyncResult.all` requires every result to succeed; `AsyncResult.some` keeps the ones that do.
- * Both fold a batch of pending results onto a seed.
- */
-export const AsyncResult = {allOf, someOf};

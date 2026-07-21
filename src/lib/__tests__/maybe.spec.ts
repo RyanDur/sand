@@ -1,6 +1,5 @@
 import {maybe, nothing, some} from '../maybe';
 import {Maybe} from '../types';
-import {expect} from 'vitest';
 import {faker} from '@faker-js/faker';
 
 describe('the Maybe', () => {
@@ -9,11 +8,11 @@ describe('the Maybe', () => {
     const thisShouldNotHappen = () => expect.fail('this should not happen');
     const otherValue = faker.lorem.sentence();
 
-    const testSomething = <T>(maybeValue: Maybe<T>, expected: T) => {
+    const testSomething = <T>(maybeValue: Maybe<T>, expected: T, other: T) => {
         describe('something', () => {
             describe('why it is a monad', () => {
                 test('orElse: for SOMETHING should not provide the fallback value', () =>
-                    expect(maybeValue.orElse(otherValue)).toBe(expected));
+                    expect(maybeValue.orElse(other)).toBe(expected));
 
                 test(`map: for SOMETHING is ${maybeValue.inspect?.()} `, () =>
                     expect(maybeValue.map(inner => `${inner} ${SOMETHING}`).orElse(otherValue))
@@ -29,7 +28,7 @@ describe('the Maybe', () => {
                 });
 
                 test('or: for SOMETHING should be skipped', () =>
-                    expect(maybeValue.or(thisShouldNotHappen).orElse(otherValue)).toBe(expected));
+                    expect(maybeValue.or(thisShouldNotHappen).orElse(other)).toBe(expected));
             });
 
             test(`toResult: for SOMETHING is ${maybeValue.inspect?.()} should be a Success`, () =>
@@ -37,23 +36,23 @@ describe('the Maybe', () => {
         });
     };
 
-    testSomething(some(SOMETHING), SOMETHING);
+    testSomething(some(SOMETHING), SOMETHING, otherValue);
 
-    const testNothing = <T>(maybeValue: Maybe<T>) => {
+    const testNothing = <T>(maybeValue: Maybe<T>, fallback: T) => {
         describe('nothing', () => {
             describe('why it is a monad', () => {
                 test('orElse: for undefined should provide the fallback value', () =>
-                    expect(maybeValue.orElse(NOTHING)).toEqual(NOTHING));
+                    expect(maybeValue.orElse(fallback)).toEqual(fallback));
 
                 test('map: for undefined should be skipped', () =>
-                    expect(maybeValue.map(thisShouldNotHappen).orElse(NOTHING)).toEqual(NOTHING));
+                    expect(maybeValue.map<T>(thisShouldNotHappen).orElse(fallback)).toEqual(fallback));
 
                 test('mBind: for undefined should be skipped', () =>
                     expect(maybeValue.mBind(thisShouldNotHappen).orNull()).toEqual(null));
 
                 describe('or: for undefined', () => {
                     test('should allow us to migrate to a something', () =>
-                        expect(maybeValue.or(() => some(otherValue)).orNull()).toEqual(otherValue));
+                        expect(maybeValue.or(() => some(fallback)).orNull()).toEqual(fallback));
 
                     test('should allow us to migrate to a different nothing', () =>
                         expect(maybeValue.mBind(() => nothing()).orNull()).toEqual(null));
@@ -65,11 +64,11 @@ describe('the Maybe', () => {
         });
     };
 
-    testNothing(nothing());
+    testNothing(nothing(), NOTHING);
 
     describe('with custom isSomething definition', () => {
-        testSomething(maybe(NOTHING, () => true), NOTHING);
-        testNothing(maybe(SOMETHING, () => false));
+        testSomething(maybe(NOTHING, () => true), NOTHING, NOTHING);
+        testNothing(maybe(SOMETHING, () => false), otherValue);
     });
 
     describe('and - combine all values into an array passed to the functions', () => {
@@ -77,7 +76,7 @@ describe('the Maybe', () => {
             expect(maybe(3).and(maybe(4)).map(([a, b]) => a + b).orElse(0)).toEqual(7);
         });
         it('should work for mixed types', () => {
-            expect(maybe(3).and(maybe('4')).map(([a, b]) => a + b).orElse(0)).toEqual('34');
+            expect(maybe(3).and(maybe('4')).map(([a, b]) => a + b).orElse('')).toEqual('34');
         });
 
         it('should handle chaining', () => {
@@ -109,7 +108,7 @@ describe('the Maybe', () => {
                 NaN,
                 null,
                 undefined
-            ].forEach(value => testNothing(maybe(value)));
+            ].forEach(value => testNothing(maybe(value), 0));
         });
 
         describe('what is something', () => {
@@ -137,7 +136,7 @@ describe('the Maybe', () => {
                 "", // eslint-disable-line
                 '',
                 ``  // eslint-disable-line
-            ].forEach(value => testSomething(maybe(value), value));
+            ].forEach(value => testSomething(maybe(value), value, otherValue));
         });
     });
 });

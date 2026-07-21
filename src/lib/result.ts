@@ -1,6 +1,6 @@
 import {inspect, shallowFreeze} from './util';
 import {nothing, some} from './maybe';
-import {Failure, Result as ResultType, Success} from './types';
+import {Failure, Success} from './types';
 
 /**
  * ```ts
@@ -10,21 +10,21 @@ import {Failure, Result as ResultType, Success} from './types';
  * ```
  */
 const success = <VALUE, ERROR = never>(value: VALUE): Success<VALUE, ERROR> => {
-    const self: Success<VALUE, ERROR> = shallowFreeze({
+    const self: Success<VALUE, never> = shallowFreeze({
         isSuccess: true,
         value,
         orNull: () => value,
         orElse: () => value,
-        map: <NEW_VALUE>(f: (value: VALUE) => NEW_VALUE) => success<NEW_VALUE, ERROR>(f(value)),
-        mBind: <NEW_VALUE>(f: (value: VALUE) => ResultType<NEW_VALUE, ERROR>) => f(value),
-        or: <NEW_ERROR>(_f: (reason: ERROR) => ResultType<VALUE, NEW_ERROR>) => success<VALUE, NEW_ERROR>(value),
-        either: <T>(onSuccess: (value: VALUE) => T) => onSuccess(value),
-        onSuccess: (consumer: (value: VALUE) => void) => {
+        map: (f) => success(f(value)),
+        mBind: (f) => f(value),
+        or: () => self,
+        either: (onSuccess) => onSuccess(value),
+        onSuccess: (consumer) => {
             consumer(value);
             return self;
         },
         onFailure: () => self,
-        onComplete: (consumer: (result: ResultType<VALUE, ERROR>) => void) => {
+        onComplete: (consumer) => {
             consumer(self);
             return self;
         },
@@ -44,21 +44,21 @@ const success = <VALUE, ERROR = never>(value: VALUE): Success<VALUE, ERROR> => {
  * ```
  */
 const failure = <ERROR, VALUE = never>(reason: ERROR): Failure<VALUE, ERROR> => {
-    const self: Failure<VALUE, ERROR> = shallowFreeze({
+    const self: Failure<never, ERROR> = shallowFreeze({
         isSuccess: false,
         reason,
         orNull: () => null,
-        orElse: (fallback: VALUE) => fallback,
-        map: <NEW_VALUE>(_f: (value: VALUE) => NEW_VALUE) => failure<ERROR, NEW_VALUE>(reason),
-        mBind: <NEW_VALUE>(_f: (value: VALUE) => ResultType<NEW_VALUE, ERROR>) => failure<ERROR, NEW_VALUE>(reason),
-        or: <NEW_ERROR>(f: (reason: ERROR) => ResultType<VALUE, NEW_ERROR>) => f(reason),
-        either: <T>(_onSuccess: (value: VALUE) => T, onFailure: (reason: ERROR) => T) => onFailure(reason),
+        orElse: (fallback) => fallback,
+        map: () => self,
+        mBind: () => self,
+        or: (f) => f(reason),
+        either: (_onSuccess, onFailure) => onFailure(reason),
         onSuccess: () => self,
-        onFailure: (consumer: (reason: ERROR) => void) => {
+        onFailure: (consumer) => {
             consumer(reason);
             return self;
         },
-        onComplete: (consumer: (result: ResultType<VALUE, ERROR>) => void) => {
+        onComplete: (consumer) => {
             consumer(self);
             return self;
         },
@@ -79,39 +79,3 @@ const failure = <ERROR, VALUE = never>(reason: ERROR): Failure<VALUE, ERROR> => 
  * @see test for failure {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/result.spec.ts#L29}
  * */
 export {success, failure};
-
-export type Result<VALUE, ERROR> = ResultType<VALUE, ERROR>;
-export declare namespace Result {
-    export type Async<SUCCESS, FAILURE> = ResultType.Async<SUCCESS, FAILURE>;
-}
-
-const allOf = <VALUE, ERROR, ACC>(
-    results: readonly ResultType<VALUE, ERROR>[],
-    reducer: (accumulator: ACC, value: VALUE) => ResultType<ACC, ERROR>,
-    seed: ACC
-): ResultType<ACC, ERROR> =>
-    results.reduce<ResultType<ACC, ERROR>>(
-        (accumulator, item) => accumulator.mBind(a => item.mBind(v => reducer(a, v))),
-        success<ACC, ERROR>(seed)
-    );
-
-const someOf = <VALUE, ERROR, ACC>(
-    results: readonly ResultType<VALUE, ERROR>[],
-    reducer: (accumulator: ACC, value: VALUE) => ResultType<ACC, ERROR>,
-    seed: ACC
-): ResultType<ACC, ERROR> => {
-    let accumulator: ResultType<ACC, ERROR> = success<ACC, ERROR>(seed);
-    for (const item of results) {
-        if (item.isSuccess) {
-            accumulator = accumulator.mBind(a => item.mBind(v => reducer(a, v)));
-            if (!accumulator.isSuccess) return accumulator;
-        }
-    }
-    return accumulator;
-};
-
-/**
- * `Result.allOf` requires every result to succeed; `Result.someOf` keeps the ones that do.
- * Both fold a batch onto a seed and short-circuit when the reducer fails.
- */
-export const Result = {allOf, someOf};

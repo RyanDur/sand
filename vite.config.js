@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
 export default defineConfig({
-  plugins: [dts()],
+  plugins: [dts({ exclude: ['**/__tests__/**', 'src/development'] })],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),

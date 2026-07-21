@@ -159,13 +159,13 @@ describe('util', () => {
         [1]: () => ({a: 23}),
         [2]: () => ({a: Number.MIN_SAFE_INTEGER}),
         [3]: () => ({a: Number.MAX_SAFE_INTEGER}),
-      }).orElse({a: 4}).a).toEqual(4);
+      }).orElse({a: 4})).toEqual({a: 4});
 
       expect(matchValue(undefined, {
         [1]: () => ({a: 23}),
         [2]: () => ({a: Number.MIN_SAFE_INTEGER}),
         [3]: () => ({a: Number.MAX_SAFE_INTEGER}),
-      }).orElse({a: 4}).a).toEqual(4);
+      }).orElse({a: 4})).toEqual({a: 4});
     });
   });
 });

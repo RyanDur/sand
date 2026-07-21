@@ -5,18 +5,19 @@ export type Result<VALUE, ERROR> = Success<VALUE, ERROR> | Failure<VALUE, ERROR>
 
 /**
  * A Result is either a {@link Success} or a {@link Failure}. Both variants are
- * parameterized by BOTH the value and error types so that every operation keeps
- * both types through a chain (e.g. `mBind` and `or` never widen to `unknown`).
+ * parameterized by BOTH the value and error types so that a chain tracks them
+ * precisely: `mBind` unions the error type as new failures are introduced, `or`
+ * unions the value type as failures recover, and neither ever widens to `unknown`.
  */
 export interface Success<VALUE, ERROR> {
   readonly isSuccess: true;
   readonly value: VALUE;
   orNull(): VALUE;
-  orElse(fallback: VALUE): VALUE;
+  orElse<FALLBACK>(fallback: FALLBACK): VALUE;
   map<NEW_VALUE>(fn: (value: VALUE) => NEW_VALUE): Success<NEW_VALUE, ERROR>;
-  mBind<NEW_VALUE>(fn: (value: VALUE) => Result<NEW_VALUE, ERROR>): Result<NEW_VALUE, ERROR>;
-  or<NEW_ERROR>(fn: (reason: ERROR) => Result<VALUE, NEW_ERROR>): Result<VALUE, NEW_ERROR>;
-  either<T>(onSuccess: (value: VALUE) => T, onFailure: (reason: ERROR) => T): T;
+  mBind<NEW_VALUE, NEW_ERROR>(fn: (value: VALUE) => Result<NEW_VALUE, NEW_ERROR>): Result<NEW_VALUE, ERROR | NEW_ERROR>;
+  or<NEW_ERROR, NEW_VALUE>(fn: (reason: ERROR) => Result<NEW_VALUE, NEW_ERROR>): Result<VALUE | NEW_VALUE, NEW_ERROR>;
+  either<ON_SUCCESS, ON_FAILURE>(onSuccess: (value: VALUE) => ON_SUCCESS, onFailure: (reason: ERROR) => ON_FAILURE): ON_SUCCESS | ON_FAILURE;
   onSuccess(consumer: Consumer<VALUE>): Result<VALUE, ERROR>;
   onFailure(consumer: Consumer<ERROR>): Result<VALUE, ERROR>;
   onComplete(consumer: Consumer<Result<VALUE, ERROR>>): Result<VALUE, ERROR>;
@@ -28,11 +29,11 @@ export interface Failure<VALUE, ERROR> {
   readonly isSuccess: false;
   readonly reason: ERROR;
   orNull(): null;
-  orElse(fallback: VALUE): VALUE;
+  orElse<FALLBACK>(fallback: FALLBACK): FALLBACK;
   map<NEW_VALUE>(fn: (value: VALUE) => NEW_VALUE): Failure<NEW_VALUE, ERROR>;
-  mBind<NEW_VALUE>(fn: (value: VALUE) => Result<NEW_VALUE, ERROR>): Result<NEW_VALUE, ERROR>;
-  or<NEW_ERROR>(fn: (reason: ERROR) => Result<VALUE, NEW_ERROR>): Result<VALUE, NEW_ERROR>;
-  either<T>(onSuccess: (value: VALUE) => T, onFailure: (reason: ERROR) => T): T;
+  mBind<NEW_VALUE, NEW_ERROR>(fn: (value: VALUE) => Result<NEW_VALUE, NEW_ERROR>): Result<NEW_VALUE, ERROR | NEW_ERROR>;
+  or<NEW_ERROR, NEW_VALUE>(fn: (reason: ERROR) => Result<NEW_VALUE, NEW_ERROR>): Result<VALUE | NEW_VALUE, NEW_ERROR>;
+  either<ON_SUCCESS, ON_FAILURE>(onSuccess: (value: VALUE) => ON_SUCCESS, onFailure: (reason: ERROR) => ON_FAILURE): ON_SUCCESS | ON_FAILURE;
   onSuccess(consumer: Consumer<VALUE>): Result<VALUE, ERROR>;
   onFailure(consumer: Consumer<ERROR>): Result<VALUE, ERROR>;
   onComplete(consumer: Consumer<Result<VALUE, ERROR>>): Result<VALUE, ERROR>;
@@ -57,10 +58,10 @@ export declare namespace Result {
   interface Async<SUCCESS, FAILURE> {
     readonly value: Promise<Result<SUCCESS, FAILURE>>;
     readonly orNull: () => Promise<SUCCESS | null>;
-    readonly orElse: (fallback: SUCCESS) => Promise<SUCCESS>;
+    readonly orElse: <FALLBACK>(fallback: FALLBACK) => Promise<SUCCESS | FALLBACK>;
     readonly map: <U>(f: (value: SUCCESS) => U) => Async<U, FAILURE>;
-    readonly mBind: <U>(f: (value: SUCCESS) => Async<U, FAILURE>) => Async<U, FAILURE>;
-    readonly or: <U>(f: (value: FAILURE) => Async<SUCCESS, U>) => Async<SUCCESS, U>;
+    readonly mBind: <U, NEW_FAILURE>(f: (value: SUCCESS) => Async<U, NEW_FAILURE>) => Async<U, FAILURE | NEW_FAILURE>;
+    readonly or: <NEW_FAILURE, U>(f: (value: FAILURE) => Async<U, NEW_FAILURE>) => Async<SUCCESS | U, NEW_FAILURE>;
     readonly either: <NS, NF>(
       onSuccess: (value: SUCCESS) => Async<NS, NF>,
       onFailure: (value: FAILURE) => Async<NS, NF>

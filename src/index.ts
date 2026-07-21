@@ -1,6 +1,7 @@
-export {success, failure, Result} from './lib/result';
-export {asyncResult, asyncSuccess, asyncFailure, AsyncResult} from './lib/asyncResult';
-export {maybe, some, nothing, Maybe} from './lib/maybe';
+export {success, failure} from './lib/result';
+export {asyncResult, asyncSuccess, asyncFailure} from './lib/asyncResult';
+export {maybe, some, nothing} from './lib/maybe';
+export {allOf, someOf} from './lib/combinators';
 export {
   not,
   is,

@@ -32,6 +32,7 @@
     "deploy": "gh-pages -d docs",
     "test:coverage": "npm test -- src/lib --coverage",
     "ci": "npm run test:coverage",
+    "typecheck": "tsc --noEmit",
     "lint": "oxlint --type-aware",
     "docs": "npx --yes -p typedoc@0.28.20 -p typescript@6.0.2 typedoc"
   },

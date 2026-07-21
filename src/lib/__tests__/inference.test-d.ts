@@ -1,14 +1,27 @@
-import {expectTypeOf, test} from 'vitest';
-import {failure, Failure, Nothing, Result, Some, Success, nothing, some, success} from '../..';
+import {allOf, asyncSuccess, failure, Failure, Maybe, Nothing, Result, Some, Success, nothing, some, success} from '../..';
 
-test('mBind keeps the value and error types', () => {
+test('mBind unions the error type when a success binds into a failure', () => {
+  const result = success('a').mBind(() => failure('b'));
+  expectTypeOf(result).toEqualTypeOf<Result<never, string>>();
+});
+
+test('mBind keeps a shared error type through the chain', () => {
   const result = success<string, Error>('x').mBind(value => success<number, Error>(value.length));
   expectTypeOf(result).toEqualTypeOf<Result<number, Error>>();
 });
 
-test('or keeps the value type and can change the error type', () => {
-  const result = failure<string, number>('e').or(() => success<number, boolean>(1));
-  expectTypeOf(result).toEqualTypeOf<Result<number, boolean>>();
+test('or unions the value type when a failure recovers into a success', () => {
+  const result = failure('e').or(() => success('w'));
+  expectTypeOf(result).toEqualTypeOf<Result<string, never>>();
+});
+
+test('orElse on a failure returns the fallback type', () => {
+  expectTypeOf(failure('e').orElse('fallback')).toEqualTypeOf<string>();
+});
+
+test('either returns the union of both branch results', () => {
+  const folded = failure<string, number>('e').either(value => value, reason => reason.length);
+  expectTypeOf(folded).toEqualTypeOf<number>();
 });
 
 test('map on a success stays a Success and keeps the error type', () => {
@@ -30,12 +43,25 @@ test('map on a nothing stays a Nothing', () => {
 });
 
 test('isSuccess narrows the union', () => {
-  const result: Result<string, Error> = success('x');
-  if (result.isSuccess) expectTypeOf(result.value).toEqualTypeOf<string>();
-  else expectTypeOf(result.reason).toEqualTypeOf<Error>();
+  const narrow = (result: Result<string, Error>) => {
+    if (result.isSuccess) expectTypeOf(result.value).toEqualTypeOf<string>();
+    else expectTypeOf(result.reason).toEqualTypeOf<Error>();
+  };
+  narrow(success<string, Error>('x'));
 });
 
-test('Result.all changes the value type and keeps the error', () => {
-  const result = Result.allOf([success<number>(1), success<number>(2)], (accumulator: string, value) => success(`${accumulator}${value}`), '');
+test('allOf over results infers a Result, changing the value type and keeping the error', () => {
+  const result = allOf([success<number>(1), success<number>(2)], (accumulator: string, value) => success(`${accumulator}${value}`), success(''));
   expectTypeOf(result).toEqualTypeOf<Result<string, never>>();
+});
+
+test('allOf over maybes infers a Maybe', () => {
+  const result = allOf([some(1), some(2)], (accumulator: string, value) => some(`${accumulator}${value}`), some(''));
+  expectTypeOf(result).toEqualTypeOf<Maybe<string>>();
+});
+
+test('allOf over async results infers an async Result', () => {
+  const result = allOf([asyncSuccess<number, Error>(1)], (accumulator: string, value) => asyncSuccess(`${accumulator}${value}`), asyncSuccess(''));
+  expectTypeOf(result.orNull()).resolves.toEqualTypeOf<string | null>();
+  expectTypeOf(result.onFailure).parameter(0).parameter(0).toEqualTypeOf<Error>();
 });
