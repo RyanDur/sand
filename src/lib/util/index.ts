@@ -181,3 +181,5 @@ export const notEmpty = <T>(value: T): value is T => not(empty(value));
  *
  * */
 export const has = notEmpty;
+
+export const toError = (thrown: unknown): Error => thrown instanceof Error ? thrown : new Error(String(thrown));

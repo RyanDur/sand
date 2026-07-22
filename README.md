@@ -90,6 +90,26 @@ await someOf([asyncSuccess<number, string>(1), asyncSuccess<number, string>(2)],
     .orNull(); // produces: 3
 ```
 
+### tryCatch / asyncTryCatch
+
+Both guard code that throws, folding the throw into the failure side so a chain never needs its own
+try block. You say how a thrown `unknown` becomes your error type; `toError` is the everyday mapper.
+
+```typescript
+import {tryCatch, asyncTryCatch, toError} from '@ryandur/sand';
+
+tryCatch(() => JSON.parse('{"name": "sand"}'), toError)
+    .map(parsed => parsed.name)
+    .orElse('unknown'); // produces: "sand"
+
+tryCatch(() => JSON.parse('not json'), toError)
+    .orElse('unknown'); // produces: "unknown" — the throw became a failure
+
+await asyncTryCatch(() => fetch('/thing'), toError)
+    .onFailure(explain)
+    .orNull(); // guards the synchronous throw AND the rejection
+```
+
 ## Maybe how you would like to use it.
 
 Let's look at how we might use this lib. Imagine we are creating an
