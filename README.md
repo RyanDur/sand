@@ -110,6 +110,19 @@ await asyncTryCatch(() => fetch('/thing'), toError)
     .orNull(); // guards the synchronous throw AND the rejection
 ```
 
+### requesting
+
+`requesting` guards the whole HTTP exchange — every verb, not just the gets. A body means stringify it and say
+it's JSON (your own Content-Type wins if you name one); no body means nothing is invented. The
+response comes back whole — status policy stays with the caller, where it belongs.
+
+```typescript
+import {requesting} from '@ryandur/sand';
+
+requesting('/things', {method: 'POST', body: {name: 'sand'}}, () => AnError.NETWORK)
+    .mBind(response => response.ok ? bodyOf(response) : explain(response));
+```
+
 ## Maybe how you would like to use it.
 
 Let's look at how we might use this lib. Imagine we are creating an

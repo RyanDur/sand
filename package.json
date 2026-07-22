@@ -1,6 +1,6 @@
 {
   "name": "@ryandur/sand",
-  "version": "5.2.0",
+  "version": "5.3.0",
   "type": "module",
   "description": "helper objects and functions",
   "homepage": "https://ryandur.github.io/sand/",
@@ -47,6 +47,7 @@
     "@typescript/typescript6": "^6.0.2",
     "@vitest/coverage-v8": "^4.1.10",
     "gh-pages": "^6.1.1",
+    "msw": "^2.15.0",
     "oxlint": "^1.74.0",
     "oxlint-tsgolint": "^0.25.0",
     "typescript": "^7.0.2",
