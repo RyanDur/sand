@@ -18,6 +18,10 @@
 <div class="tsd-comment tsd-typography"><pre><code class="ts"><span class="hl-0">requesting</span><span class="hl-1">(</span><span class="hl-2">&#39;/things&#39;</span><span class="hl-1">, {</span><span class="hl-4">method:</span><span class="hl-1"> </span><span class="hl-2">&#39;POST&#39;</span><span class="hl-1">, </span><span class="hl-4">body:</span><span class="hl-1"> {</span><span class="hl-4">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;sand&#39;</span><span class="hl-1">}}, () </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-2">&#39;network error&#39;</span><span class="hl-1">)</span><br/><span class="hl-1">    .</span><span class="hl-0">mBind</span><span class="hl-1">(</span><span class="hl-4">response</span><span class="hl-1"> </span><span class="hl-6">=&gt;</span><span class="hl-1"> ...); </span><span class="hl-7">// a body means stringify it and say it&#39;s JSON;</span><br/><span class="hl-1">                             </span><span class="hl-7">// status policy stays with the caller</span>
 </code><button type="button">Copy</button></pre>
 
+<p>Cancelable end-to-end: bring no signal and requesting wires its own
+AbortController through onCancel, so the chain's cancel aborts the exchange
+at the network layer. Bring your own signal and it stays yours — cancel
+only silences.</p>
 </div>
 <section class="tsd-panel">
 <h4>Type Parameters</h4>
@@ -31,7 +35,7 @@
 <li><span><span class="tsd-kind-parameter">onError</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">thrown</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span> <span class="tsd-signature-symbol">=&gt;</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#requestingerror">ERROR</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="../interfaces/Result.Async.html" class="tsd-signature-type tsd-kind-interface">Async</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Response</span><span class="tsd-signature-symbol">,</span> <a class="tsd-signature-type tsd-kind-type-parameter" href="#requestingerror">ERROR</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/RyanDur/sand/blob/c557a45b58daedc4be9cc89fe3cbe6d69779938c/src/lib/requesting.ts#L16">requesting.ts:16</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/RyanDur/sand/blob/bebe8b267fc01692cfb1976401a496af8bac20c6/src/lib/requesting.ts#L20">requesting.ts:20</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
