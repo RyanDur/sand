@@ -66,6 +66,16 @@ nothing().or(() => some('recovered')).orNull(); // produces: "recovered"
 A `Result.Async` lets you work with a promise the same way you work with a `Result`, plus `onPending` for
 loading states. The story below shows it in action.
 
+Every chain is cancelable: `cancel` silences all the chain's consumers (no more setState-after-unmount),
+and `onCancel` attaches work to free — the creator of the work is the only one who knows how to stop it,
+so it hangs that knowledge on the chain (`requesting` does this to abort its in-flight exchange). Explicit
+reads still settle honestly; cancel suppresses pushes, it never corrupts pulls. The shape is made for
+effect cleanup:
+
+```typescript
+useEffect(() => getArt(id).onPending(isLoading).onSuccess(updatePiece).cancel, [id]);
+```
+
 ### allOf / someOf
 
 Both fold a batch onto a seed. `allOf` requires every item to succeed; `someOf` keeps the ones that do and
@@ -114,7 +124,8 @@ await asyncTryCatch(() => fetch('/thing'), toError)
 
 `requesting` guards the whole HTTP exchange — every verb, not just the gets. A body means stringify it and say
 it's JSON (your own Content-Type wins if you name one); no body means nothing is invented. The
-response comes back whole — status policy stays with the caller, where it belongs.
+response comes back whole — status policy stays with the caller, where it belongs. Bring no signal and
+the chain's `cancel` aborts the exchange at the network layer; bring your own and it stays yours.
 
 ```typescript
 import {requesting} from '@ryandur/sand';

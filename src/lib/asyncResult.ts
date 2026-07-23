@@ -2,25 +2,57 @@ import {failure as err, success as ok} from './result';
 import {Result} from './types';
 import {inspect} from './util';
 
-const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>): Result.Async<SUCCESS, FAILURE> => ({
-  value: promise,
-  orNull: () => promise.then(result => result.orNull()),
-  orElse: <FALLBACK>(fallback: FALLBACK): Promise<SUCCESS | FALLBACK> => promise.then(result => result.orElse(fallback)),
-  map: fn => ofPromise(promise.then(result => result.map(fn))),
-  mBind: <U, NEW_FAILURE>(fn: (value: SUCCESS) => Result.Async<U, NEW_FAILURE>) => ofPromise<U, FAILURE | NEW_FAILURE>(promise.then<Result<U, FAILURE | NEW_FAILURE>>(result => result.isSuccess ? fn(result.value).value : err<FAILURE | NEW_FAILURE, U>(result.reason))),
-  or: <NEW_FAILURE, U>(fn: (reason: FAILURE) => Result.Async<U, NEW_FAILURE>) => ofPromise<SUCCESS | U, NEW_FAILURE>(promise.then<Result<SUCCESS | U, NEW_FAILURE>>(result => result.isSuccess ? ok<SUCCESS | U, NEW_FAILURE>(result.value) : fn(result.reason).value)),
-  either: (onSuccess, onFailure) => ofPromise(promise.then(result => result.isSuccess
-    ? onSuccess(result.value).value
-    : onFailure(result.reason).value)),
-  onPending: (waiting) => {
-    waiting(true);
-    return ofPromise(promise.then((result) => result.onComplete(() => waiting(false))));
-  },
-  onSuccess: consumer => ofPromise(promise.then(result => result.onSuccess(consumer))),
-  onFailure: consumer => ofPromise(promise.then(result => result.onFailure(consumer))),
-  onComplete: consumer => ofPromise(promise.then(result => result.onComplete(consumer))),
-  inspect: () => promise.then(value => `Result.Async(${inspect(value)})`)
-});
+type Halt = { stopped: boolean; release?: (() => void) | undefined };
+
+const cancelable = (halt: Halt) => {
+  const chain = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>): Result.Async<SUCCESS, FAILURE> => ({
+    value: promise,
+    orNull: () => promise.then(result => result.orNull()),
+    orElse: fallback => promise.then(result => result.orElse(fallback)),
+    map: fn => chain(promise.then(result => result.map(fn))),
+    mBind: <U, NEW_FAILURE>(fn: (value: SUCCESS) => Result.Async<U, NEW_FAILURE>) => chain(promise.then<Result<U, FAILURE | NEW_FAILURE>>(result => result.isSuccess ? fn(result.value).value : err(result.reason))),
+    or: <NEW_FAILURE, U>(fn: (reason: FAILURE) => Result.Async<U, NEW_FAILURE>) => chain(promise.then<Result<SUCCESS | U, NEW_FAILURE>>(result => result.isSuccess ? ok(result.value) : fn(result.reason).value)),
+    either: (onSuccess, onFailure) => chain(promise.then(result => result.isSuccess
+      ? onSuccess(result.value).value
+      : onFailure(result.reason).value)),
+    onPending: (waiting) => {
+      if (!halt.stopped) waiting(true);
+      return chain(promise.then((result) => halt.stopped ? result : result.onComplete(() => {
+        if (!halt.stopped) waiting(false);
+      })));
+    },
+    onSuccess: consumer => chain(promise.then(result => halt.stopped ? result : result.onSuccess(value => {
+      if (!halt.stopped) consumer(value);
+    }))),
+    onFailure: consumer => chain(promise.then(result => halt.stopped ? result : result.onFailure(reason => {
+      if (!halt.stopped) consumer(reason);
+    }))),
+    onComplete: consumer => chain(promise.then(result => halt.stopped ? result : result.onComplete(settled => {
+      if (!halt.stopped) consumer(settled);
+    }))),
+    onCancel: release => {
+      if (halt.stopped) release();
+      else {
+        const prior = halt.release;
+        halt.release = prior ? () => {
+          prior();
+          release();
+        } : release;
+      }
+      return chain(promise);
+    },
+    cancel: () => {
+      halt.stopped = true;
+      halt.release?.();
+      halt.release = undefined;
+    },
+    inspect: () => promise.then(value => `Result.Async(${inspect(value)})`)
+  });
+  return chain;
+};
+
+const ofPromise = <SUCCESS, FAILURE>(promise: Promise<Result<SUCCESS, FAILURE>>): Result.Async<SUCCESS, FAILURE> =>
+  cancelable({stopped: false})(promise);
 
 /**
  * {@link https://github.com/RyanDur/sand/blob/main/src/lib/asyncResult.ts | Implementation}
@@ -53,3 +85,5 @@ export const asyncFailure = <F, S = never>(value: F): Result.Async<S, F> => ofPr
  * ```
  * */
 export const asyncResult = <S, F>(promise: Promise<S>): Result.Async<S, F> => ofPromise<S, F>(promise.then(ok<S, F>).catch(err<F, S>));
+
+

@@ -81,6 +81,32 @@ export declare namespace Result {
     readonly onSuccess: (f: (value: SUCCESS) => void) => Async<SUCCESS, FAILURE>;
     readonly onFailure: (f: (value: FAILURE) => void) => Async<SUCCESS, FAILURE>;
     readonly onComplete: (f: (value: Result<SUCCESS, FAILURE>) => void) => Async<SUCCESS, FAILURE>;
+    /**
+     * cancel: silences the chain and frees its work.
+     *
+     * <p>After cancel no consumer fires — onSuccess, onFailure, onComplete,
+     * and onPending's trailing false are all suppressed, from every link of
+     * the chain, and every onCancel hook runs (requesting hangs its
+     * AbortController's abort there, so the exchange is torn down at the
+     * network layer). Explicit reads (value, orNull, orElse) still settle
+     * honestly: cancel suppresses pushes, it never corrupts pulls.</p>
+     *
+     * <p>The reach is the chain: every link derived from one source shares
+     * one cancellation. A NEW chain created inside an mBind callback has its
+     * own — the outer cancel silences its consumers but does not free its
+     * work.</p>
+     *
+     * <p>The shape is deliberate: `useEffect(() => chain.cancel, [deps])`.</p>
+     * */
+    /**
+     * onCancel: attaches work to free when the chain is canceled.
+     *
+     * <p>The creator of the work is the only one who knows how to stop it —
+     * attach that knowledge here and cancel will call it. Attaching to an
+     * already-canceled chain releases immediately, so late work never leaks.</p>
+     * */
+    readonly onCancel: (release: () => void) => Async<SUCCESS, FAILURE>;
+    readonly cancel: () => void;
     readonly inspect: () => Promise<string>;
   }
 }

@@ -32,8 +32,6 @@ export const asyncTryCatch = <VALUE, ERROR>(
 ): Result.Async<VALUE, ERROR> =>
   tryCatch(fn, onError).either(
     pending =>
-      asyncResult<VALUE, ERROR>(
-        pending.catch((thrown: unknown) => Promise.reject(onError(thrown)))
-      ),
+      asyncResult<VALUE, ERROR>(pending.catch((thrown: unknown) => Promise.reject(onError(thrown)))),
     asyncFailure
   );
