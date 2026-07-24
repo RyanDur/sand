@@ -7,7 +7,7 @@ more about the functional paradigm.
 
 [Docs](https://ryandur.github.io/sand/modules.html)
 
-![branches](./badges/coverage-branches.svg)  ![Functions](./badges/coverage-functions.svg)  ![lines](./badges/coverage-lines.svg)  ![statements](./badges/coverage-statements.svg)
+![branches](https://ryandur.github.io/sand/badges/coverage-branches.svg)  ![Functions](https://ryandur.github.io/sand/badges/coverage-functions.svg)  ![lines](https://ryandur.github.io/sand/badges/coverage-lines.svg)  ![statements](https://ryandur.github.io/sand/badges/coverage-statements.svg)
 
 ## Install
 

@@ -9,7 +9,7 @@ export type Result<VALUE, ERROR> = Success<VALUE, ERROR> | Failure<VALUE, ERROR>
  * precisely: `mBind` unions the error type as new failures are introduced, `or`
  * unions the value type as failures recover, and neither ever widens to `unknown`.
  */
-export interface Success<VALUE, ERROR> {
+export type Success<VALUE, ERROR> = {
   readonly isSuccess: true;
   readonly value: VALUE;
   orNull(): VALUE;
@@ -25,7 +25,7 @@ export interface Success<VALUE, ERROR> {
   inspect(): string;
 }
 
-export interface Failure<VALUE, ERROR> {
+export type Failure<VALUE, ERROR> = {
   readonly isSuccess: false;
   readonly reason: ERROR;
   orNull(): null;
@@ -55,7 +55,7 @@ export declare namespace Result {
    * @see Implementation:  {@link https://github.com/RyanDur/sand/blob/main/src/lib/asyncResult.ts}
    * @see Test: {@link https://github.com/RyanDur/sand/blob/main/src/lib/__tests__/asyncResult.spec.ts}
    * */
-  interface Async<SUCCESS, FAILURE> {
+  type Async<SUCCESS, FAILURE> = {
     readonly value: Promise<Result<SUCCESS, FAILURE>>;
     readonly orNull: () => Promise<SUCCESS | null>;
     readonly orElse: <FALLBACK>(fallback: FALLBACK) => Promise<SUCCESS | FALLBACK>;

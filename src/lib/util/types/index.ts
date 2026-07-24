@@ -1,9 +1,9 @@
 import {Supplier} from '../../types';
 
-export interface Inspectable {
+export type Inspectable = {
     inspect: Supplier<string>;
 }
 
-export interface IsEmpty {
+export type IsEmpty = {
     isEmpty: Supplier<boolean>
 }

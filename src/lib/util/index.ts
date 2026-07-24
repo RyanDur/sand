@@ -155,6 +155,11 @@ export const empty = (value: unknown): boolean => {
  * notEmpty(0) // produces: true
  * ```
  *
+ * A false result does not prove absence: '' and [] and {} are present
+ * but empty, yet the negative branch narrows as though the value were
+ * null or undefined. Guard with has/notEmpty when you want substance;
+ * compare against undefined when you only care about presence.
+ *
  * */
 export const notEmpty = <T>(value: T | null | undefined): value is T => not(empty(value));
 

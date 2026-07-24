@@ -2,7 +2,7 @@ import {Result} from './Result';
 
 export type Maybe<THING> = Some<THING> | Nothing
 
-export interface Some<THING> {
+export type Some<THING> = {
     readonly isNothing: false;
     orNull(): THING;
     orElse<FALLBACK>(fallback: FALLBACK): THING;
@@ -14,7 +14,7 @@ export interface Some<THING> {
     inspect(): string;
 }
 
-export interface Nothing {
+export type Nothing = {
     readonly isNothing: true;
     orElse<FALLBACK>(fallback: FALLBACK): FALLBACK;
     orNull(): null;

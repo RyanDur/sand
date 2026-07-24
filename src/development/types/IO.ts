@@ -1,6 +1,6 @@
 import {Supplier} from '../../lib/types';
 
-export interface IO<T> {
+export type IO<T> = {
     readonly perform: Supplier<T>;
     readonly orElse: (fallback: T) => T;
     readonly map: <NewT>(f: (fallback: T) => NewT) => IO<NewT>;

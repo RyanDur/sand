@@ -27,6 +27,7 @@ jobs:
         uses: jpb06/jest-badges-action@latest
         with:
           branches: main
+          no-commit: true
       - name: Create the docs directory locally in CI
         run: npm run docs
       - name: Copy badges to docs
