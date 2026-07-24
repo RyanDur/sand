@@ -25,3 +25,30 @@ export type Nothing = {
     toResult<ERROR>(fallback: ERROR): Result<never, ERROR>;
     inspect(): string;
 }
+
+/**
+ * Array.reduce lifted over the container: reduce.all demands every
+ * item be present; reduce.some skips the nothings.
+ *
+ * ```ts
+ * Maybe.reduce.some([some(1), nothing(), some(3)], (a, b) => some(a + b), some(0)).orNull(); // produces: 4
+ * ```
+ * */
+export namespace Maybe {
+  export const reduce = {
+    all: <VALUE, ACC>(
+      maybes: readonly Maybe<VALUE>[],
+      reducer: (accumulator: ACC, value: VALUE) => Maybe<ACC>,
+      seed: Maybe<ACC>
+    ): Maybe<ACC> =>
+      maybes.reduce((accumulator, item) =>
+        accumulator.mBind(acc => item.mBind(value => reducer(acc, value))), seed),
+    some: <VALUE, ACC>(
+      maybes: readonly Maybe<VALUE>[],
+      reducer: (accumulator: ACC, value: VALUE) => Maybe<ACC>,
+      seed: Maybe<ACC>
+    ): Maybe<ACC> =>
+      maybes.reduce((accumulator, item) =>
+        accumulator.mBind(acc => item.map(value => reducer(acc, value)).orElse(accumulator)), seed)
+  };
+}

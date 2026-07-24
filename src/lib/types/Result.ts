@@ -110,3 +110,52 @@ export declare namespace Result {
     readonly inspect: () => Promise<string>;
   }
 }
+
+/**
+ * Array.reduce lifted over the container: reduce.all demands every
+ * item succeed; reduce.some forgives the items that fail and keeps
+ * the reductions that land. Result.Async.reduce does the same for
+ * asynchronous results.
+ *
+ * ```ts
+ * Result.reduce.all([success(1), success(2)], (a, b) => success(a + b), success(0)).orNull(); // produces: 3
+ * Result.reduce.some([success(1), failure('x')], (a, b) => success(a + b), success(0)).orNull(); // produces: 1
+ * ```
+ * */
+export namespace Result {
+  export const reduce = {
+    all: <VALUE, ACC, ERROR>(
+      results: readonly Result<VALUE, ERROR>[],
+      reducer: (accumulator: ACC, value: VALUE) => Result<ACC, ERROR>,
+      seed: Result<ACC, ERROR>
+    ): Result<ACC, ERROR> =>
+      results.reduce((accumulator, result) =>
+        accumulator.mBind(acc => result.mBind(value => reducer(acc, value))), seed),
+    some: <VALUE, ACC, ERROR>(
+      results: readonly Result<VALUE, ERROR>[],
+      reducer: (accumulator: ACC, value: VALUE) => Result<ACC, ERROR>,
+      seed: Result<ACC, ERROR>
+    ): Result<ACC, ERROR> =>
+      results.reduce((accumulator, result) =>
+        accumulator.mBind(acc => result.either(value => reducer(acc, value), () => accumulator)), seed)
+  };
+
+  export namespace Async {
+    export const reduce = {
+      all: <VALUE, ACC, ERROR>(
+        results: readonly Async<VALUE, ERROR>[],
+        reducer: (accumulator: ACC, value: VALUE) => Async<ACC, ERROR>,
+        seed: Async<ACC, ERROR>
+      ): Async<ACC, ERROR> =>
+        results.reduce((accumulator, result) =>
+          accumulator.mBind(acc => result.mBind(value => reducer(acc, value))), seed),
+      some: <VALUE, ACC, ERROR>(
+        results: readonly Async<VALUE, ERROR>[],
+        reducer: (accumulator: ACC, value: VALUE) => Async<ACC, ERROR>,
+        seed: Async<ACC, ERROR>
+      ): Async<ACC, ERROR> =>
+        results.reduce((accumulator, result) =>
+          accumulator.mBind(acc => result.either(value => reducer(acc, value), () => accumulator)), seed)
+    };
+  }
+}

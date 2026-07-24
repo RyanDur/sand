@@ -1,4 +1,4 @@
-import {reduce, asyncSuccess, failure, Failure, has, Maybe, Nothing, notEmpty, Result, Some, Success, nothing, some, success} from '../..';
+import {asyncSuccess, failure, Failure, has, Maybe, Nothing, notEmpty, Result, Some, Success, nothing, some, success} from '../..';
 
 test('mBind unions the error type when a success binds into a failure', () => {
   const result = success('a').mBind(() => failure('b'));
@@ -51,17 +51,17 @@ test('isSuccess narrows the union', () => {
 });
 
 test('reduce over results infers a Result, changing the value type and keeping the error', () => {
-  const result = reduce.all([success<number>(1), success<number>(2)], (accumulator: string, value) => success(`${accumulator}${value}`), success(''));
+  const result = Result.reduce.all([success<number>(1), success<number>(2)], (accumulator: string, value) => success(`${accumulator}${value}`), success(''));
   expectTypeOf(result).toEqualTypeOf<Result<string, never>>();
 });
 
 test('reduce over maybes infers a Maybe', () => {
-  const result = reduce.all([some(1), some(2)], (accumulator: string, value) => some(`${accumulator}${value}`), some(''));
+  const result = Maybe.reduce.all([some(1), some(2)], (accumulator: string, value) => some(`${accumulator}${value}`), some(''));
   expectTypeOf(result).toEqualTypeOf<Maybe<string>>();
 });
 
 test('reduce over async results infers an async Result', () => {
-  const result = reduce.all([asyncSuccess<number, Error>(1)], (accumulator: string, value) => asyncSuccess(`${accumulator}${value}`), asyncSuccess(''));
+  const result = Result.Async.reduce.all([asyncSuccess<number, Error>(1)], (accumulator: string, value) => asyncSuccess(`${accumulator}${value}`), asyncSuccess(''));
   expectTypeOf(result.orNull()).resolves.toEqualTypeOf<string | null>();
   expectTypeOf(result.onFailure).parameter(0).parameter(0).toEqualTypeOf<Error>();
 });

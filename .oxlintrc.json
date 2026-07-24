@@ -40,6 +40,15 @@
         "typescript/restrict-template-expressions": "off",
         "typescript/unbound-method": "off"
       }
+    },
+    {
+      "files": [
+        "src/lib/types/Result.ts",
+        "src/lib/types/Maybe.ts"
+      ],
+      "rules": {
+        "typescript/no-namespace": "off"
+      }
     }
   ],
   "ignorePatterns": [
