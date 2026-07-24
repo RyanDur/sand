@@ -1,4 +1,4 @@
-import {allOf, asyncSuccess, failure, Failure, Maybe, Nothing, Result, Some, Success, nothing, some, success} from '../..';
+import {allOf, asyncSuccess, failure, Failure, has, Maybe, Nothing, notEmpty, Result, Some, Success, nothing, some, success} from '../..';
 
 test('mBind unions the error type when a success binds into a failure', () => {
   const result = success('a').mBind(() => failure('b'));
@@ -64,4 +64,18 @@ test('allOf over async results infers an async Result', () => {
   const result = allOf([asyncSuccess<number, Error>(1)], (accumulator: string, value) => asyncSuccess(`${accumulator}${value}`), asyncSuccess(''));
   expectTypeOf(result.orNull()).resolves.toEqualTypeOf<string | null>();
   expectTypeOf(result.onFailure).parameter(0).parameter(0).toEqualTypeOf<Error>();
+});
+
+test('has narrows null and undefined off the value it guards', () => {
+  const narrow = (value?: string) => {
+    if (has(value)) expectTypeOf(value).toEqualTypeOf<string>();
+  };
+  narrow('text');
+});
+
+test('notEmpty narrows the same way', () => {
+  const narrow = (value: number | null) => {
+    if (notEmpty(value)) expectTypeOf(value).toEqualTypeOf<number>();
+  };
+  narrow(1);
 });

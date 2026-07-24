@@ -156,7 +156,7 @@ export const empty = (value: unknown): boolean => {
  * ```
  *
  * */
-export const notEmpty = <T>(value: T): value is T => not(empty(value));
+export const notEmpty = <T>(value: T | null | undefined): value is T => not(empty(value));
 
 /**
  * A value that is [not](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts) [empty](https://github.com/RyanDur/sand/blob/main/src/lib/util/index.ts).
