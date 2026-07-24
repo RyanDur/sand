@@ -19,31 +19,32 @@ type FoldMaybe = {
 // so this is the one cast-free way to fold every container through one name.
 
 /**
- * Folds a batch onto a wrapped seed, requiring every item to succeed.
- * The seed's container decides the container of the whole fold:
- * pass Results, Maybes, or AsyncResults and get the same kind back.
+ * Array.reduce lifted over containers: reduces a batch onto a wrapped
+ * seed, requiring every item to succeed. The seed's container decides
+ * the container of the whole reduction: pass Results, Maybes, or
+ * AsyncResults and get the same kind back.
  *
  * ```ts
- * allOf([success(1), success(2)], (a, b) => success(a + b), success(0)).orNull(); // produces: 3
- * allOf([some(1), nothing()], (a, b) => some(a + b), some(0)).orNull(); // produces: null
+ * reduce.all([success(1), success(2)], (a, b) => success(a + b), success(0)).orNull(); // produces: 3
+ * reduce.all([some(1), nothing()], (a, b) => some(a + b), some(0)).orNull(); // produces: null
  * ```
  * */
-export function allOf<VALUE, ACC, ERROR>(
+function allOf<VALUE, ACC, ERROR>(
   results: readonly Result<VALUE, ERROR>[],
   reducer: (accumulator: ACC, value: VALUE) => Result<ACC, ERROR>,
   seed: Result<ACC, ERROR>
 ): Result<ACC, ERROR>;
-export function allOf<VALUE, ACC>(
+function allOf<VALUE, ACC>(
   maybes: readonly Maybe<VALUE>[],
   reducer: (accumulator: ACC, value: VALUE) => Maybe<ACC>,
   seed: Maybe<ACC>
 ): Maybe<ACC>;
-export function allOf<VALUE, ACC, ERROR>(
+function allOf<VALUE, ACC, ERROR>(
   results: readonly Result.Async<VALUE, ERROR>[],
   reducer: (accumulator: ACC, value: VALUE) => Result.Async<ACC, ERROR>,
   seed: Result.Async<ACC, ERROR>
 ): Result.Async<ACC, ERROR>;
-export function allOf(
+function allOf(
   items: readonly Chain[],
   reducer: (accumulator: unknown, value: unknown) => unknown,
   seed: Chain
@@ -52,30 +53,30 @@ export function allOf(
 }
 
 /**
- * Folds a batch onto a wrapped seed, keeping the items that succeed and
- * skipping the ones that do not. A failure from the reducer itself still
- * fails the whole fold.
+ * The forgiving reduction: keeps the items that succeed and skips the
+ * ones that do not. A failure from the reducer itself still fails the
+ * whole reduction.
  *
  * ```ts
- * someOf([success(1), failure('x'), success(3)], (a, b) => success(a + b), success(0)).orNull(); // produces: 4
+ * reduce.some([success(1), failure('x'), success(3)], (a, b) => success(a + b), success(0)).orNull(); // produces: 4
  * ```
  * */
-export function someOf<VALUE, ACC, ERROR>(
+function someOf<VALUE, ACC, ERROR>(
   results: readonly Result<VALUE, ERROR>[],
   reducer: (accumulator: ACC, value: VALUE) => Result<ACC, ERROR>,
   seed: Result<ACC, ERROR>
 ): Result<ACC, ERROR>;
-export function someOf<VALUE, ACC>(
+function someOf<VALUE, ACC>(
   maybes: readonly Maybe<VALUE>[],
   reducer: (accumulator: ACC, value: VALUE) => Maybe<ACC>,
   seed: Maybe<ACC>
 ): Maybe<ACC>;
-export function someOf<VALUE, ACC, ERROR>(
+function someOf<VALUE, ACC, ERROR>(
   results: readonly Result.Async<VALUE, ERROR>[],
   reducer: (accumulator: ACC, value: VALUE) => Result.Async<ACC, ERROR>,
   seed: Result.Async<ACC, ERROR>
 ): Result.Async<ACC, ERROR>;
-export function someOf(
+function someOf(
   items: readonly (FoldEither | FoldMaybe)[],
   reducer: (accumulator: unknown, value: unknown) => unknown,
   seed: Chain
@@ -84,3 +85,5 @@ export function someOf(
     ? item.map(v => reducer(a, v)).orElse(accumulator)
     : item.either(v => reducer(a, v), () => accumulator)), seed);
 }
+
+export const reduce = {all: allOf, some: someOf};

@@ -1,4 +1,4 @@
-import {allOf, asyncSuccess, failure, Failure, has, Maybe, Nothing, notEmpty, Result, Some, Success, nothing, some, success} from '../..';
+import {reduce, asyncSuccess, failure, Failure, has, Maybe, Nothing, notEmpty, Result, Some, Success, nothing, some, success} from '../..';
 
 test('mBind unions the error type when a success binds into a failure', () => {
   const result = success('a').mBind(() => failure('b'));
@@ -50,18 +50,18 @@ test('isSuccess narrows the union', () => {
   narrow(success<string, Error>('x'));
 });
 
-test('allOf over results infers a Result, changing the value type and keeping the error', () => {
-  const result = allOf([success<number>(1), success<number>(2)], (accumulator: string, value) => success(`${accumulator}${value}`), success(''));
+test('reduce over results infers a Result, changing the value type and keeping the error', () => {
+  const result = reduce.all([success<number>(1), success<number>(2)], (accumulator: string, value) => success(`${accumulator}${value}`), success(''));
   expectTypeOf(result).toEqualTypeOf<Result<string, never>>();
 });
 
-test('allOf over maybes infers a Maybe', () => {
-  const result = allOf([some(1), some(2)], (accumulator: string, value) => some(`${accumulator}${value}`), some(''));
+test('reduce over maybes infers a Maybe', () => {
+  const result = reduce.all([some(1), some(2)], (accumulator: string, value) => some(`${accumulator}${value}`), some(''));
   expectTypeOf(result).toEqualTypeOf<Maybe<string>>();
 });
 
-test('allOf over async results infers an async Result', () => {
-  const result = allOf([asyncSuccess<number, Error>(1)], (accumulator: string, value) => asyncSuccess(`${accumulator}${value}`), asyncSuccess(''));
+test('reduce over async results infers an async Result', () => {
+  const result = reduce.all([asyncSuccess<number, Error>(1)], (accumulator: string, value) => asyncSuccess(`${accumulator}${value}`), asyncSuccess(''));
   expectTypeOf(result.orNull()).resolves.toEqualTypeOf<string | null>();
   expectTypeOf(result.onFailure).parameter(0).parameter(0).toEqualTypeOf<Error>();
 });
