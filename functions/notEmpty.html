@@ -33,9 +33,13 @@
 <pre><code class="ts"><span class="hl-0">notEmpty</span><span class="hl-1">({}) </span><span class="hl-7">// produces: false</span><br/><span class="hl-0">notEmpty</span><span class="hl-1">({</span><span class="hl-4">I:</span><span class="hl-1"> </span><span class="hl-2">&#39;am not empty&#39;</span><span class="hl-1">}) </span><span class="hl-7">// produces: true</span><br/><br/><span class="hl-0">notEmpty</span><span class="hl-1">([]) </span><span class="hl-7">// produces: false</span><br/><span class="hl-0">notEmpty</span><span class="hl-1">([</span><span class="hl-5">1</span><span class="hl-1">, </span><span class="hl-5">2</span><span class="hl-1">, </span><span class="hl-5">3</span><span class="hl-1">]) </span><span class="hl-7">// produces: true</span><br/><br/><span class="hl-0">notEmpty</span><span class="hl-1">(</span><span class="hl-2">&#39;&#39;</span><span class="hl-1">) </span><span class="hl-7">// produces: false</span><br/><span class="hl-0">notEmpty</span><span class="hl-1">(</span><span class="hl-2">&#39;not empty&#39;</span><span class="hl-1">) </span><span class="hl-7">// produces: true</span><br/><br/><span class="hl-0">notEmpty</span><span class="hl-1">(</span><span class="hl-6">NaN</span><span class="hl-1">) </span><span class="hl-7">// produces: false</span><br/><span class="hl-0">notEmpty</span><span class="hl-1">(</span><span class="hl-5">0</span><span class="hl-1">) </span><span class="hl-7">// produces: true</span>
 </code><button type="button">Copy</button></pre>
 
+<p>A false result does not prove absence: '' and [] and {} are present
+but empty, yet the negative branch narrows as though the value were
+null or undefined. Guard with has/notEmpty when you want substance;
+compare against undefined when you only care about presence.</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/RyanDur/sand/blob/2ab15238209d6457dfd855e7a155ce0d118fe6f4/src/lib/util/index.ts#L159">util/index.ts:159</a></li></ul></aside></div></li></ul></section></div>
+<li>Defined in <a href="https://github.com/RyanDur/sand/blob/2fcc9fd46b58cfeadee7f9127a00b0c149f8bf86/src/lib/util/index.ts#L164">util/index.ts:164</a></li></ul></aside></div></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
