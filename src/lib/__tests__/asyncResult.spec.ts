@@ -1,4 +1,5 @@
 import {asyncFailure, asyncResult, asyncSuccess} from '../asyncResult';
+import {lawsOf} from './laws';
 import {Result} from '../types';
 
 const resolvePromises = () => new Promise<void>(resolve => setTimeout(resolve));
@@ -174,5 +175,58 @@ describe('result', () => {
       await expect(failure.either(successResult, failureResult).value).resolves.toEqual(expect.objectContaining({isSuccess: false}));
       await expect(failure.either(failureResult, successResult).value).resolves.toEqual(expect.objectContaining({isSuccess: true}));
     });
+  });
+});
+
+describe('Result.Async is a lawful Functor and Monad, and the Catamorphism its shape can state', () => {
+  const eq = async (
+    left: Result.Async<number, string>,
+    right: Result.Async<number, string>
+  ): Promise<void> => expect(await left.inspect()).toEqual(await right.inspect());
+  const laws = lawsOf<Result.Async<number, string>, Promise<void>>(asyncSuccess, eq);
+  const hit = (value: number): Result.Async<number, string> => asyncSuccess(value * 2);
+  const miss = (): Result.Async<number, string> => asyncFailure('missed');
+
+  test('monad left identity: asyncSuccess(a).mBind(f) is f(a)', laws.leftIdentity);
+  test('monad right identity holds on both branches', async () => {
+    await laws.rightIdentity(asyncSuccess(3));
+    await laws.rightIdentity(asyncFailure('boom'));
+  });
+  test('monad associativity holds on both branches', async () => {
+    await laws.associativity(asyncSuccess(3));
+    await laws.associativity(asyncFailure('boom'));
+  });
+  test('functor identity holds on both branches', async () => {
+    await laws.mapIdentity(asyncSuccess(3));
+    await laws.mapIdentity(asyncFailure('boom'));
+  });
+  test('functor composition holds on both branches', async () => {
+    await laws.mapComposition(asyncSuccess(3));
+    await laws.mapComposition(asyncFailure('boom'));
+  });
+  test('catamorphism computation: folding a constructor selects its branch', async () => {
+    expect(await asyncSuccess<number, string>(3).either(hit, miss).inspect()).toEqual(
+      await hit(3).inspect()
+    );
+    expect(await asyncFailure<string, number>('e').either(hit, miss).inspect()).toEqual(
+      await miss().inspect()
+    );
+  });
+  test('catamorphism reflection: folding with the constructors rebuilds the value', async () => {
+    const reflect = async (m: Result.Async<number, string>): Promise<void> =>
+      expect(await m.either(asyncSuccess, asyncFailure).inspect()).toEqual(await m.inspect());
+    await reflect(asyncSuccess(3));
+    await reflect(asyncFailure('e'));
+  });
+
+  test('catamorphism fusion in its own vocabulary: an Async-to-Async function after the fold distributes into both branches', async () => {
+    const shift = (a: Result.Async<number, string>): Result.Async<number, string> =>
+      a.map(value => value + 10);
+    const fused = async (m: Result.Async<number, string>): Promise<void> =>
+      expect(await shift(m.either(hit, miss)).inspect()).toEqual(
+        await m.either(value => shift(hit(value)), () => shift(miss())).inspect()
+      );
+    await fused(asyncSuccess(3));
+    await fused(asyncFailure('e'));
   });
 });

@@ -1,5 +1,6 @@
 import {Consumer} from './Function';
 import {Nothing, Some} from './Maybe';
+import {foldAll, foldSome} from '../kernel';
 
 export type Result<VALUE, ERROR> = Success<VALUE, ERROR> | Failure<VALUE, ERROR>;
 
@@ -129,15 +130,13 @@ export namespace Result {
       reducer: (accumulator: ACC, value: VALUE) => Result<ACC, ERROR>,
       seed: Result<ACC, ERROR>
     ): Result<ACC, ERROR> =>
-      results.reduce((accumulator, result) =>
-        accumulator.mBind(acc => result.mBind(value => reducer(acc, value))), seed),
+      foldAll<VALUE, ACC, Result<ACC, ERROR>>(results, reducer, seed),
     some: <VALUE, ACC, ERROR>(
       results: readonly Result<VALUE, ERROR>[],
       reducer: (accumulator: ACC, value: VALUE) => Result<ACC, ERROR>,
       seed: Result<ACC, ERROR>
     ): Result<ACC, ERROR> =>
-      results.reduce((accumulator, result) =>
-        accumulator.mBind(acc => result.either(value => reducer(acc, value), () => accumulator)), seed)
+      foldSome<VALUE, ACC, Result<ACC, ERROR>>(results, reducer, seed)
   };
 
   export namespace Async {
@@ -147,15 +146,13 @@ export namespace Result {
         reducer: (accumulator: ACC, value: VALUE) => Async<ACC, ERROR>,
         seed: Async<ACC, ERROR>
       ): Async<ACC, ERROR> =>
-        results.reduce((accumulator, result) =>
-          accumulator.mBind(acc => result.mBind(value => reducer(acc, value))), seed),
+        foldAll<VALUE, ACC, Async<ACC, ERROR>>(results, reducer, seed),
       some: <VALUE, ACC, ERROR>(
         results: readonly Async<VALUE, ERROR>[],
         reducer: (accumulator: ACC, value: VALUE) => Async<ACC, ERROR>,
         seed: Async<ACC, ERROR>
       ): Async<ACC, ERROR> =>
-        results.reduce((accumulator, result) =>
-          accumulator.mBind(acc => result.either(value => reducer(acc, value), () => accumulator)), seed)
+        foldSome<VALUE, ACC, Async<ACC, ERROR>>(results, reducer, seed)
     };
   }
 }

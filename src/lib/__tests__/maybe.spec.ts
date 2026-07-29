@@ -1,4 +1,5 @@
 import {maybe, nothing, some} from '../maybe';
+import {lawsOf} from './laws';
 import {Maybe} from '../types';
 import {faker} from '@faker-js/faker';
 
@@ -138,5 +139,65 @@ describe('the Maybe', () => {
                 ``  // eslint-disable-line
             ].forEach(value => testSomething(maybe(value), value, otherValue));
         });
+    });
+});
+
+describe('either folds the two branches of a Maybe into one value', () => {
+    test('some folds through the first branch', () => {
+        expect(some(3).either(value => `got ${value}`, () => 'empty')).toEqual('got 3');
+    });
+
+    test('nothing folds through the second branch', () => {
+        expect(nothing().either(value => `got ${value}`, () => 'empty')).toEqual('empty');
+    });
+
+    test('the branches keep their own types', () => {
+        const folded: number = some('abc').either(value => value.length, () => 0);
+        expect(folded).toEqual(3);
+    });
+});
+
+describe('Maybe is a lawful Functor, Monad, and Catamorphism', () => {
+    const eq = (left: Maybe<number>, right: Maybe<number>): void =>
+        expect(left.inspect()).toEqual(right.inspect());
+    const laws = lawsOf<Maybe<number>, void>(some, eq);
+    const hit = (value: number): string => `hit ${value}`;
+    const miss = (): string => 'miss';
+
+    test('monad left identity: some(a).mBind(f) is f(a)', laws.leftIdentity);
+    test('monad right identity holds on both branches', () => {
+        laws.rightIdentity(some(3));
+        laws.rightIdentity(nothing());
+    });
+    test('monad associativity holds on both branches', () => {
+        laws.associativity(some(3));
+        laws.associativity(nothing());
+    });
+    test('the maybe factory is unit too: maybe(a).mBind(f) is f(a)', () =>
+        expect(maybe(3).mBind(value => some(value * 2)).inspect()).toEqual(some(6).inspect()));
+    test('functor identity holds on both branches', () => {
+        laws.mapIdentity(some(3));
+        laws.mapIdentity(nothing());
+    });
+    test('functor composition holds on both branches', () => {
+        laws.mapComposition(some(3));
+        laws.mapComposition(nothing());
+    });
+    test('catamorphism computation: folding a constructor selects its branch', () => {
+        expect(some(3).either(hit, miss)).toEqual('hit 3');
+        expect(nothing().either(hit, miss)).toEqual('miss');
+    });
+    test('catamorphism reflection: folding with the constructors rebuilds the value', () => {
+        const reflect = (m: Maybe<number>): void =>
+            expect(m.either(some, nothing).inspect()).toEqual(m.inspect());
+        reflect(some(3));
+        reflect(nothing());
+    });
+    test('catamorphism fusion: a function after the fold distributes into both branches', () => {
+        const shout = (folded: string): string => folded.toUpperCase();
+        const fused = (m: Maybe<number>): void =>
+            expect(shout(m.either(hit, miss))).toEqual(m.either(value => shout(hit(value)), () => shout(miss())));
+        fused(some(3));
+        fused(nothing());
     });
 });

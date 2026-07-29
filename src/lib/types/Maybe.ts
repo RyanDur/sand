@@ -1,4 +1,5 @@
 import {Result} from './Result';
+import {foldAll, foldSome} from '../kernel';
 
 export type Maybe<THING> = Some<THING> | Nothing
 
@@ -10,6 +11,7 @@ export type Some<THING> = {
     mBind<NEW_THING>(f: (value: THING) => Maybe<NEW_THING>): Maybe<NEW_THING>;
     or(f: () => Maybe<THING>): Maybe<THING>;
     and<NEW_THING>(other: Maybe<NEW_THING>): Maybe<[THING, NEW_THING]>;
+    either<ON_SOME, ON_NOTHING>(onSome: (thing: THING) => ON_SOME, onNothing: () => ON_NOTHING): ON_SOME | ON_NOTHING;
     toResult<ERROR>(fallback: ERROR): Result<THING, ERROR>;
     inspect(): string;
 }
@@ -22,6 +24,7 @@ export type Nothing = {
     mBind<NEW_THING>(f: (value: never) => Maybe<NEW_THING>): Maybe<NEW_THING>;
     or<THING>(f: () => Maybe<THING>): Maybe<THING>;
     and<OTHER>(other: Maybe<OTHER>): Nothing;
+    either<ON_SOME, ON_NOTHING>(onSome: (thing: never) => ON_SOME, onNothing: () => ON_NOTHING): ON_SOME | ON_NOTHING;
     toResult<ERROR>(fallback: ERROR): Result<never, ERROR>;
     inspect(): string;
 }
@@ -41,14 +44,12 @@ export namespace Maybe {
       reducer: (accumulator: ACC, value: VALUE) => Maybe<ACC>,
       seed: Maybe<ACC>
     ): Maybe<ACC> =>
-      maybes.reduce((accumulator, item) =>
-        accumulator.mBind(acc => item.mBind(value => reducer(acc, value))), seed),
+      foldAll<VALUE, ACC, Maybe<ACC>>(maybes, reducer, seed),
     some: <VALUE, ACC>(
       maybes: readonly Maybe<VALUE>[],
       reducer: (accumulator: ACC, value: VALUE) => Maybe<ACC>,
       seed: Maybe<ACC>
     ): Maybe<ACC> =>
-      maybes.reduce((accumulator, item) =>
-        accumulator.mBind(acc => item.map(value => reducer(acc, value)).orElse(accumulator)), seed)
+      foldSome<VALUE, ACC, Maybe<ACC>>(maybes, reducer, seed)
   };
 }

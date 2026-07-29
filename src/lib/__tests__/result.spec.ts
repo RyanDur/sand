@@ -1,4 +1,6 @@
 import {failure, success} from '../result';
+import {Result} from '../types';
+import {lawsOf} from './laws';
 
 describe('result', () => {
   const value = 'value';
@@ -190,5 +192,50 @@ describe('result', () => {
         expect(failure(value).either(failureResult, successResult).isSuccess).toBe(true);
       });
     });
+  });
+});
+
+describe('Result is a lawful Functor, Monad, and Catamorphism', () => {
+  const eq = (left: Result<number, string>, right: Result<number, string>): void =>
+    expect(left.inspect()).toEqual(right.inspect());
+  const laws = lawsOf<Result<number, string>, void>(success, eq);
+  const hit = (value: number): string => `hit ${value}`;
+  const miss = (reason: string): string => `miss ${reason}`;
+
+  test('monad left identity: success(a).mBind(f) is f(a)', laws.leftIdentity);
+  test('monad right identity holds on both branches', () => {
+    laws.rightIdentity(success(3));
+    laws.rightIdentity(failure('boom'));
+  });
+  test('monad associativity holds on both branches', () => {
+    laws.associativity(success(3));
+    laws.associativity(failure('boom'));
+  });
+  test('functor identity holds on both branches', () => {
+    laws.mapIdentity(success(3));
+    laws.mapIdentity(failure('boom'));
+  });
+  test('functor composition holds on both branches', () => {
+    laws.mapComposition(success(3));
+    laws.mapComposition(failure('boom'));
+  });
+  test('catamorphism computation: folding a constructor selects its branch', () => {
+    expect(success<number, string>(3).either(hit, miss)).toEqual('hit 3');
+    expect(failure<string, number>('e').either(hit, miss)).toEqual('miss e');
+  });
+  test('catamorphism reflection: folding with the constructors rebuilds the value', () => {
+    const reflect = (m: Result<number, string>): void =>
+      expect(m.either(success, failure).inspect()).toEqual(m.inspect());
+    reflect(success(3));
+    reflect(failure('e'));
+  });
+  test('catamorphism fusion: a function after the fold distributes into both branches', () => {
+    const shout = (folded: string): string => folded.toUpperCase();
+    const fused = (m: Result<number, string>): void =>
+      expect(shout(m.either(hit, miss))).toEqual(
+        m.either(value => shout(hit(value)), reason => shout(miss(reason)))
+      );
+    fused(success(3));
+    fused(failure('e'));
   });
 });

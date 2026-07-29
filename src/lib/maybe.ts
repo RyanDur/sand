@@ -16,6 +16,7 @@ const some = <THING>(thing: THING): Some<THING> => {
     mBind: <NEW_THING>(f: (value: THING) => MaybeType<NEW_THING>) => f(thing),
     or: () => self,
     and: <NEW_THING>(other: MaybeType<NEW_THING>) => other.map(value => [thing, value] as [THING, NEW_THING]),
+    either: <ON_SOME, ON_NOTHING>(onSome: (value: THING) => ON_SOME, _onNothing: () => ON_NOTHING) => onSome(thing),
     toResult: <ERROR>(_fallback: ERROR) => success<THING, ERROR>(thing),
     inspect: () => `Some(${inspect(thing)})`
   });
@@ -36,6 +37,7 @@ const nothing = (): Nothing => NOTHING ??= shallowFreeze({
   mBind: () => nothing(),
   or: <THING>(f: () => MaybeType<THING>) => f(),
   and: () => nothing(),
+  either: <ON_SOME, ON_NOTHING>(_onSome: (value: never) => ON_SOME, onNothing: () => ON_NOTHING) => onNothing(),
   toResult: <ERROR>(fallback: ERROR) => failure<ERROR>(fallback),
   inspect: () => 'Nothing'
 });
