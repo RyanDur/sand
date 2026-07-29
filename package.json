@@ -1,6 +1,6 @@
 {
   "name": "@ryandur/sand",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "type": "module",
   "description": "helper objects and functions",
   "homepage": "https://ryandur.github.io/sand/",
@@ -35,7 +35,7 @@
     "prepublishOnly": "npm run build",
     "deploy": "gh-pages -d docs",
     "test:coverage": "npm test -- src/lib --coverage",
-    "ci": "npm run test:coverage",
+    "ci": "npm run typecheck && npm run lint && npm run test:coverage",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint --type-aware",
     "docs": "npx --yes -p typedoc@0.28.20 -p typescript@6.0.2 typedoc"

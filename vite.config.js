@@ -16,6 +16,7 @@ export default defineConfig({
   test: {
     globals: true,
     watch: false,
+    typecheck: { enabled: true },
     coverage: {
       reporter: ['text', 'json-summary'],
       exclude: ['src/development', 'setupTests.ts', 'src/index.ts', '**/types*/**'],
