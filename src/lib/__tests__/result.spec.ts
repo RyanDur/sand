@@ -1,6 +1,6 @@
 import {failure, success} from '../result';
 import {Result} from '../types';
-import {lawsOf} from './laws';
+import {lawsOf} from '../laws';
 
 describe('result', () => {
   const value = 'value';

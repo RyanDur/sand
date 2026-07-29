@@ -1,5 +1,21 @@
-import {Functor, Monad} from '../kernel';
+import {Functor, Monad} from './kernel';
 
+/**
+ * The law harness: hand it your type's unit and an equality, get back the
+ * functor and monad laws as runnable assertions. The constraint is the
+ * entry fee — your type must already be the capabilities it claims. The
+ * shipped containers prove themselves with it in their own suites; a type
+ * you mint yourself proves its laws the same way.
+ *
+ * ```ts
+ * const laws = lawsOf<Mine, void>(mine, (left, right) => expect(left.value).toEqual(right.value));
+ * laws.leftIdentity();
+ * laws.rightIdentity(mine(3));
+ * laws.associativity(mine(3));
+ * laws.mapIdentity(mine(3));
+ * laws.mapComposition(mine(3));
+ * ```
+ * */
 export const lawsOf = <
   M extends Functor<number, M> & Monad<number, M>,
   VERDICT extends void | Promise<void>

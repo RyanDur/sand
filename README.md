@@ -76,27 +76,37 @@ effect cleanup:
 useEffect(() => getArt(id).onPending(isLoading).onSuccess(updatePiece).cancel, [id]);
 ```
 
-### allOf / someOf
-
-Both fold a batch onto a seed. `allOf` requires every item to succeed; `someOf` keeps the ones that do and
-skips the ones that don't. Either way, a failure from the reducer itself fails the whole fold.
-
-One function covers all three containers: the arguments carry the types, so whatever kind the seed is —
-`Result`, `Maybe`, or `Result.Async` — is what comes back, with nothing annotated at the call site.
+When the moment comes to leave the container, `settle` is the true fold: both branches land in one plain
+value, delivered when the exchange settles. `either` keeps you in the Async world; `settle` is the exit —
+and since the value doesn't exist until the promise does, it arrives inside a `Promise`. Like every
+explicit read it is a pull: cancel suppresses pushes, it never corrupts pulls.
 
 ```typescript
-import {allOf, someOf, success, failure, some, nothing, asyncSuccess} from '@ryandur/sand';
+const view = await getArt(id).settle(
+    art => ({state: 'loaded', art}),
+    reason => ({state: 'failed', reason})
+); // one value, whichever branch the exchange took
+```
 
-allOf([success(1), success(2), success(3)], (total, value) => success(total + value), success(0))
+### reduce.all / reduce.some
+
+Array.reduce lifted over the container, living on the type it reduces. `reduce.all` demands every item
+land; `reduce.some` forgives the ones that don't and keeps the reductions that do. Either way, a failure
+from the reducer itself fails the whole fold.
+
+```typescript
+import {Maybe, Result, asyncSuccess, failure, nothing, some, success} from '@ryandur/sand';
+
+Result.reduce.all([success(1), success(2), success(3)], (total, value) => success(total + value), success(0))
     .orNull(); // produces: 6
 
-allOf([some(1), nothing(), some(3)], (total, value) => some(total + value), some(0))
-    .orNull(); // produces: null (allOf needs every one)
+Maybe.reduce.all([some(1), nothing(), some(3)], (total, value) => some(total + value), some(0))
+    .orNull(); // produces: null (all needs every one)
 
-someOf([success<number, string>(1), failure('x'), success(3)], (total, value) => success(total + value), success(0))
-    .orNull(); // produces: 4 (someOf skips the failure)
+Result.reduce.some([success<number, string>(1), failure('x'), success(3)], (total, value) => success(total + value), success(0))
+    .orNull(); // produces: 4 (some skips the failure)
 
-await someOf([asyncSuccess<number, string>(1), asyncSuccess<number, string>(2)], (total, value) => asyncSuccess(total + value), asyncSuccess(0))
+await Result.Async.reduce.all([asyncSuccess<number, string>(1), asyncSuccess<number, string>(2)], (total, value) => asyncSuccess(total + value), asyncSuccess(0))
     .orNull(); // produces: 3
 ```
 
@@ -132,6 +142,46 @@ import {requesting} from '@ryandur/sand';
 
 requesting('/things', {method: 'POST', body: {name: 'sand'}}, () => AnError.NETWORK)
     .mBind(response => response.ok ? bodyOf(response) : explain(response));
+```
+
+### Make your own pieces
+
+The engines under `reduce` are public, and they consume structure, not names. `foldAll` folds anything
+whose items chain with `mBind` (a `Monad`); `foldSome` forgives the misses of anything that can fold its
+two branches (a `Catamorphism`). Mint a type with those capabilities and the engines are yours — nothing
+to register, the structure is the membership.
+
+```typescript
+import {Catamorphism, Functor, Monad, foldAll} from '@ryandur/sand';
+
+interface Counted extends Functor<number, Counted>, Monad<number, Counted>, Catamorphism<number, Counted> {
+    count: number;
+}
+
+const counted = (count: number): Counted => ({
+    count,
+    map: f => counted(f(count)),
+    mBind: f => f(count),
+    either: onHit => onHit(count)
+});
+
+foldAll([counted(1), counted(2), counted(3)], (total, value) => counted(total + value), counted(0))
+    .count; // produces: 6
+```
+
+And prove you joined the algebra correctly: `lawsOf` hands back the functor and monad laws as runnable
+assertions — the same harness the shipped containers prove themselves with in their own suites.
+
+```typescript
+import {lawsOf} from '@ryandur/sand';
+
+const laws = lawsOf<Counted, void>(counted, (left, right) => expect(left.count).toEqual(right.count));
+
+laws.leftIdentity();             // unit(a).mBind(f) is f(a)
+laws.rightIdentity(counted(3));  // m.mBind(unit) is m
+laws.associativity(counted(3));  // the order of binding never matters
+laws.mapIdentity(counted(3));    // mapping identity changes nothing
+laws.mapComposition(counted(3)); // mapping f then g is mapping g after f
 ```
 
 ## Maybe how you would like to use it.

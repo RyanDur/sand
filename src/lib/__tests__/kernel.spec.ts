@@ -1,5 +1,5 @@
 import {Monad, Catamorphism, foldAll, foldSome} from '../kernel';
-import {lawsOf} from './laws';
+import {lawsOf} from '../laws';
 import {failure, success} from '../..';
 import {Result} from '../types';
 

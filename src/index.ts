@@ -4,6 +4,7 @@ export {maybe, some, nothing} from './lib/maybe';
 export {tryCatch, asyncTryCatch} from './lib/tryCatch';
 export {requesting} from './lib/requesting';
 export {foldAll, foldSome} from './lib/kernel';
+export {lawsOf} from './lib/laws';
 export type {Catamorphism, Functor, Monad} from './lib/kernel';
 export {
   not,

@@ -1,6 +1,6 @@
 import {asyncFailure, asyncResult, asyncSuccess} from '../asyncResult';
 import {failure, success} from '../result';
-import {lawsOf} from './laws';
+import {lawsOf} from '../laws';
 import {Result} from '../types';
 
 const resolvePromises = () => new Promise<void>(resolve => setTimeout(resolve));

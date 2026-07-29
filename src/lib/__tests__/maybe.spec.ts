@@ -1,5 +1,5 @@
 import {maybe, nothing, some} from '../maybe';
-import {lawsOf} from './laws';
+import {lawsOf} from '../laws';
 import {Maybe} from '../types';
 import {faker} from '@faker-js/faker';
 
