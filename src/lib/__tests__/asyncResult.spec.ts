@@ -1,4 +1,5 @@
 import {asyncFailure, asyncResult, asyncSuccess} from '../asyncResult';
+import {failure, success} from '../result';
 import {lawsOf} from './laws';
 import {Result} from '../types';
 
@@ -178,7 +179,7 @@ describe('result', () => {
   });
 });
 
-describe('Result.Async is a lawful Functor and Monad, and the Catamorphism its shape can state', () => {
+describe('Result.Async is a lawful Functor, Monad, and Catamorphism — settle is the true fold, either the endo fold', () => {
   const eq = async (
     left: Result.Async<number, string>,
     right: Result.Async<number, string>
@@ -228,5 +229,37 @@ describe('Result.Async is a lawful Functor and Monad, and the Catamorphism its s
       );
     await fused(asyncSuccess(3));
     await fused(asyncFailure('e'));
+  });
+
+  test('settle computation: the true fold selects its branch and lands in a plain value', async () => {
+    const label = (value: number): string => `hit ${value}`;
+    const blame = (reason: string): string => `miss ${reason}`;
+    expect(await asyncSuccess<number, string>(3).settle(label, blame)).toEqual('hit 3');
+    expect(await asyncFailure<string, number>('e').settle(label, blame)).toEqual('miss e');
+  });
+
+  test('settle reflection: folding with the result constructors recovers the settled result', async () => {
+    const reflect = async (m: Result.Async<number, string>): Promise<void> =>
+      expect((await m.settle(success, failure)).inspect()).toEqual((await m.value).inspect());
+    await reflect(asyncSuccess(3));
+    await reflect(asyncFailure('e'));
+  });
+
+  test('settle fusion: a plain function after the true fold distributes into both branches', async () => {
+    const label = (value: number): string => `hit ${value}`;
+    const blame = (reason: string): string => `miss ${reason}`;
+    const shout = (folded: string): string => folded.toUpperCase();
+    const fused = async (m: Result.Async<number, string>): Promise<void> =>
+      expect(shout(await m.settle(label, blame))).toEqual(
+        await m.settle(value => shout(label(value)), reason => shout(blame(reason)))
+      );
+    await fused(asyncSuccess(3));
+    await fused(asyncFailure('e'));
+  });
+
+  test('settle is a pull: cancel suppresses pushes, the fold still settles honestly', async () => {
+    const chain = asyncSuccess<number, string>(3);
+    chain.cancel();
+    expect(await chain.settle(value => `hit ${value}`, reason => `miss ${reason}`)).toEqual('hit 3');
   });
 });

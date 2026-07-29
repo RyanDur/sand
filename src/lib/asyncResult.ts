@@ -15,6 +15,7 @@ const cancelable = (halt: Halt) => {
     either: (onSuccess, onFailure) => chain(promise.then(result => result.isSuccess
       ? onSuccess(result.value).value
       : onFailure(result.reason).value)),
+    settle: (onSuccess, onFailure) => promise.then(result => result.either(onSuccess, onFailure)),
     onPending: (waiting) => {
       if (!halt.stopped) waiting(true);
       return chain(promise.then((result) => halt.stopped ? result : result.onComplete(() => {
