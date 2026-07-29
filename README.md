@@ -76,13 +76,13 @@ effect cleanup:
 useEffect(() => getArt(id).onPending(isLoading).onSuccess(updatePiece).cancel, [id]);
 ```
 
-When the moment comes to leave the container, `settle` is the true fold: both branches land in one plain
-value, delivered when the exchange settles. `either` keeps you in the Async world; `settle` is the exit —
-and since the value doesn't exist until the promise does, it arrives inside a `Promise`. Like every
-explicit read it is a pull: cancel suppresses pushes, it never corrupts pulls.
+When the moment comes to leave the container, no new piece is needed: `value` hands you the settled
+`Result`, and `Result.either` is the true fold. The exit composes from what you already have — and since
+the value doesn't exist until the promise does, it arrives inside a `Promise`. Like every explicit read
+it is a pull: cancel suppresses pushes, it never corrupts pulls.
 
 ```typescript
-const view = await getArt(id).settle(
+const view = (await getArt(id).value).either(
     art => ({state: 'loaded', art}),
     reason => ({state: 'failed', reason})
 ); // one value, whichever branch the exchange took
@@ -142,6 +142,22 @@ import {requesting} from '@ryandur/sand';
 
 requesting('/things', {method: 'POST', body: {name: 'sand'}}, () => AnError.NETWORK)
     .mBind(response => response.ok ? bodyOf(response) : explain(response));
+```
+
+### connecting
+
+`connecting` is `requesting`'s sibling for sockets: it guards the handshake — the one exchange a socket
+settles — and hands the open connection back whole. Message policy stays with the caller, where it
+belongs. The chain owns the teardown: `cancel` closes the socket, whether the handshake is still in
+flight or long since landed, and a socket that closes before it ever opens folds into the failure side.
+
+```typescript
+import {connecting} from '@ryandur/sand';
+
+connecting('wss://example.test/live', () => 'unreachable')
+    .onSuccess(socket => socket.addEventListener('message', receive));
+
+useEffect(() => connecting(url, explain).onSuccess(listen).cancel, [url]);
 ```
 
 ### Make your own pieces
