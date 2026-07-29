@@ -68,19 +68,6 @@ export declare namespace Result {
       onFailure: (value: FAILURE) => Async<NS, NF>
     ) => Async<NS, NF>;
     /**
-     * settle: the true fold — both branches land in one plain value,
-     * delivered when the exchange settles.
-     *
-     * <p>Where either keeps you in the Async world, settle is the exit: the
-     * catamorphism a promise-backed container can honestly offer, so the
-     * value arrives inside a Promise. A pull like value, orNull, and orElse —
-     * cancel suppresses pushes, it never corrupts pulls.</p>
-     * */
-    readonly settle: <ON_SUCCESS, ON_FAILURE>(
-      onSuccess: (value: SUCCESS) => ON_SUCCESS,
-      onFailure: (reason: FAILURE) => ON_FAILURE
-    ) => Promise<ON_SUCCESS | ON_FAILURE>;
-    /**
      * onPending: A function that notifies the consuming function of the pending state.
      *
      * <p>Upon invocation it will pass true to the consumer.
