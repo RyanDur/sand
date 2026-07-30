@@ -34,8 +34,8 @@ test('caseOf.all demands every case and drops the Maybe — growth in the union 
     });
   expectTypeOf(total).toEqualTypeOf<(delta: Delta) => number>();
 
+  // @ts-expect-error -- a missing arm is a compile error in a total analysis
   caseOf.all('domain')<Delta, number>({domain: 'removed', id: 1}, {
-    // @ts-expect-error -- a missing arm is a compile error in a total analysis
     stories: (member) => member.stories.length
   });
 });
