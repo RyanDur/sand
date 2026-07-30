@@ -14,6 +14,7 @@ export {
   notEmpty,
   has,
   matchOn,
+  caseOf,
   toError
 } from './lib/util';
 
