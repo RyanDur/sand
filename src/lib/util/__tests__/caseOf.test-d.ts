@@ -25,3 +25,17 @@ test('arms are partial by design and the miss rides a Maybe', () => {
     caseOf('domain')<Delta, number>(delta, {stories: (member) => member.stories.length});
   expectTypeOf(partial).returns.toEqualTypeOf<Maybe<number>>();
 });
+
+test('caseOf.all demands every case and drops the Maybe — growth in the union breaks every total site', () => {
+  const total = (delta: Delta): number =>
+    caseOf.all('domain')<Delta, number>(delta, {
+      stories: (member) => member.stories.length,
+      removed: (member) => member.id
+    });
+  expectTypeOf(total).toEqualTypeOf<(delta: Delta) => number>();
+
+  caseOf.all('domain')<Delta, number>({domain: 'removed', id: 1}, {
+    // @ts-expect-error -- a missing arm is a compile error in a total analysis
+    stories: (member) => member.stories.length
+  });
+});

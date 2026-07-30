@@ -75,7 +75,7 @@ export const matchOn = <MATCH extends string | number>(
  * }).orElse(0);
  * ```
  * */
-export const caseOf =
+const partialAnalysis =
   <FIELD extends string>(field: FIELD) =>
   <UNION extends Record<FIELD, string>, RESULT>(
     value: UNION,
@@ -84,6 +84,23 @@ export const caseOf =
     const arm = arms[value[field]] as ((member: UNION) => RESULT) | undefined;
     return maybe(arm).map(matched => matched(value));
   };
+
+/**
+ * caseOf.all is the complete analysis: every case must be armed, so the miss
+ * cannot exist and the value comes back bare — no Maybe. When the union
+ * grows a case, every total site fails to compile until it decides.
+ * */
+const totalAnalysis =
+  <FIELD extends string>(field: FIELD) =>
+  <UNION extends Record<FIELD, string>, RESULT>(
+    value: UNION,
+    arms: {[CASE in UNION[FIELD]]: (member: Extract<UNION, Record<FIELD, CASE>>) => RESULT}
+  ): RESULT => {
+    const arm = arms[value[field]] as (member: UNION) => RESULT;
+    return arm(value);
+  };
+
+export const caseOf = Object.assign(partialAnalysis, {all: totalAnalysis});
 
 export const typeOf = (value: unknown): string => {
   if (Number.isNaN(value)) return 'nan';

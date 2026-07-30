@@ -42,3 +42,16 @@ describe('caseOf — the case analysis of a sum type', () => {
     ]);
   });
 });
+
+describe('caseOf.all — the complete analysis has no miss', () => {
+  test('every case armed means the value comes back bare, no Maybe', () => {
+    const label = (shape: Shape): string =>
+      caseOf.all('kind')<Shape, string>(shape, {
+        circle: ({radius}) => `round ${radius}`,
+        square: ({side}) => `cornered ${side}`,
+        line: ({length}) => `flat ${length}`
+      });
+    expect(label({kind: 'circle', radius: 2})).toEqual('round 2');
+    expect(label({kind: 'line', length: 5})).toEqual('flat 5');
+  });
+});
