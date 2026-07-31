@@ -58,50 +58,6 @@ export const matchOn = <MATCH extends string | number>(
   ): Maybe<VALUE> => maybe(cases[matcher(on as MATCH)]).map(value => value());
 };
 
-/**
- * caseOf is the case analysis of a sum type — a case-of over a discriminated
- * union. Name the field that discriminates, give an arm per case you care
- * about, and each arm receives the member already narrowed. The result rides
- * a Maybe: an unmatched case is Nothing, so the miss stays the caller's
- * decision. either is its two-branch special case on the shipped containers;
- * matchOn is its value-level sibling.
- *
- * ```ts
- * type Shape = {kind: 'circle'; radius: number} | {kind: 'square'; side: number};
- *
- * caseOf('kind')(shape, {
- *     circle: ({radius}) => Math.PI * radius * radius,
- *     square: ({side}) => side * side
- * }).orElse(0);
- * ```
- * */
-const partialAnalysis =
-  <FIELD extends string>(field: FIELD) =>
-  <UNION extends Record<FIELD, string>, RESULT>(
-    value: UNION,
-    arms: Partial<{[CASE in UNION[FIELD]]: (member: Extract<UNION, Record<FIELD, CASE>>) => RESULT}>
-  ): Maybe<RESULT> => {
-    const arm = arms[value[field]] as ((member: UNION) => RESULT) | undefined;
-    return maybe(arm).map(matched => matched(value));
-  };
-
-/**
- * caseOf.all is the complete analysis: every case must be armed, so the miss
- * cannot exist and the value comes back bare — no Maybe. When the union
- * grows a case, every total site fails to compile until it decides.
- * */
-const totalAnalysis =
-  <FIELD extends string>(field: FIELD) =>
-  <UNION extends Record<FIELD, string>, RESULT>(
-    value: UNION,
-    arms: {[CASE in UNION[FIELD]]: (member: Extract<UNION, Record<FIELD, CASE>>) => RESULT}
-  ): RESULT => {
-    const arm = arms[value[field]] as (member: UNION) => RESULT;
-    return arm(value);
-  };
-
-export const caseOf = Object.assign(partialAnalysis, {all: totalAnalysis});
-
 export const typeOf = (value: unknown): string => {
   if (Number.isNaN(value)) return 'nan';
   if (value === null) return 'null';
