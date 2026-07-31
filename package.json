@@ -37,7 +37,7 @@
     "test:coverage": "npm test -- src/lib --coverage",
     "ci": "npm run typecheck && npm run lint && npm run test:coverage",
     "typecheck": "tsc --noEmit",
-    "lint": "oxlint --type-aware",
+    "lint": "oxlint --type-aware --deny-warnings",
     "docs": "npx --yes -p typedoc@0.28.20 -p typescript@6.0.2 typedoc"
   },
   "author": "Ryan Durling",
