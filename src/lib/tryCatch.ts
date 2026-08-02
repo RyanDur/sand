@@ -1,6 +1,7 @@
-import {Result} from './types';
+import {Maybe, Result} from './types';
 import {failure, success} from './result';
 import {asyncFailure, asyncResult} from './asyncResult';
+import {maybe, nothing} from './maybe';
 
 /**
  * ```ts
@@ -19,6 +20,15 @@ export const tryCatch = <VALUE, ERROR>(
     return failure(onError(thrown));
   }
 };
+
+/**
+ * ```ts
+ * attempt(() => JSON.parse(frame))
+ *     .mBind(json => maybe(TradeDecoder.decode(json))); // a throw is just nothing — for edges where absence is the only fact
+ * ```
+ */
+export const attempt = <VALUE>(fn: () => VALUE): Maybe<VALUE> =>
+  tryCatch(fn, nothing).either(maybe, absent => absent);
 
 /**
  * ```ts

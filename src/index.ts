@@ -1,7 +1,7 @@
 export {success, failure} from './lib/result';
 export {asyncResult, asyncSuccess, asyncFailure} from './lib/asyncResult';
 export {maybe, some, nothing} from './lib/maybe';
-export {tryCatch, asyncTryCatch} from './lib/tryCatch';
+export {tryCatch, asyncTryCatch, attempt} from './lib/tryCatch';
 export {requesting} from './lib/requesting';
 export {connecting} from './lib/connecting';
 export {foldAll, foldSome} from './lib/kernel';

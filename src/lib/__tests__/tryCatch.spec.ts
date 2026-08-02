@@ -1,4 +1,5 @@
-import {asyncTryCatch, tryCatch} from '../tryCatch';
+import {asyncTryCatch, attempt, tryCatch} from '../tryCatch';
+import {some, nothing} from '../maybe';
 import {toError} from '../util';
 
 describe('tryCatch', () => {
@@ -23,6 +24,30 @@ describe('tryCatch', () => {
       throw 'plain string';
     }, thrown => thrown);
     expect(result.either(() => 'nope', reason => reason)).toBe('plain string');
+  });
+});
+
+describe('attempt', () => {
+  test('a returning fn is some of its value', () => {
+    expect(attempt(() => 'value').inspect()).toBe(some('value').inspect());
+  });
+
+  test('a throwing fn is nothing — no error ceremony', () => {
+    const result = attempt((): string => {
+      throw new Error('boom');
+    });
+    expect(result.inspect()).toBe(nothing().inspect());
+  });
+
+  test('a fn returning null is nothing, matching maybe', () => {
+    expect(attempt(() => null).inspect()).toBe(nothing().inspect());
+  });
+
+  test('attempt is exactly the composition it abbreviates', () => {
+    const returning = (): unknown => JSON.parse('{"name":"sand"}');
+    const throwing = (): unknown => JSON.parse('not json');
+    expect(attempt(returning).inspect()).toBe(tryCatch(returning, toError).toMaybe().inspect());
+    expect(attempt(throwing).inspect()).toBe(tryCatch(throwing, toError).toMaybe().inspect());
   });
 });
 
