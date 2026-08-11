@@ -33,6 +33,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "prepublishOnly": "npm run build",
+    "prepack": "npm run build",
     "deploy": "gh-pages -d docs",
     "test:coverage": "npm test -- src/lib --coverage",
     "ci": "npm run typecheck && npm run lint && npm run test:coverage",
