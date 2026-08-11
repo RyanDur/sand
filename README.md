@@ -144,20 +144,23 @@ requesting('/things', {method: 'POST', body: {name: 'sand'}}, () => AnError.NETW
     .mBind(response => response.ok ? bodyOf(response) : explain(response));
 ```
 
-### connecting
+### streaming
 
-`connecting` is `requesting`'s sibling for sockets: it guards the handshake — the one exchange a socket
-settles — and hands the open connection back whole. Message policy stays with the caller, where it
-belongs. The chain owns the teardown: `cancel` closes the socket, whether the handshake is still in
-flight or long since landed, and a socket that closes before it ever opens folds into the failure side.
+A socket is not a result: nothing settles into a value. `streaming` owns a socket's whole life — the
+handshake, the flow, the ending — in socket-native words. Message policy stays with the caller, where
+it belongs: frames arrive raw. Settled facts replay for late listeners; the flow does not. `close` is
+the one teardown, silent and idempotent: our own hanging up is not an ending worth announcing, but the
+peer's is, and a handshake refused folds into the failure side through the caller's mapper.
 
 ```typescript
-import {connecting} from '@ryandur/sand';
+import {streaming} from '@ryandur/sand';
 
-connecting('wss://example.test/live', () => 'unreachable')
-    .onSuccess(socket => socket.addEventListener('message', receive));
+streaming('wss://example.test/live', () => 'unreachable')
+    .onOpen(socket => socket.send(subscribe))
+    .onMessage(receive)
+    .onClose(mourn);
 
-useEffect(() => connecting(url, explain).onSuccess(listen).cancel, [url]);
+useEffect(() => streaming(url, explain).onMessage(receive).close, [url]);
 ```
 
 ### Make your own pieces
